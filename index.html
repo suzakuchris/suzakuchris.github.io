@@ -3,16 +3,43 @@
         <title>
             Abyssal Flower
         </title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
         <style>
             body{
                 background-color:black;
                 color:white;
             }
+            #main-container{
+                height:100vh;
+                width:100vw;
+                overflow:hidden;
+            }
+            .wip-message{
+                color:rgb(122, 0, 0);
+                font-family: 'Orbitron', sans-serif;
+            }
         </style>
     </head>
     <body>
-        Hello world!
-        <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+        <div id="main-container" class="container">
+            <div class="row h-100 w-100">
+                <div class="col-12 col-md-6 col-lg-4 d-flex align-items-center">
+                    <div class="main-logo w-100">
+                        <div class="w-100">
+                            <img src="https://media.discordapp.net/attachments/901047542287056936/1143131531666276422/New_Project.png" class="w-100">
+                        </div>
+                        <div class="wip-message">
+                            <i>Work in Progress!</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
         <script>
             $(window).on('load', function(){
                 console.log('web loaded');
