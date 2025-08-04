@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RISE - Lilianna Highwind</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts for a gothic, heavy feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            /* Dark, aged paper background color */
+            background-color: #0e0e0e;
+            font-family: 'EB Garamond', serif;
+            min-height: 100vh;
+        }
+        .tome-font {
+            font-family: 'Uncial Antiqua', cursive;
+        }
+        .tome-item {
+            /* Rigid, non-rotated style with subtle border */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            border: 1px solid rgba(255,255,255,0.1);
+            height: 100%;
+        }
+        .tome-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1), 0 4px 6px -2px rgba(255, 255, 255, 0.05);
+        }
+        .bg-dark-subtle {
+            background-color: #1a1a1a !important;
+        }
+        .bg-dark-deep {
+            background-color: #121212 !important;
+        }
+
+        /* CSS for the randomly positioned decorative images */
+        .grimoire-decoration {
+            position: absolute;
+            z-index: 1; /* Below the main content */
+            width: 120px;
+            height: auto;
+            opacity: 0.2;
+        }
+
+        .grimoire-decoration:hover {
+            opacity: 0.5;
+        }
+
+        /* Positioning for each decorative image */
+        .grimoire-deco-1 { top: 5%; left: 5%; transform: rotate(-10deg); }
+        .grimoire-deco-2 { top: 15%; right: 8%; transform: rotate(15deg); }
+        .grimoire-deco-3 { bottom: 10%; left: 12%; transform: rotate(5deg); }
+        .grimoire-deco-4 { bottom: 5%; right: 5%; transform: rotate(-20deg); }
+        .grimoire-deco-5 { bottom: 85%; right: 75%; transform: rotate(20deg); }
+        .grimoire-deco-6 { bottom: 30%; right: 25%; transform: rotate(-70deg); }
+
+        .power-item-container,
+        .feat-item-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .skill-name-link,
+        .power-name-link,
+        .feat-name-link,
+        .misc-feature-link {
+            flex-grow: 1;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .skill-name-link:hover,
+        .power-name-link:hover,
+        .feat-name-link:hover,
+        .misc-feature-link:hover {
+            text-decoration: underline;
+        }
+        
+        .btn-clear-all {
+            background-color: #6e7f80;
+            color: #fff;
+            border: 1px solid #6e7f80;
+            transition: background-color 0.3s;
+        }
+        .btn-clear-all:hover {
+            background-color: #708090;
+            color: #fff;
+            border-color: #708090;
+        }
+
+        /* Iframe for displaying power details */
+        .power-iframe {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: #101010;
+            width: 100%;
+            height: 300px;
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Custom styles for the HP inputs and bloodied animation */
+        .hp-input-container {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .hp-input-container input {
+            background-color: #101010;
+            border: 1px solid #6e7f80;
+            color: #fff;
+            font-size: 1.25rem;
+            width: 50px;
+            text-align: center;
+            padding: 0.25rem;
+        }
+        .hp-input-container input:focus {
+            background-color: #708090;
+            border-color: #fff;
+        }
+        .bloodied-effect {
+            box-shadow: 0 0 10px 5px rgba(255, 0, 0, 0.5);
+            animation: pulse-red 1.5s infinite alternate;
+        }
+        @keyframes pulse-red {
+            from { box-shadow: 0 0 10px 5px rgba(255, 0, 0, 0.5); }
+            to { box-shadow: 0 0 15px 8px rgba(255, 0, 0, 0.8); }
+        }
+
+        /* Custom styles for the healing surge slider */
+        .surge-slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            width: 100%;
+        }
+        .surge-slider-container input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #6e7f80;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+            border-radius: 3px;
+        }
+        .surge-slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        /* Fixing the image stretching in sketches & records */
+        .sketches img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            aspect-ratio: 4 / 3;
+        }
+        .portrait-container img {
+            width: 100%;
+            height: auto;
+            /* aspect-ratio: 1 / 1; */
+            object-fit: cover;
+        }
+
+        /* Power list grid layout */
+        .power-grid {
+            display: grid;
+            gap: 0.5rem;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        /* Mobile nav styling */
+        .mobile-nav {
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1030; /* Higher than other fixed elements */
+            background-color: rgba(14, 14, 14, 0.95);
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .mobile-nav a {
+            font-family: 'Uncial Antiqua', cursive;
+            font-size: 0.8rem;
+            padding: 0.5rem 0.25rem;
+            color: #ccc;
+        }
+        .mobile-nav a:hover, .mobile-nav a.active {
+            color: #fff;
+            background-color: transparent;
+            text-decoration: underline;
+        }
+
+        /* Extra padding for the main container on mobile to prevent content from being hidden behind the nav bar */
+        @media (max-width: 991px) {
+            .tome-container {
+                padding-top: 5rem !important;
+            }
+        }
+        /* Single column on small screens */
+        @media (max-width: 767px) {
+            .power-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        #roleplay-page{
+            display:none;
+        }
+
+        .show-roleplay #roleplay-page{
+            display:flex;
+        }
+
+        #combat-page{
+            max-width:100%;
+            transition: 0.6s;
+        }
+
+        .show-roleplay #combat-page{
+            max-width:0%;
+            padding:0px;
+            overflow:hidden;
+        }
+
+        .show-roleplay #combat-page .row{
+            display:none;
+        }
+
+        #misc-feature-content{
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body class="text-white" id="mode">
+    <!-- Decorative images for the corners of the page -->
+    <img src="https://media.discordapp.net/attachments/901047542287056936/1401991857600336041/ffixv__unknown_ascian_emblem_by_aet_obli_ddlibi4-pre.png?ex=68924a2a&is=6890f8aa&hm=9b149c1e0edacc23d77935c62711ae7500b0e14da99f8394626bfe976cc60802&=&format=webp&quality=lossless&width=592&height=592" alt="A decorative symbol" class="grimoire-decoration grimoire-deco-1 d-none d-lg-block">
+    <img src="https://media.discordapp.net/attachments/901047542287056936/1401991857600336041/ffixv__unknown_ascian_emblem_by_aet_obli_ddlibi4-pre.png?ex=68924a2a&is=6890f8aa&hm=9b149c1e0edacc23d77935c62711ae7500b0e14da99f8394626bfe976cc60802&=&format=webp&quality=lossless&width=592&height=592" alt="A decorative symbol" class="grimoire-decoration grimoire-deco-6 d-none d-lg-block">
+    <img src="https://media.discordapp.net/attachments/901047542287056936/1401991858090938500/ffixv__fandaniel_ascian_emblem_by_aet_obli_deslvok-pre.png?ex=68924a2a&is=6890f8aa&hm=59ec6c48915c64cc13e769fc7b0e81eab1d69a0a430009bc118f7b2e04d93965&=&format=webp&quality=lossless&width=592&height=592" alt="A decorative seal" class="grimoire-decoration grimoire-deco-2 d-none d-lg-block">
+    <img src="https://media.discordapp.net/attachments/901047542287056936/1401991858090938500/ffixv__fandaniel_ascian_emblem_by_aet_obli_deslvok-pre.png?ex=68924a2a&is=6890f8aa&hm=59ec6c48915c64cc13e769fc7b0e81eab1d69a0a430009bc118f7b2e04d93965&=&format=webp&quality=lossless&width=592&height=592" alt="A decorative seal" class="grimoire-decoration grimoire-deco-5 d-none d-lg-block">
+    <img src="https://media.discordapp.net/attachments/901047542287056936/1401991858552307865/ffxiv__lahabrea_ascian_emblem_by_aet_obli_ddkm74g-pre.png?ex=68924a2a&is=6890f8aa&hm=59fa4e2bf21f285b92474266c52f047d57983af5a63d86ffcd8284bd96d1ee9a&=&format=webp&quality=lossless&width=592&height=592" alt="A decorative emblem" class="grimoire-decoration grimoire-deco-3 d-none d-lg-block">
+    <img src="https://media.discordapp.net/attachments/901047542287056936/1401991858552307865/ffxiv__lahabrea_ascian_emblem_by_aet_obli_ddkm74g-pre.png?ex=68924a2a&is=6890f8aa&hm=59fa4e2bf21f285b92474266c52f047d57983af5a63d86ffcd8284bd96d1ee9a&=&format=webp&quality=lossless&width=592&height=592" alt="A decorative sigil" class="grimoire-decoration grimoire-deco-4 d-none d-lg-block">
+
+    <!-- Mobile-only Navigation Bar -->
+    <nav class="navbar navbar-dark mobile-nav d-lg-none fixed-top">
+        <div class="container-fluid">
+            <ul class="nav nav-pills d-flex w-100 justify-content-around">
+                <li class="nav-item"><a class="nav-link" href="#feats-section">Feats</a></li>
+                <li class="nav-item"><a class="nav-link" href="#skills-section">Skills</a></li>
+                <li class="nav-item"><a class="nav-link" href="#attributes-section">Attributes</a></li>
+                <li class="nav-item"><a class="nav-link" href="#vitals-section">Vitals</a></li>
+                <li class="nav-item"><a class="nav-link" href="#powers-section">Powers</a></li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <div class="container py-3 px-3 px-md-4 tome-container" style="z-index: 2; position: relative;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <!-- Header Section -->
+            <header>
+                <h1 class="tome-font display-4 text-white">
+                    Lilianna Highwind
+                </h1>
+            </header>
+             <!-- Inventory & Tracker Button -->
+            <div class="btn-group">
+                <button class="btn btn-sm text-white" onclick="combat_mode();">
+                    Combat
+                </button>
+                <button class="btn btn-sm text-white" style="border-left:1px solid white;" onclick='rp_mode();'>
+                    Roleplay
+                </button>
+                <button class="btn btn-sm text-white" style="border-left:1px solid white;" data-bs-toggle="modal" data-bs-target="#inventoryModal">
+                    Inventory & Tracker
+                </button>
+            </div>
+        </div>
+
+        <!-- Character Info Section -->
+        <div class="bg-dark p-3 pb-1 shadow-sm rounded-lg mb-3" style="background:#626694 !important;">
+            <div class="d-flex flex-column flex-md-row justify-content-between text-white gap-2 gap-md-0">
+                <p><strong>Race:</strong> Thri-Kreen</p>
+                <p><strong>Class:</strong> Barbarian (Berserker)</p>
+                <p><strong>Theme:</strong> Windlord</p>
+                <p><strong>Faculty:</strong> Anathema</p>
+                <p><strong>Level:</strong> <span id="level"></span></p>
+                <p><strong>Speed:</strong> 7</p>
+            </div>
+        </div>
+
+        <!-- Main Tome Layout for a three-page spread on large screens -->
+        <div id="tome-pages-wrapper" class="row g-3 g-lg-4 position-relative">
+            <div id="combat-page" class="col-12 col-lg-8">
+                <div class="row">
+                    <!-- Left Column: Attributes, Skills, Feats -->
+                    <div class="col-12 col-lg-6">
+                        <!-- Vital Stats section moved to the top of the middle column -->
+                        <h3 id="vitals-section" class="tome-font h4 mb-2 text-white">Vital Stats</h3>
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <div class="tome-item bg-dark-subtle p-2 shadow-sm rounded-lg d-flex flex-column justify-content-center align-items-center h-100" id="hp-container">
+                                    <span class="text-lg tome-font text-white-50">HP</span>
+                                    <div class="hp-input-container mt-2">
+                                        <input type="number" id="current-hp" value="105">
+                                        <span>/</span>
+                                        <input type="number" id="max-hp" value="105" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="tome-item bg-dark-deep p-2 shadow-sm rounded-lg d-flex flex-column justify-content-center align-items-center h-100">
+                                    <span class="text-lg tome-font text-white-50">Surges</span>
+                                    <div class="surge-slider-container">
+                                        <span class="fs-4 text-white fw-bold text-end mt-2" id="surge-value-display">9 / 9</span>
+                                        <input type="range" id="surge-slider" min="0" max="9" value="9">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="tome-item bg-dark-deep p-2 shadow-sm rounded-lg d-flex flex-column justify-content-center align-items-center h-100">
+                                    <span class="text-lg tome-font text-white-50">Initiative</span>
+                                    <span class="fs-4 text-white fw-bold mt-2" id="initiative-value">--</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="tome-item bg-dark-subtle p-2 shadow-sm rounded-lg d-flex flex-column justify-content-center align-items-center h-100">
+                                    <span class="text-lg tome-font text-white-50">Passive Perception</span>
+                                    <span class="fs-4 text-white fw-bold mt-2" id="passive-perception">--</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="tome-item bg-dark-subtle p-2 shadow-sm rounded-lg d-flex flex-column justify-content-center align-items-center h-100">
+                                    <span class="text-lg tome-font text-white-50">Attack Roll</span>
+                                    <span class="fs-4 text-white fw-bold mt-2" id="attack-roll">--</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="tome-item bg-dark-deep p-2 shadow-sm rounded-lg d-flex flex-column justify-content-center align-items-center h-100">
+                                    <span class="text-lg tome-font text-white-50">Defenses</span>
+                                    <span class="fs-5 text-white mt-2" id="defenses">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 id="feats-section" class="tome-font h4 mt-3 mb-2 text-white">Feats</h3>
+                        <div id="feats-list" class="row g-2"></div>
+
+                        <div id="feat-details-container" class="d-none">
+                            <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                                <h3 class="tome-font h4 mb-0 text-white">Feat Details</h3>
+                                <button class="btn-close btn-close-white" onclick="document.getElementById('feat-details-container').classList.add('d-none');"></button>
+                            </div>
+                            <iframe id="feat-details-iframe" class="power-iframe" src="" frameborder="0"></iframe>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                            <h3 id="skills-section" class="tome-font h4 mb-0 text-white skill-collapsible-link" data-bs-toggle="collapse" data-bs-target="#skills-list-container" aria-expanded="false" aria-controls="skills-list-container">Skills</h3>
+                        </div>
+                        
+                        <!-- This is where the skills will be generated by JavaScript -->
+                        <div id="top-skills-preview"></div>
+                        <div id="skills-list-container" class="collapse">
+                            <div id="skills-list" class="row g-2"></div>
+                        </div>
+                        
+                        <h3 id="attributes-section" class="tome-font h4 mb-2 text-white mt-3">Attributes</h3>
+                        
+                        <!-- This is where the attributes will be generated by JavaScript -->
+                        <div id="attributes-list" class="row g-2"></div>
+
+                        
+                        <!-- Skill Details section, hidden by default -->
+                        <div id="skill-details-container" class="d-none">
+                            <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                                <h3 class="tome-font h4 mb-0 text-white">Skill Details</h3>
+                                <button class="btn-close btn-close-white" onclick="document.getElementById('skill-details-container').classList.add('d-none');"></button>
+                            </div>
+                            <iframe id="skill-details-iframe" class="power-iframe" src="" frameborder="0"></iframe>
+                        </div>
+                    </div>
+                    
+                    <!-- Middle Column: Powers -->
+                    <div class="col-12 col-lg-6">
+                        <!-- <h3 id="powers-section" class="tome-font h4 mb-2 text-white">Powers</h3> -->
+
+                        <!-- At-Will Powers Section -->
+                        <h4 class="tome-font h5 mb-2 mt-1">Power - <span class="text-white-50">At-Will</span></h4>
+                        <div id="at-will-powers-list" class="power-grid"></div>
+
+                        <!-- Encounter Powers Section -->
+                        <div class="d-flex gap-2 mb-2 mt-3">
+                            <h4 class="tome-font h5 mb-0 text-white-50">Encounter</h4>
+                            <button id="clear-encounter-powers" class="btn btn-sm btn-clear-all ms-auto">Clear</button>
+                        </div>
+                        <div id="encounter-powers-list" class="power-grid"></div>
+
+                        <!-- Daily Powers Section -->
+                        <div class="d-flex gap-2 mb-2 mt-3">
+                            <h4 class="tome-font h5 mb-0 text-white-50">Daily</h4>
+                            <button id="clear-daily-powers" class="btn btn-sm btn-clear-all ms-auto">Clear</button>
+                        </div>
+                        <div id="daily-powers-list" class="power-grid"></div>
+
+                        <div id="power-details-container" class="d-none">
+                            <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                                <h3 class="tome-font h4 mb-0 text-white">Power Details</h3>
+                                <button class="btn-close btn-close-white" onclick="document.getElementById('power-details-container').classList.add('d-none');"></button>
+                            </div>
+                            <iframe id="power-details-iframe" class="power-iframe" src="" frameborder="0"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Feats & Sketches -->
+            <div class="col-12 col-lg-4">
+                <h3 class="tome-font h4 mb-2 text-white">Character Portrait</h3>
+                <div class="tome-item bg-dark-subtle p-3 shadow-sm rounded-lg mb-3 d-flex justify-content-center portrait-container" style="height:auto;">
+                    <img src="https://media.discordapp.net/attachments/901047542287056936/1401948899865919568/GrIxX-XXcAA_36p_isnet-anime.png?ex=68922228&is=6890d0a8&hm=df161992e58176f11ac294b2e761d7644c5bd661f0999f7f08e7d6d326a12ea1&=&format=webp&quality=lossless&width=510&height=696" alt="Character Portrait" class="w-100 rounded-lg">
+                </div>
+                
+                <h3 class="tome-font h4 mt-3 mb-2 text-white">Miscellaneous Features</h3>
+                <div id="misc-features-list"></div>
+
+                <div id="feat-details-container" class="d-none">
+                    <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                        <h3 class="tome-font h4 mb-0 text-white">Feat Details</h3>
+                        <button class="btn-close btn-close-white" onclick="document.getElementById('feat-details-container').classList.add('d-none');"></button>
+                    </div>
+                    <iframe id="feat-details-iframe" class="power-iframe" src="" frameborder="0"></iframe>
+                </div>
+
+                <div id="misc-feature-details-container" class="d-none">
+                    <h3 class="tome-font h4 mt-3 mb-2 text-white">Feature Details</h3>
+                    <div id="misc-feature-content" class="tome-item p-3 shadow-sm rounded-lg bg-dark-subtle text-white-50"></div>
+                </div>
+            </div>
+
+            <div id="roleplay-page" class="col-12 col-lg-8">
+                <div class="row w-100">
+                    <div class="col-12">
+                        <div id="background-container">
+                            <h3 class="tome-font h4 mb-2 text-white">Background</h3>
+                            <div class="tome-item p-3 shadow-sm rounded-lg bg-dark-subtle text-white-50">
+                                <i>"There exist myriad fighting styles, each of which has its own unique qualities. None, however, can claim to be as offensively minded as ours. Our approach is ever one of attack, no matter who─or what─we face. An experienced lancer is able to wield a polearm as if it were an extension of his body. He transforms into a raging storm before his foes, delivering a barrage of devastating thrusts and slashes. In order to facilitate such a relentless offense, we lancers favor armor of leather and chainmail─such things as provide adequate protection without sacrificing mobility. The measure of a lancer's worth is truly quite simple: how swiftly and decisively he can pierce the enemy's defenses."
+                                </i>
+                                <br/><br/>
+                                Liliana's lineage isn't something special. She came from parents that are researchers of ancient dragon mythologies. Their pursuit of draconic knowledge and its immense magical implication has been imprinted into her ever since she was a child. One myth then foretold of such warrior wielding a draconic magic and soar high into the sky just like a dragon would. This piques her interest so much that she wishes to learn if such legend can be true, taking up spellcraft and the mantle that was left by her parents.
+                                <br/><br/>She knows little of her creation, however, only that she awoke in the midst of the research that has been abandoned with an aching void where a past should be. She is driven by an innocent curiosity of such possibility, with each step bringing her closer to her goal.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div id="background-container">
+                            <h3 class="tome-font h4 mb-2 text-white">Faculty - Anathema</h3>
+                            <div class="tome-item p-3 shadow-sm rounded-lg bg-dark-subtle text-white-50">
+                                Anathema, derived from the Greek word, anatithemi meaning "to offer up" in the olden days the word anathema is used by the pope to denounce an excommunication towards a person for being cursed. This faculty places its roots by that same logic, in order to defeat evil we must first learn of it. To defeat black magic and forbidden spellcrafts, we must dive deep into their psyche, we learn of their secrets so that we may keep the world in a balance. Anathema students are not expected to be heroes; lauded for their actions, paraded with their names strewn on signs on the street, instead they keep the silence, perhaps for their whole life, for the day that people hear of their actions, is the day they have failed their education.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div id="background-container">
+                            <h3 class="tome-font h4 mb-2 text-white">Other Notes</h3>
+                            <div class="tome-item p-3 shadow-sm rounded-lg bg-dark-subtle text-white-50">
+                                She listens to symphonic rock.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory & Tracker Modal -->
+    <div class="modal fade" id="inventoryModal" tabindex="-1" aria-labelledby="inventoryModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content bg-dark-subtle border border-secondary">
+          <div class="modal-header border-bottom border-secondary">
+            <h5 class="modal-title tome-font text-white" id="inventoryModalLabel">Inventory & Session Tracker</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-0">
+             <!-- <iframe src="https://docs.google.com/spreadsheets/d/1lYZvtz8K8MTBLzjKFi0g7XVF3iTowkM7lhpdnGdrOxI/edit?usp=sharing" class="w-100 h-100" style="min-height: 80vh;"></iframe> -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Bootstrap 5 JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // =========================================================================
+        //  VIEW TOGGLE FUNCTIONS
+        // =========================================================================
+        function combat_mode() {
+            document.getElementById('tome-pages-wrapper').classList.remove('show-roleplay');
+        }
+
+        function rp_mode() {
+            document.getElementById('tome-pages-wrapper').classList.add('show-roleplay');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // =========================================================================
+            //  EDITABLE DATA: Modify these objects to update your character sheet
+            // =========================================================================
+            //Define Level
+            const level = 1;
+            const weaponProf = 2;
+            const otherBonus = 1;
+            const levelBonus = Math.floor(level/2);
+            const ACBonus = 3;
+            const REFBonus = 2;
+            const FORTBonus = 0;
+            const WILLBonus = 0;
+
+            // Define the attributes as a JSON object
+            const attributes = {
+                "STR": 20,
+                "CON": 11,
+                "DEX": 16,
+                "INT": 10,
+                "WIS": 10,
+                "CHA": 8
+            };
+
+            // Define the skills with their base attribute, final value, and other bonuses
+            const skills = {
+                "Acrobatics": { id: 'skill1', baseAttribute: "DEX", trained: true, otherBonus: 0 },
+                "Arcana": { id: 'skill2', baseAttribute: "INT", trained: false, otherBonus: 0 },
+                "Athletics": { id: 'skill27', baseAttribute: "STR", trained: true, otherBonus: 4 },
+                "Bluff": { id: 'skill3', baseAttribute: "CHA", trained: false, otherBonus: 0 },
+                "Diplomacy": { id: 'skill6', baseAttribute: "CHA", trained: false, otherBonus: 0 },
+                "Dungeoneering": { id: 'skill7', baseAttribute: "WIS", trained: false, otherBonus: 0 },
+                "Endurance": { id: 'skill8', baseAttribute: "CON", trained: false, otherBonus: 0 },
+                "Heal": { id: 'skill9', baseAttribute: "WIS", trained: true, otherBonus: 0 },
+                "History": { id: 'skill11', baseAttribute: "INT", trained: false, otherBonus: 0 },
+                "Insight": { id: 'skill13', baseAttribute: "WIS", trained: false, otherBonus: 0 },
+                "Intimidate": { id: 'skill14', baseAttribute: "CHA", trained: false, otherBonus: 0 },
+                "Nature": { id: 'skill16', baseAttribute: "WIS", trained: false, otherBonus: 2 },
+                "Perception": { id: 'skill17', baseAttribute: "WIS", trained: false, otherBonus: 2 },
+                "Religion": { id: 'skill18', baseAttribute: "INT", trained: false, otherBonus: 0 },
+                "Stealth": { id: 'skill20', baseAttribute: "DEX", trained: false, otherBonus: 0 },
+                "Streetwise": { id: 'skill21', baseAttribute: "CHA", trained: false, otherBonus: 0 },
+                "Thievery": { id: 'skill23', baseAttribute: "DEX", trained: false, otherBonus: 0 }
+            };
+            
+            // Define the powers with their id, name, and type
+            const powersToDisplay = [
+                { id: 'power4818', name: 'Howling Strike', type: 'At-Will' },
+                { id: 'power14411', name: 'Stalk and Strike', type: 'At-Will' },
+                { id: 'power12406', name: 'Psionic Spark', type: 'At-Will' },
+                { id: 'power12408', name: 'Telekinetic Grasp', type: 'At-Will' },
+                { id: 'power12400', name: 'Body Equilibrium', type: 'At-Will' },
+                { id: 'power12660', name: 'Defender Aura', type: 'At-Will' },
+                { id: 'power15848', name: 'Vengeful Guardian', type: 'At-Will' },
+
+                { id: 'power4821', name: 'Avalanche Strike', type: 'Encounter' },
+                { id: 'power16113', name: 'Wind Fury Assault', type: 'Encounter' },
+                { id: 'power11739', name: 'Thri-kreen Claws', type: 'Encounter' },
+
+                { id: 'power4936', name: 'Rage Drake\'s Frenzy', type: 'Daily' }
+            ];
+
+            // Define the feats with their id and name
+            const featsToDisplay = [
+                { id: 'feat3672', name: 'Two-Handed Weapon Expertise' },
+                { id: 'feat3247', name: 'Wild Talent Master' }
+            ];
+
+            // Define miscellaneous features with a name and content
+            const miscFeaturesToDisplay = [
+                { name: 'Thri-Kreen Traits', content: `
+                    Speed: 7 squares.
+                    Vision: Low-light
+                    Languages: Common, Thri-kreen
+                    Skill Bonuses: +2 Athletics, +2 Nature.
+                    Multiple Arms: Once per turn, you can draw or sheathe a weapon (or retrieve or stow an item stored on your person) as a free action instead of a minor action.
+                    Natural Jumper: A thri-kreen is always considered to have a running start when jumping.
+                    Thri-kreen Claws: You have the thri-kreen claws power.
+                    Torpor: Rather than sleep, thri-kreen enter a torpid state. In this state, you remain aware of your surroundings, and you require only 4 hours of torpor (rather than 6 hours of sleep) to gain the benefit of an extended rest.
+                ` },
+                { name: 'Berserker Fury', content: `
+                    When you use a barbarian primal attack power, you enter your Berserker Fury until the end of the encounter. Alternatively, you can use a minor action while you are bloodied to enter the fury. The fury has the following effects.
+                    ✦     Your defender aura ends, if it was active, and you cannot use defender aura or vengeful guardian until the fury ends.
+                    ✦     Some of your powers, such as your barbarian martial at-will attack powers, gain additional benefits, as noted in those powers.
+                    ✦     Your melee basic attacks deal 1d8 extra damage. This extra damage increases to 2d8 at 11th level and 3d8 at 21st level.
+                ` },
+                { name: 'Heartland - Arid Desert', content: `
+                    While you are wearing cloth armor or no armor and not using a shield, you gain a +3 bonus to AC and a +2 bonus to Reflex.
+                ` },
+                { name: 'Poised Defender', content: `
+                    While your defender aura is active and you're not wearing heavy armor, you gain a +2 bonus to AC.
+                ` },
+                { name: 'Windlord', content: `
+                    Your origin becomes elemental. For the purpose of effects that relate to creature origin, you are considered to be an elemental. Add Primordial to the languages you can read, write, and speak. You gain a +2 power bonus to Athletics checks and Perception checks.
+                ` },
+            ];
+
+            // =========================================================================
+            //  END OF EDITABLE DATA
+            // =========================================================================
+
+            const baseHP = 15;
+            const hitPointsPerLevel = 6;
+            const totalHP = baseHP + ((level-1)*hitPointsPerLevel) + attributes['CON'];
+            const HSPerDay = 8 + Math.floor((attributes['CON']-10)/2);
+            const initiative = Math.floor((attributes['DEX']-10)/2);
+
+            const attackValue = ((attributes['STR']-10)/2) + weaponProf + otherBonus + levelBonus;
+
+            const baseDefense = 10;
+            const ACDefense = baseDefense+ACBonus+Math.floor((attributes['DEX']-10)/2)+Math.floor((attributes['INT']-10)/2);
+            const REFDefense = baseDefense+REFBonus+Math.floor((attributes['DEX']-10)/2)+Math.floor((attributes['INT']-10)/2);
+            const FORTDefense = baseDefense+FORTBonus+Math.floor((attributes['CON']-10)/2)+Math.floor((attributes['STR']-10)/2);
+            const WILLDefense = baseDefense+WILLBonus+Math.floor((attributes['WIS']-10)/2)+Math.floor((attributes['CHA']-10)/2);
+
+            const attributesList = document.getElementById('attributes-list');
+            const skillsList = document.getElementById('skills-list');
+            const atWillPowersList = document.getElementById('at-will-powers-list');
+            const encounterPowersList = document.getElementById('encounter-powers-list');
+            const dailyPowersList = document.getElementById('daily-powers-list');
+            const featsList = document.getElementById('feats-list');
+            const miscFeaturesList = document.getElementById('misc-features-list');
+            const clearEncounterButton = document.getElementById('clear-encounter-powers');
+            const clearDailyButton = document.getElementById('clear-daily-powers');
+            const powerIframe = document.getElementById('power-details-iframe');
+            const skillIframe = document.getElementById('skill-details-iframe');
+            const featIframe = document.getElementById('feat-details-iframe');
+            const passivePerceptionElement = document.getElementById('passive-perception');
+            const currentHpInput = document.getElementById('current-hp');
+            const maxHpInput = document.getElementById('max-hp');
+            const hpContainer = document.getElementById('hp-container');
+            const surgeSlider = document.getElementById('surge-slider');
+            const surgeDisplay = document.getElementById('surge-value-display');
+            const skillDetailsContainer = document.getElementById('skill-details-container');
+            const powerDetailsContainer = document.getElementById('power-details-container');
+            const featDetailsContainer = document.getElementById('feat-details-container');
+            const miscFeatureDetailsContainer = document.getElementById('misc-feature-details-container');
+            const miscFeatureContent = document.getElementById('misc-feature-content');
+            const topSkillsPreview = document.getElementById('top-skills-preview');
+
+
+            // Function to calculate the attribute modifier
+            function getModifier(score) {
+                return Math.floor((score - 10) / 2);
+            }
+
+            // Function to generate the list items from a JSON object
+            function generateListItems(list, data, isTomeFont = false, perRow = 1, isSkill = false, isPreview = false) {
+                list.innerHTML = '';
+                const entries = Object.entries(data);
+                const skillValues = {};
+
+                if (isSkill) {
+                     for (const [key, value] of Object.entries(skills)) {
+                        const attributeValue = attributes[value.baseAttribute];
+                        const attributeModifier = getModifier(attributeValue);
+                        const trainedBonus = value.trained ? 5 : 0;
+                        const finalValue = attributeModifier + trainedBonus + value.otherBonus + levelBonus;
+                        skillValues[key] = finalValue;
+                    }
+                    entries.sort((a, b) => skillValues[b[0]] - skillValues[a[0]]);
+                }
+                
+                let itemsToDisplay = isPreview ? entries.slice(0, 3) : entries;
+
+                for (let i = 0; i < itemsToDisplay.length; i += perRow) {
+                    const row = document.createElement('div');
+                    row.className = 'row g-2 mb-2';
+
+                    for (let j = 0; j < perRow && i + j < itemsToDisplay.length; j++) {
+                        const [key, value] = itemsToDisplay[i + j];
+                        const col = document.createElement('div');
+                        col.className = 'col';
+
+                        const item = document.createElement('div');
+                        item.className = 'tome-item p-2 shadow-sm rounded-lg d-flex justify-content-between align-items-center h-100';
+                        const isOdd = (i + j) % 2 !== 0;
+                        item.classList.add(isOdd ? 'bg-dark-deep' : 'bg-dark-subtle');
+                        
+                        const keySpan = document.createElement('span');
+                        
+                        if (isSkill) {
+                            keySpan.className = 'text-lg text-white-50 skill-name-link';
+                            keySpan.textContent = key;
+                            keySpan.onclick = () => {
+                                skillDetailsContainer.classList.remove('d-none');
+                                skillIframe.src = `https://iws.mx/dnd/?view=${value.id}`;
+                            };
+                        } else {
+                            keySpan.className = `text-lg text-white-50 ${isTomeFont ? 'tome-font' : ''}`;
+                            keySpan.textContent = key;
+                        }
+
+                        const valueSpan = document.createElement('span');
+                        valueSpan.className = 'fs-4 text-white fw-bold text-end';
+                        
+                        if (isSkill) {
+                            valueSpan.textContent = `+${skillValues[key]}`;
+                        } else {
+                            valueSpan.textContent = value;
+                        }
+
+                        item.appendChild(keySpan);
+                        item.appendChild(valueSpan);
+                        col.appendChild(item);
+                        row.appendChild(col);
+                    }
+                    list.appendChild(row);
+                }
+            }
+
+            
+            // Function to generate and render the list of powers
+            function generatePowersList(listElement, powers, showCheckbox = false) {
+                // Sort powers alphabetically by name
+                powers.sort((a, b) => a.name.localeCompare(b.name));
+                
+                listElement.innerHTML = '';
+                powers.forEach((power, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'tome-item p-2 shadow-sm rounded-lg mb-2 power-item-container';
+                    const isOdd = index % 2 !== 0;
+                    item.classList.add(isOdd ? 'bg-dark-deep' : 'bg-dark-subtle');
+                    item.setAttribute('data-power-type', power.type);
+
+                    const nameAndType = document.createElement('div');
+                    nameAndType.className = 'd-flex align-items-center flex-grow-1';
+                    nameAndType.onclick = () => {
+                        powerDetailsContainer.classList.remove('d-none');
+                        powerIframe.src = `https://iws.mx/dnd/?view=${power.id}`;
+                    };
+
+                    const powerName = document.createElement('span');
+                    powerName.className = 'power-name me-2 power-name-link';
+                    powerName.textContent = power.name;
+
+                    nameAndType.appendChild(powerName);
+                    
+                    item.appendChild(nameAndType);
+
+                    if (showCheckbox) {
+                        const checkbox = document.createElement('div');
+                        checkbox.className = 'form-check form-switch ms-3';
+                        const input = document.createElement('input');
+                        input.className = 'form-check-input';
+                        input.type = 'checkbox';
+                        checkbox.appendChild(input);
+                        item.appendChild(checkbox);
+                    }
+
+                    listElement.appendChild(item);
+                });
+            }
+
+            // Function to generate and render the list of feats
+            function generateFeatsList() {
+                featsToDisplay.sort((a, b) => a.name.localeCompare(b.name));
+                
+                featsList.innerHTML = '';
+                const entries = featsToDisplay;
+
+                for (let i = 0; i < entries.length; i += 2) {
+                    const row = document.createElement('div');
+                    row.className = 'row g-2 mb-2';
+
+                    for (let j = 0; j < 3 && i + j < entries.length; j++) {
+                        const feat = entries[i + j];
+                        const col = document.createElement('div');
+                        col.className = 'col';
+
+                        const item = document.createElement('div');
+                        item.className = 'tome-item p-2 shadow-sm rounded-lg feat-item-container';
+                        const isOdd = (i + j) % 2 !== 0;
+                        item.classList.add(isOdd ? 'bg-dark-deep' : 'bg-dark-subtle');
+
+                        const featName = document.createElement('span');
+                        featName.className = 'feat-name-link';
+                        featName.textContent = feat.name;
+                        featName.onclick = () => {
+                            featDetailsContainer.classList.remove('d-none');
+                            featIframe.src = `https://iws.mx/dnd/?view=${feat.id}`;
+                        };
+                        
+                        item.appendChild(featName);
+                        col.appendChild(item);
+                        row.appendChild(col);
+                    }
+                    featsList.appendChild(row);
+                }
+            }
+
+            // Function to generate and render the list of miscellaneous features
+            function generateMiscFeaturesList() {
+                miscFeaturesToDisplay.sort((a, b) => a.name.localeCompare(b.name));
+                
+                miscFeaturesList.innerHTML = '';
+                miscFeaturesToDisplay.forEach((feature, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'tome-item p-2 shadow-sm rounded-lg mb-2 feat-item-container';
+                    const isOdd = index % 2 !== 0;
+                    item.classList.add(isOdd ? 'bg-dark-deep' : 'bg-dark-subtle');
+
+                    const featureName = document.createElement('span');
+                    featureName.className = 'misc-feature-link';
+                    featureName.textContent = feature.name;
+                    featureName.onclick = () => {
+                        miscFeatureDetailsContainer.classList.remove('d-none');
+                        miscFeatureContent.innerHTML = `<p class="text-white-50">${feature.content}</p>`;
+                    };
+                    
+                    item.appendChild(featureName);
+                    miscFeaturesList.appendChild(item);
+                });
+            }
+
+            // Clear powers functionality for Encounter and Daily
+            clearEncounterButton.addEventListener('click', () => {
+                const powers = encounterPowersList.querySelectorAll('input[type="checkbox"]');
+                powers.forEach(cb => cb.checked = false);
+            });
+             clearDailyButton.addEventListener('click', () => {
+                const powers = dailyPowersList.querySelectorAll('input[type="checkbox"]');
+                powers.forEach(cb => cb.checked = false);
+            });
+
+            // HP Tracking Logic
+            function updateHpDisplay() {
+                const currentHp = parseInt(currentHpInput.value, 10);
+                const maxHp = parseInt(maxHpInput.value, 10);
+
+                if (currentHp <= maxHp / 2) {
+                    hpContainer.classList.add('bloodied-effect');
+                } else {
+                    hpContainer.classList.remove('bloodied-effect');
+                }
+            }
+            currentHpInput.addEventListener('input', updateHpDisplay);
+            maxHpInput.addEventListener('input', updateHpDisplay);
+
+            // Healing Surge Slider Logic
+            surgeSlider.addEventListener('input', () => {
+                const currentSurges = surgeSlider.value;
+                const maxSurges = surgeSlider.max;
+                surgeDisplay.textContent = `${currentSurges} / ${maxSurges}`;
+            });
+            
+            // Skills preview toggle
+            const skillsToggle = document.querySelector('.skill-collapsible-link');
+            const skillsListCollapse = document.getElementById('skills-list-container');
+            
+            skillsToggle.addEventListener('click', () => {
+                const isExpanded = skillsListCollapse.classList.contains('show');
+                topSkillsPreview.classList.toggle('d-none', isExpanded);
+                skillsToggle.classList.toggle('collapsed', isExpanded);
+            });
+
+
+            // Calculate Passive Perception
+            const perceptionSkill = skills.Perception;
+            const perceptionAttribute = attributes[perceptionSkill.baseAttribute];
+            const perceptionModifier = getModifier(perceptionAttribute) + (perceptionSkill.trained ? 5 : 0) + perceptionSkill.otherBonus;
+            passivePerceptionElement.textContent = perceptionModifier + 10;
+
+
+            // Set the default power to display on load
+            if (powersToDisplay.length > 0) {
+                // powerIframe.src = `https://iws.mx/dnd/?view=${powersToDisplay[0].id}`;
+            }
+
+            // Group powers by type
+            const atWillPowers = powersToDisplay.filter(p => p.type === 'At-Will');
+            const encounterPowers = powersToDisplay.filter(p => p.type === 'Encounter');
+            const dailyPowers = powersToDisplay.filter(p => p.type === 'Daily');
+
+            // Generate the lists on page load
+            generateListItems(attributesList, attributes, true, 3, false);
+            generateListItems(skillsList, skills, false, 3, true);
+            generateListItems(topSkillsPreview, skills, false, 3, true, true);
+            generatePowersList(atWillPowersList, atWillPowers, false);
+            generatePowersList(encounterPowersList, encounterPowers, true);
+            generatePowersList(dailyPowersList, dailyPowers, true);
+            generateFeatsList();
+            generateMiscFeaturesList();
+
+            $("#level").html(level);
+            $("#current-hp").val(totalHP);
+            $("#max-hp").val(totalHP);
+            $("#initiative-value").html("+"+initiative);
+
+            $("#surge-value-display").html(HSPerDay+" / "+HSPerDay);
+            $("#surge-slider").attr("max", HSPerDay);
+            $("#surge-slider").attr("value", HSPerDay);
+            $("#attack-roll").html("+"+attackValue);
+            $("#defenses").html("AC"+ACDefense+" R"+REFDefense+" F"+FORTDefense+" W"+WILLDefense);
+        });
+    </script>
+</body>
+</html>
