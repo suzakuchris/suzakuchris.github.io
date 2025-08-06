@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RISE - Lilianna Highwind</title>
@@ -242,9 +242,29 @@
             white-space: pre-line;
         }
         
-        #notes-area {
+        #notes-area, #inventory-area {
             min-height: 250px;
         }
+
+        .nav-tabs .nav-link.active {
+            background-color: #1a1a1a !important;
+            border-color: #1a1a1a #1a1a1a #121212 !important;
+            color: #fff !important;
+        }
+
+        .nav-tabs {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-tabs .nav-link {
+            color: #ccc;
+            border-color: transparent;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: #fff;
+        }
+
     </style>
 </head>
 <body class="text-white" id="mode">
@@ -285,9 +305,6 @@
                 <button class="btn btn-sm text-white" style="border-left:1px solid white;" data-bs-toggle="modal" data-bs-target="#inventoryModal">
                     Inventory & Tracker
                 </button>
-                <!-- <button class="btn btn-sm text-white" onclick="signInWithGoogle()">
-                    Sign In with Gmail
-                </button> -->
             </div>
         </div>
 
@@ -480,13 +497,28 @@
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body p-4">
-              <h4 class="tome-font h5 mb-2 text-white">Session Notes</h4>
-              <textarea id="notes-area" class="form-control bg-dark-deep text-white border-secondary mb-3"></textarea>
+              <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="inventory-tab" data-bs-toggle="tab" data-bs-target="#inventory-pane" type="button" role="tab" aria-controls="inventory-pane" aria-selected="true">Inventory</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes-pane" type="button" role="tab" aria-controls="notes-pane" aria-selected="false">Session Tracker</button>
+                </li>
+              </ul>
+              <div class="tab-content pt-3" id="myTabContent">
+                <div class="tab-pane fade show active" id="inventory-pane" role="tabpanel" aria-labelledby="inventory-tab">
+                    <h4 class="tome-font h5 mb-2 text-white">Inventory</h4>
+                    <textarea id="inventory-area" class="form-control bg-dark-deep text-white border-secondary mb-3"></textarea>
+                </div>
+                <div class="tab-pane fade" id="notes-pane" role="tabpanel" aria-labelledby="notes-tab">
+                    <h4 class="tome-font h5 mb-2 text-white">Session Notes</h4>
+                    <textarea id="notes-area" class="form-control bg-dark-deep text-white border-secondary mb-3"></textarea>
+                </div>
+              </div>
               <div class="text-end">
-                <button id="save-notes-btn" class="btn btn-sm btn-clear-all">Save Notes</button>
+                <button id="save-data-btn" class="btn btn-sm btn-clear-all">Save All</button>
               </div>
-
-              </div>
+          </div>
         </div>
       </div>
     </div>
@@ -495,13 +527,13 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     
     <script>
         // =========================================================================
-        //  FIREBASE CONFIGURATION (Replace with your own)
+        //  FIREBASE CONFIGURATION
         // =========================================================================
         const firebaseConfig = {
+            // Replace with the config from your Firebase project.
             apiKey: "AIzaSyAZmkytKusbdoDt0g6GOWNYlsXh5TkQI8M",
             authDomain: "rise-character-sheet.firebaseapp.com",
             projectId: "rise-character-sheet",
@@ -513,91 +545,57 @@
         
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const auth = firebase.auth();
-        let currentUserId = null;
+
+        // The name of the single document to save to
+        const characterDocId = 'lilianna-highwind';
 
         // =========================================================================
-        //  FIREBASE AUTHENTICATION & DATA FUNCTIONS
+        //  FIREBASE DATA FUNCTIONS
         // =========================================================================
-        
-        // This function handles the Google Sign-in process
-        function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    const user = result.user;
-                    currentUserId = user.uid;
-                    console.log("User signed in with Google:", currentUserId);
-                })
-                .catch((error) => {
-                    console.error("Google sign-in failed:", error);
-                });
-        }
-        
-        // Check for an existing signed-in user on page load
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                currentUserId = user.uid;
-                console.log("User already signed in:", currentUserId);
-            } else {
-                currentUserId = null;
-                console.log("No user signed in.");
-            }
-        });
-
-        // Function to save the character sheet data (notes, etc.)
-        function saveNotes() {
-            if (!currentUserId) {
-                console.error("User not authenticated. Cannot save notes.");
-                alert("Please sign in first to save your notes!");
-                return;
-            }
-            const notesContent = document.getElementById('notes-area').value;
-            db.collection("notes").doc(currentUserId).set({
-                text: notesContent,
+        function saveData() {
+            // Get the current content from both text areas
+            const dataToSave = {
+                inventory: document.getElementById('inventory-area').value,
+                notes: document.getElementById('notes-area').value,
                 lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-            })
+            };
+            
+            db.collection("character_data").doc(characterDocId).set(dataToSave)
             .then(() => {
-                console.log("Notes saved successfully!");
-                alert("Notes saved!");
+                alert("Inventory and notes saved successfully!");
             })
             .catch((error) => {
-                console.error("Error saving notes:", error);
-                alert("Error saving notes. Check the console for details.");
+                console.error("Error saving data:", error);
+                alert("Error saving data. Check the console for details.");
             });
         }
-        
-        // Function to load the character sheet data
-        function loadNotes() {
-            if (!currentUserId) {
-                console.error("User not authenticated. Cannot load notes.");
-                document.getElementById('notes-area').value = "Please sign in to load your notes.";
-                return;
-            }
-            db.collection("notes").doc(currentUserId).get()
+
+        function loadData() {
+            db.collection("character_data").doc(characterDocId).get()
               .then((doc) => {
-                const notesArea = document.getElementById('notes-area');
                 if (doc.exists) {
                     const data = doc.data();
-                    notesArea.value = data.text || "";
-                    console.log("Notes loaded successfully!");
+                    document.getElementById('inventory-area').value = data.inventory || "";
+                    document.getElementById('notes-area').value = data.notes || "";
+                    console.log("Data loaded successfully!");
                 } else {
-                    console.log("No notes found for this user. Starting with a blank page.");
-                    notesArea.value = "";
+                    console.log("No data found, starting with a blank page.");
+                    document.getElementById('inventory-area').value = "";
+                    document.getElementById('notes-area').value = "";
                 }
               })
               .catch((error) => {
-                console.error("Error loading notes:", error);
+                console.error("Error loading data:", error);
               });
         }
         
-        // Attach event listeners to the modal
+        // Attach event listeners to the modal and save button
         const inventoryModal = document.getElementById('inventoryModal');
-        inventoryModal.addEventListener('shown.bs.modal', loadNotes);
-        document.getElementById('save-notes-btn').addEventListener('click', saveNotes);
-        
+        inventoryModal.addEventListener('shown.bs.modal', loadData);
+        document.getElementById('save-data-btn').addEventListener('click', saveData);
+
         // =========================================================================
-        //  VIEW TOGGLE FUNCTIONS
+        //  VIEW TOGGLE FUNCTIONS
         // =========================================================================
         function combat_mode() {
             document.getElementById('tome-pages-wrapper').classList.remove('show-roleplay');
@@ -609,9 +607,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             // =========================================================================
-            //  EDITABLE DATA: Modify these objects to update your character sheet
+            //  EDITABLE DATA: Modify these objects to update your character sheet
             // =========================================================================
-            //Define Level
             const level = 1;
             const weaponProf = 2;
             const otherBonus = 1;
@@ -621,17 +618,10 @@
             const FORTBonus = 0;
             const WILLBonus = 0;
 
-            // Define the attributes as a JSON object
             const attributes = {
-                "STR": 20,
-                "CON": 11,
-                "DEX": 16,
-                "INT": 10,
-                "WIS": 10,
-                "CHA": 8
+                "STR": 20, "CON": 11, "DEX": 16, "INT": 10, "WIS": 10, "CHA": 8
             };
 
-            // Define the skills with their base attribute, final value, and other bonuses
             const skills = {
                 "Acrobatics": { id: 'skill1', baseAttribute: "DEX", trained: true, otherBonus: 0 },
                 "Arcana": { id: 'skill2', baseAttribute: "INT", trained: false, otherBonus: 0 },
@@ -651,8 +641,7 @@
                 "Streetwise": { id: 'skill21', baseAttribute: "CHA", trained: false, otherBonus: 0 },
                 "Thievery": { id: 'skill23', baseAttribute: "DEX", trained: false, otherBonus: 0 }
             };
-            
-            // Define the powers with their id, name, and type
+
             const powersToDisplay = [
                 { id: 'power4818', name: 'Howling Strike', type: 'At-Will' },
                 { id: 'power14411', name: 'Stalk and Strike', type: 'At-Will' },
@@ -669,13 +658,11 @@
                 { id: 'power4936', name: 'Rage Drake\'s Frenzy', type: 'Daily' }
             ];
 
-            // Define the feats with their id and name
             const featsToDisplay = [
                 { id: 'feat3672', name: 'Two-Handed Weapon Expertise' },
                 { id: 'feat3247', name: 'Wild Talent Master' }
             ];
 
-            // Define miscellaneous features with a name and content
             const miscFeaturesToDisplay = [
                 { name: 'Thri-Kreen Traits', content: `
                     Speed: 7 squares.
@@ -705,7 +692,7 @@
             ];
 
             // =========================================================================
-            //  END OF EDITABLE DATA
+            //  END OF EDITABLE DATA
             // =========================================================================
 
             const baseHP = 15;
