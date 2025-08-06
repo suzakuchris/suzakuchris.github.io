@@ -285,6 +285,9 @@
                 <button class="btn btn-sm text-white" style="border-left:1px solid white;" data-bs-toggle="modal" data-bs-target="#inventoryModal">
                     Inventory & Tracker
                 </button>
+                <button class="btn btn-sm text-white" onclick="signInWithGoogle()">
+                    Sign In with Gmail
+                </button>
             </div>
         </div>
 
@@ -511,25 +514,42 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
-        let currentUserId = null; // We'll store the anonymous user ID here
+        let currentUserId = null;
 
         // =========================================================================
-        //  FIREBASE FUNCTIONS
+        //  FIREBASE AUTHENTICATION & DATA FUNCTIONS
         // =========================================================================
         
-        // Authenticate the user anonymously on page load
-        auth.signInAnonymously()
-          .then((userCredential) => {
-            currentUserId = userCredential.user.uid;
-            console.log("Signed in anonymously with UID:", currentUserId);
-          })
-          .catch((error) => {
-            console.error("Anonymous sign-in failed:", error);
-          });
-          
+        // This function handles the Google Sign-in process
+        function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    currentUserId = user.uid;
+                    console.log("User signed in with Google:", currentUserId);
+                })
+                .catch((error) => {
+                    console.error("Google sign-in failed:", error);
+                });
+        }
+        
+        // Check for an existing signed-in user on page load
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUserId = user.uid;
+                console.log("User already signed in:", currentUserId);
+            } else {
+                currentUserId = null;
+                console.log("No user signed in.");
+            }
+        });
+
+        // Function to save the character sheet data (notes, etc.)
         function saveNotes() {
             if (!currentUserId) {
                 console.error("User not authenticated. Cannot save notes.");
+                alert("Please sign in first to save your notes!");
                 return;
             }
             const notesContent = document.getElementById('notes-area').value;
@@ -547,9 +567,11 @@
             });
         }
         
+        // Function to load the character sheet data
         function loadNotes() {
             if (!currentUserId) {
                 console.error("User not authenticated. Cannot load notes.");
+                document.getElementById('notes-area').value = "Please sign in to load your notes.";
                 return;
             }
             db.collection("notes").doc(currentUserId).get()
