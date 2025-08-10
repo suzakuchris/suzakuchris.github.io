@@ -374,137 +374,173 @@
             50% { opacity: 0.5; }
         }
 
+        /* --- Rotate Device Overlay --- */
+        #rotate-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 6000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        /* Media query to show rotate overlay on landscape mobile */
+        @media (orientation: landscape) and (max-height: 500px) {
+            #app-container {
+                display: none;
+            }
+            #rotate-overlay {
+                display: flex;
+            }
+        }
+
     </style>
 </head>
 <body class="bg-black m-0 p-0 overflow-hidden">
 
-    <!-- Map container for Leaflet.js -->
-    <div id="map"></div>
-    <div id="night-vision-overlay"></div>
+    <div id="app-container">
+        <!-- Map container for Leaflet.js -->
+        <div id="map"></div>
+        <div id="night-vision-overlay"></div>
 
-    <!-- Visuals-Only Overlay -->
-    <div class="overlay-container" id="visual-overlay">
-        <div class="noise-overlay" id="noise-overlay"></div>
-        <div class="grid-overlay"></div>
-        <div class="vignette-overlay"></div>
-        <div class="reticle" id="reticle-element">
-            <div class="reticle-bracket reticle-bracket-tl"></div>
-            <div class="reticle-bracket reticle-bracket-tr"></div>
-            <div class="reticle-bracket reticle-bracket-bl"></div>
-            <div class="reticle-bracket reticle-bracket-br"></div>
-        </div>
-    </div>
-        
-    <!-- Top Bar -->
-    <div class="top-bar" id="top-bar">
-        <div class="bar-section">
-            <p class="font-display text-lg" id="time-display">14:06:47</p>
-            <div>
-                <p id="date-display">FRIDAY, 02 AUGUST, 2002, GMT +2.00</p>
-                <p id="configure-btn" class="clickable">CONFIGURE</p>
+        <!-- Visuals-Only Overlay -->
+        <div class="overlay-container" id="visual-overlay">
+            <div class="noise-overlay" id="noise-overlay"></div>
+            <div class="grid-overlay"></div>
+            <div class="vignette-overlay"></div>
+            <div class="reticle" id="reticle-element">
+                <div class="reticle-bracket reticle-bracket-tl"></div>
+                <div class="reticle-bracket reticle-bracket-tr"></div>
+                <div class="reticle-bracket reticle-bracket-bl"></div>
+                <div class="reticle-bracket reticle-bracket-br"></div>
             </div>
         </div>
-        <div class="bar-section">
-            <p id="network-id">NTWRK-ID: 150.248.142.178</p>
-            <div class="bar-divider"></div>
-            <p>MISSION BRIEF</p>
+            
+        <!-- Top Bar -->
+        <div class="top-bar" id="top-bar">
+            <div class="bar-section">
+                <p class="font-display text-lg" id="time-display">14:06:47</p>
+                <div class="hidden sm:block">
+                    <p id="date-display">FRIDAY, 02 AUGUST, 2002, GMT +2.00</p>
+                    <p id="configure-btn" class="clickable">CONFIGURE</p>
+                </div>
+            </div>
+            <div class="bar-section hidden md:flex">
+                <p id="network-id">NTWRK-ID: 150.248.142.178</p>
+                <div class="bar-divider"></div>
+                <p>MISSION BRIEF</p>
+            </div>
+            <div class="bar-section">
+                <p class="hidden lg:block">UNENCRYPTED SIGNAL</p>
+                <div class="bar-divider hidden lg:block"></div>
+                <div class="flex items-center gap-4">
+                    <div class="hidden sm:block">
+                        <p>TOSHKA SATELLITE LOGS-07</p>
+                        <p>OS: SPECTRE OS v3.2</p>
+                        <p id="ping-rate">CONNECTION PING-RATE: 1.78S</p>
+                    </div>
+                    <button id="fullscreen-btn" class="clickable p-2 hover:bg-gray-700 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="bar-section">
-            <p>UNENCRYPTED SIGNAL</p>
-            <div class="bar-divider"></div>
-            <div class="flex items-center gap-4">
+
+        <!-- Configure Menu (Submenu) -->
+        <div id="configure-menu">
+            <button id="btn-sat" class="active">Satellite</button>
+            <button id="btn-topo">Topographic</button>
+            <button id="btn-nv">Night Vision</button>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="bottom-bar" id="bottom-bar">
+            <div class="bar-section">
+                <p class="font-display">SYSTEM</p>
+                <div class="bar-divider"></div>
                 <div>
-                    <p>TOSHKA SATELLITE LOGS-07</p>
-                    <p>OS: SPECTRE OS v3.2</p>
-                    <p id="ping-rate">CONNECTION PING-RATE: 1.78S</p>
+                    <p>OP.CON: <span id="opcon-callsign" class="text-white"></span></p>
+                    <p id="terminate-login" class="clickable">TERMINATE LOGIN</p>
+                    <p id="system-reboot" class="clickable">SYSTEM REBOOT</p>
+                    <p id="terminal-access" class="clickable">TERMINAL ACCESS</p>
                 </div>
-                <button id="fullscreen-btn" class="clickable p-2 hover:bg-gray-700 rounded-md">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/>
-                    </svg>
-                </button>
+            </div>
+            <div class="bar-section hidden sm:flex">
+                <p>TARGET COORDS: <span id="lat-display">0.0000</span>, <span id="lon-display">0.0000</span></p>
+            </div>
+            <div class="bar-section">
+                <svg width="80" height="40" viewBox="0 0 100 50" class="fill-current text-cyan-400 opacity-50 hidden md:block">
+                    <path d="M 50,0 L 60,10 L 55,15 L 65,25 L 50,50 L 35,25 L 45,15 L 40,10 Z M 0,25 L 100,25 M 20,15 A 30,15 0 0 1 80,15 M 10,25 A 40,20 0 0 1 90,25 M 0,35 A 50,25 0 0 1 100,35" fill="none" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                    <div id="satlink-toggle" class="clickable">
+                        <p class="font-display">SAT.LINK</p>
+                        <p id="satlink-status" class="text-green-500">ONLINE</p>
+                    </div>
             </div>
         </div>
-    </div>
 
-    <!-- Configure Menu (Submenu) -->
-    <div id="configure-menu">
-        <button id="btn-sat" class="active">Satellite</button>
-        <button id="btn-topo">Topographic</button>
-        <button id="btn-nv">Night Vision</button>
-    </div>
+        <!-- New Info Panels -->
+        <div id="mission-briefing" class="info-panel">
+            <!-- Content generated by JavaScript -->
+        </div>
 
-    <!-- Bottom Bar -->
-    <div class="bottom-bar" id="bottom-bar">
-        <div class="bar-section">
-            <p class="font-display">SYSTEM</p>
-            <div class="bar-divider"></div>
+        <div id="target-info" class="info-panel">
+            <!-- Content generated by JavaScript -->
+        </div>
+
+        <!-- SVG Canvas for lines -->
+        <svg id="line-canvas">
+            <line id="line-mission" x1="0" y1="0" x2="0" y2="0" style="opacity: 0;"/>
+            <line id="line-target" x1="0" y1="0" x2="0" y2="0" style="opacity: 0;"/>
+        </svg>
+
+
+        <!-- Terminal Access Modal -->
+        <div id="search-modal" class="modal-container">
+            <div class="modal-content">
+                <h2 class="font-display text-2xl mb-4">TERMINAL ACCESS</h2>
+                <p>INPUT TARGET COORDINATES (LAT, LON)</p>
+                <form id="search-form" class="mb-4">
+                    <input type="text" id="coord-input" placeholder="e.g., 40.7128, -74.0060">
+                    <button type="submit">ACQUIRE TARGET</button>
+                </form>
+                <button id="my-location-btn">USE MY LOCATION</button>
+                 <button id="close-modal-btn" class="mt-4">CLOSE TERMINAL</button>
+            </div>
+        </div>
+
+        <!-- Alert Modal -->
+        <div id="alert-modal" class="modal-container">
+            <div class="modal-content">
+                <h2 class="font-display text-2xl mb-4 text-yellow-400">SYSTEM ALERT</h2>
+                <p id="alert-message" class="mb-4"></p>
+                <button id="close-alert-btn">ACKNOWLEDGE</button>
+            </div>
+        </div>
+
+        <!-- Lockdown Screen -->
+        <div id="lockdown-screen">
             <div>
-                <p>OP.CON: <span id="opcon-callsign" class="text-white"></span></p>
-                <p id="terminate-login" class="clickable">TERMINATE LOGIN</p>
-                <p id="system-reboot" class="clickable">SYSTEM REBOOT</p>
-                <p id="terminal-access" class="clickable">TERMINAL ACCESS</p>
+                <h2 class="font-display text-4xl text-red-500">//: CONNECTION TERMINATED ://</h2>
+                <button id="lockdown-reboot-btn" class="clickable mt-8 border border-red-500 px-4 py-2 text-red-500 hover:bg-red-500 hover:text-black transition-colors">REINITIALIZE SYSTEM</button>
             </div>
         </div>
-        <div class="bar-section">
-            <p>TARGET COORDS: <span id="lat-display">0.0000</span>, <span id="lon-display">0.0000</span></p>
-        </div>
-        <div class="bar-section">
-            <svg width="80" height="40" viewBox="0 0 100 50" class="fill-current text-cyan-400 opacity-50">
-                <path d="M 50,0 L 60,10 L 55,15 L 65,25 L 50,50 L 35,25 L 45,15 L 40,10 Z M 0,25 L 100,25 M 20,15 A 30,15 0 0 1 80,15 M 10,25 A 40,20 0 0 1 90,25 M 0,35 A 50,25 0 0 1 100,35" fill="none" stroke="currentColor" stroke-width="2"/>
-            </svg>
-                <div id="satlink-toggle" class="clickable">
-                    <p class="font-display">SAT.LINK</p>
-                    <p id="satlink-status" class="text-green-500">ONLINE</p>
-                </div>
-        </div>
     </div>
 
-    <!-- New Info Panels -->
-    <div id="mission-briefing" class="info-panel">
-        <!-- Content generated by JavaScript -->
-    </div>
-
-    <div id="target-info" class="info-panel">
-        <!-- Content generated by JavaScript -->
-    </div>
-
-    <!-- SVG Canvas for lines -->
-    <svg id="line-canvas">
-        <line id="line-mission" x1="0" y1="0" x2="0" y2="0" style="opacity: 0;"/>
-        <line id="line-target" x1="0" y1="0" x2="0" y2="0" style="opacity: 0;"/>
-    </svg>
-
-
-    <!-- Terminal Access Modal -->
-    <div id="search-modal" class="modal-container">
-        <div class="modal-content">
-            <h2 class="font-display text-2xl mb-4">TERMINAL ACCESS</h2>
-            <p>INPUT TARGET COORDINATES (LAT, LON)</p>
-            <form id="search-form" class="mb-4">
-                <input type="text" id="coord-input" placeholder="e.g., 40.7128, -74.0060">
-                <button type="submit">ACQUIRE TARGET</button>
-            </form>
-            <button id="my-location-btn">USE MY LOCATION</button>
-             <button id="close-modal-btn" class="mt-4">CLOSE TERMINAL</button>
-        </div>
-    </div>
-
-    <!-- Alert Modal -->
-    <div id="alert-modal" class="modal-container">
-        <div class="modal-content">
-            <h2 class="font-display text-2xl mb-4 text-yellow-400">SYSTEM ALERT</h2>
-            <p id="alert-message" class="mb-4"></p>
-            <button id="close-alert-btn">ACKNOWLEDGE</button>
-        </div>
-    </div>
-
-    <!-- Lockdown Screen -->
-    <div id="lockdown-screen">
-        <div>
-            <h2 class="font-display text-4xl text-red-500">//: CONNECTION TERMINATED ://</h2>
-            <button id="lockdown-reboot-btn" class="clickable mt-8 border border-red-500 px-4 py-2 text-red-500 hover:bg-red-500 hover:text-black transition-colors">REINITIALIZE SYSTEM</button>
-        </div>
+    <!-- Rotate Device Overlay -->
+    <div id="rotate-overlay">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="mb-4" viewBox="0 0 16 16">
+            <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.5 11.5a.5.5 0 0 1-1 0V5.707L4.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V12.5z"/>
+        </svg>
+        <p class="font-display text-2xl">PLEASE ROTATE YOUR DEVICE</p>
     </div>
 
     <!-- Leaflet.js script -->
