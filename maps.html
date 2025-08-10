@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tactical Map - Target Acquisition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet.js CSS for map rendering -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+    
+    <style>
+        :root {
+            --ui-color: #68d8d6;
+            --ui-color-glow: rgba(104, 216, 214, 0.5);
+            --ui-color-dark: rgba(104, 216, 214, 0.1);
+            --ui-color-border: rgba(104, 216, 214, 0.4);
+        }
+        body, button {
+            font-family: 'Roboto Mono', monospace;
+            color: var(--ui-color);
+            background-color: #0a0a0a;
+        }
+        .font-display {
+            font-family: 'Orbitron', sans-serif;
+        }
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1a1a1a;
+            cursor: grab;
+            transition: filter 0.5s ease-in-out, opacity 0.5s ease;
+        }
+        #map.offline {
+            filter: grayscale(80%) blur(1px);
+        }
+        #map:active {
+            cursor: grabbing;
+        }
+        .leaflet-control-container {
+            display: none;
+        }
+        .overlay-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-shadow: 0 0 8px var(--ui-color-glow);
+            z-index: 999; /* Sits below UI bars but above map */
+            transition: opacity 0.5s ease;
+        }
+        .vignette-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 20vw 10vw rgba(0,0,0,0.8);
+        }
+        .grid-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--ui-color-dark) 1px, transparent 1px),
+                linear-gradient(90deg, var(--ui-color-dark) 1px, transparent 1px);
+            background-size: 100px 100px;
+        }
+        .noise-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiGAAAAA1BMVEX///+nxBvIAAAAIElEQVR42mP4BwYY/4CBgYGBgYGBgYGBgYGBgYGBgYEBDAwAcgA/r9e2eAAAAABJRU5ErkJggg==');
+            opacity: 0.08;
+            transition: opacity 0.5s ease-in-out;
+            animation: noise 0.5s steps(2) infinite;
+        }
+        .noise-overlay.offline {
+            opacity: 0.25;
+        }
+        @keyframes noise {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(2px, -3px); }
+            50% { transform: translate(-1px, 2px); }
+            75% { transform: translate(3px, 1px); }
+        }
+        .reticle {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            border: 2px solid var(--ui-color-dark);
+        }
+        .reticle::before, .reticle::after {
+            content: '';
+            position: absolute;
+            background-color: var(--ui-color-dark);
+        }
+        .reticle::before { left: 20%; right: 20%; top: 50%; height: 1px; margin-top: -0.5px; }
+        .reticle::after { top: 20%; bottom: 20%; left: 50%; width: 1px; margin-left: -0.5px; }
+        .reticle-bracket {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            border-color: var(--ui-color);
+            border-style: solid;
+            box-shadow: 0 0 5px var(--ui-color-glow);
+        }
+        .reticle-bracket-tl { top: -2px; left: -2px; border-width: 3px 0 0 3px; }
+        .reticle-bracket-tr { top: -2px; right: -2px; border-width: 3px 3px 0 0; }
+        .reticle-bracket-bl { bottom: -2px; left: -2px; border-width: 0 0 3px 3px; }
+        .reticle-bracket-br { bottom: -2px; right: -2px; border-width: 0 3px 3px 0; }
+        
+        /* --- Top and Bottom Bars --- */
+        .top-bar, .bottom-bar {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(3px);
+            border-color: var(--ui-color-border);
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+        .top-bar {
+            top: 0;
+            border-bottom-width: 1px;
+        }
+        .bottom-bar {
+            bottom: 0;
+            border-top-width: 1px;
+        }
+        .bar-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .bar-divider {
+            width: 1px;
+            height: 20px;
+            background-color: var(--ui-color-border);
+        }
+        .clickable {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .clickable:hover {
+            color: #fff;
+        }
+        .clickable.disabled {
+            color: #555;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+
+        /* --- New Info Panels --- */
+        .info-panel {
+            position: absolute;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(3px);
+            border: 1px solid var(--ui-color-border);
+            padding: 1rem;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none;
+            cursor: grab;
+        }
+        .info-panel.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        #mission-briefing {
+            left: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 300px;
+        }
+        #target-info {
+            right: 2rem;
+            bottom: 6rem; /* Position above the main bottom bar */
+            width: 300px;
+        }
+        .info-panel h3 {
+            font-family: 'Orbitron', sans-serif;
+            border-bottom: 1px solid var(--ui-color-border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        .info-panel ul {
+            list-style: none;
+            padding: 0;
+        }
+        .info-panel li {
+            margin-bottom: 0.25rem;
+        }
+        .info-panel .status-online { color: #4ade80; }
+        .info-panel .status-caution { color: #facc15; }
+        .close-panel-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        /* --- SVG Lines --- */
+        #line-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            transition: opacity 0.5s ease;
+        }
+        #line-canvas line {
+            stroke: var(--ui-color-border);
+            stroke-width: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        /* --- Modals (Search and Alert) --- */
+        .modal-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none; /* Hidden by default */
+        }
+        .modal-container.visible {
+            opacity: 1;
+            pointer-events: all; /* Clickable when visible */
+        }
+        .modal-content {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid var(--ui-color-border);
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .modal-content input {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--ui-color-border);
+            color: var(--ui-color);
+            padding: 0.5rem;
+            width: 100%;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        .modal-content button {
+            background: transparent;
+            border: 1px solid var(--ui-color-border);
+            padding: 0.5rem 2rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .modal-content button:hover {
+            background-color: var(--ui-color);
+            color: #0a0a0a;
+        }
+
+        /* --- Configure Menu --- */
+        #configure-menu {
+            position: absolute;
+            top: 4rem;
+            left: 1rem;
+            z-index: 1001;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--ui-color-border);
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        #configure-menu.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        #configure-menu button {
+            background: transparent;
+            border: 1px solid var(--ui-color-border);
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            text-align: left;
+        }
+        #configure-menu button.active {
+            background-color: var(--ui-color);
+            color: #0a0a0a;
+            text-shadow: none;
+        }
+
+        /* --- Night Vision Overlay --- */
+        #night-vision-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 255, 0, 0.2);
+            z-index: 998;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        #night-vision-overlay.visible {
+            opacity: 1;
+        }
+
+        /* --- Lockdown Screen --- */
+        #lockdown-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 5000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            text-align: center;
+        }
+        #lockdown-screen.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        #lockdown-screen h2 {
+            animation: blink 1.5s linear infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+
+    </style>
+</head>
+<body class="bg-black m-0 p-0 overflow-hidden">
+
+    <!-- Map container for Leaflet.js -->
+    <div id="map"></div>
+    <div id="night-vision-overlay"></div>
+
+    <!-- Visuals-Only Overlay -->
+    <div class="overlay-container" id="visual-overlay">
+        <div class="noise-overlay" id="noise-overlay"></div>
+        <div class="grid-overlay"></div>
+        <div class="vignette-overlay"></div>
+        <div class="reticle" id="reticle-element">
+            <div class="reticle-bracket reticle-bracket-tl"></div>
+            <div class="reticle-bracket reticle-bracket-tr"></div>
+            <div class="reticle-bracket reticle-bracket-bl"></div>
+            <div class="reticle-bracket reticle-bracket-br"></div>
+        </div>
+    </div>
+        
+    <!-- Top Bar -->
+    <div class="top-bar" id="top-bar">
+        <div class="bar-section">
+            <p class="font-display text-lg" id="time-display">14:06:47</p>
+            <div>
+                <p id="date-display">FRIDAY, 02 AUGUST, 2002, GMT +2.00</p>
+                <p id="configure-btn" class="clickable">CONFIGURE</p>
+            </div>
+        </div>
+        <div class="bar-section">
+            <p id="network-id">NTWRK-ID: 150.248.142.178</p>
+            <div class="bar-divider"></div>
+            <p>MISSION BRIEF</p>
+        </div>
+        <div class="bar-section">
+            <p>UNENCRYPTED SIGNAL</p>
+            <div class="bar-divider"></div>
+            <div class="flex items-center gap-4">
+                <div>
+                    <p>TOSHKA SATELLITE LOGS-07</p>
+                    <p>OS: SPECTRE OS v3.2</p>
+                    <p id="ping-rate">CONNECTION PING-RATE: 1.78S</p>
+                </div>
+                <button id="fullscreen-btn" class="clickable p-2 hover:bg-gray-700 rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configure Menu (Submenu) -->
+    <div id="configure-menu">
+        <button id="btn-sat" class="active">Satellite</button>
+        <button id="btn-topo">Topographic</button>
+        <button id="btn-nv">Night Vision</button>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar" id="bottom-bar">
+        <div class="bar-section">
+            <p class="font-display">SYSTEM</p>
+            <div class="bar-divider"></div>
+            <div>
+                <p>OP.CON: <span id="opcon-callsign" class="text-white"></span></p>
+                <p id="terminate-login" class="clickable">TERMINATE LOGIN</p>
+                <p id="system-reboot" class="clickable">SYSTEM REBOOT</p>
+                <p id="terminal-access" class="clickable">TERMINAL ACCESS</p>
+            </div>
+        </div>
+        <div class="bar-section">
+            <p>TARGET COORDS: <span id="lat-display">0.0000</span>, <span id="lon-display">0.0000</span></p>
+        </div>
+        <div class="bar-section">
+            <svg width="80" height="40" viewBox="0 0 100 50" class="fill-current text-cyan-400 opacity-50">
+                <path d="M 50,0 L 60,10 L 55,15 L 65,25 L 50,50 L 35,25 L 45,15 L 40,10 Z M 0,25 L 100,25 M 20,15 A 30,15 0 0 1 80,15 M 10,25 A 40,20 0 0 1 90,25 M 0,35 A 50,25 0 0 1 100,35" fill="none" stroke="currentColor" stroke-width="2"/>
+            </svg>
+                <div id="satlink-toggle" class="clickable">
+                    <p class="font-display">SAT.LINK</p>
+                    <p id="satlink-status" class="text-green-500">ONLINE</p>
+                </div>
+        </div>
+    </div>
+
+    <!-- New Info Panels -->
+    <div id="mission-briefing" class="info-panel">
+        <!-- Content generated by JavaScript -->
+    </div>
+
+    <div id="target-info" class="info-panel">
+        <!-- Content generated by JavaScript -->
+    </div>
+
+    <!-- SVG Canvas for lines -->
+    <svg id="line-canvas">
+        <line id="line-mission" x1="0" y1="0" x2="0" y2="0" style="opacity: 0;"/>
+        <line id="line-target" x1="0" y1="0" x2="0" y2="0" style="opacity: 0;"/>
+    </svg>
+
+
+    <!-- Terminal Access Modal -->
+    <div id="search-modal" class="modal-container">
+        <div class="modal-content">
+            <h2 class="font-display text-2xl mb-4">TERMINAL ACCESS</h2>
+            <p>INPUT TARGET COORDINATES (LAT, LON)</p>
+            <form id="search-form" class="mb-4">
+                <input type="text" id="coord-input" placeholder="e.g., 40.7128, -74.0060">
+                <button type="submit">ACQUIRE TARGET</button>
+            </form>
+            <button id="my-location-btn">USE MY LOCATION</button>
+             <button id="close-modal-btn" class="mt-4">CLOSE TERMINAL</button>
+        </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="alert-modal" class="modal-container">
+        <div class="modal-content">
+            <h2 class="font-display text-2xl mb-4 text-yellow-400">SYSTEM ALERT</h2>
+            <p id="alert-message" class="mb-4"></p>
+            <button id="close-alert-btn">ACKNOWLEDGE</button>
+        </div>
+    </div>
+
+    <!-- Lockdown Screen -->
+    <div id="lockdown-screen">
+        <div>
+            <h2 class="font-display text-4xl text-red-500">//: CONNECTION TERMINATED ://</h2>
+            <button id="lockdown-reboot-btn" class="clickable mt-8 border border-red-500 px-4 py-2 text-red-500 hover:bg-red-500 hover:text-black transition-colors">REINITIALIZE SYSTEM</button>
+        </div>
+    </div>
+
+    <!-- Leaflet.js script -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+    <script>
+        window.onload = function() {
+
+            // =================================================================
+            // === CONFIGURATION - EDIT YOUR DATA HERE ===
+            // =================================================================
+            const config = {
+                startOffline: false, // Set to true to start with SAT.LINK offline
+                operatorCallsign: 'KERBEROS',
+                mapCoordinates: {
+                    initialView: [43.35, 42.71],
+                    initialZoom: 5,
+                    targetView: [23.9828, 30.3736],
+                    targetZoom: 18
+                },
+                missionData: {
+                    statement: "Infiltrate the designated area of operations, identify key enemy infrastructure, and neutralize high-value targets. Maintain stealth and await further instructions.",
+                    objectives: [
+                        "1. SECURE PERIMETER",
+                        "2. IDENTIFY HVT \"VIPER\"",
+                        "3. NEUTRALIZE COMMUNICATIONS ARRAY",
+                        "4. EXTRACT VIA ROOFTOP"
+                    ]
+                },
+                targetData: {
+                    operators: '2 (ACTIVE)',
+                    hostiles: '12+ (ESTIMATED)',
+                    civilians: 'UNKNOWN',
+                    primaryTarget: 'HVT "VIPER"',
+                    secondaryTarget: 'COMMS TOWER'
+                }
+            };
+            // =================================================================
+            // === END OF CONFIGURATION ===
+            // =================================================================
+
+
+            let map;
+            const timeEl = document.getElementById('time-display');
+            const dateEl = document.getElementById('date-display');
+            const latDisplay = document.getElementById('lat-display');
+            const lonDisplay = document.getElementById('lon-display');
+            
+            // Info panels and lines
+            const missionBriefing = document.getElementById('mission-briefing');
+            const targetInfo = document.getElementById('target-info');
+            const reticle = document.getElementById('reticle-element');
+            const lineMission = document.getElementById('line-mission');
+            const lineTarget = document.getElementById('line-target');
+            
+            // Modal elements
+            const terminalAccessBtn = document.getElementById('terminal-access');
+            const searchModal = document.getElementById('search-modal');
+            const searchForm = document.getElementById('search-form');
+            const coordInput = document.getElementById('coord-input');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const myLocationBtn = document.getElementById('my-location-btn');
+            const alertModal = document.getElementById('alert-modal');
+            const alertMessage = document.getElementById('alert-message');
+            const closeAlertBtn = document.getElementById('close-alert-btn');
+
+            // System Reboot & Terminate
+            const systemRebootBtn = document.getElementById('system-reboot');
+            const terminateLoginBtn = document.getElementById('terminate-login');
+            const lockdownScreen = document.getElementById('lockdown-screen');
+            const lockdownRebootBtn = document.getElementById('lockdown-reboot-btn');
+            const opconCallsignEl = document.getElementById('opcon-callsign');
+
+            // SAT.LINK Toggle elements
+            const satlinkToggle = document.getElementById('satlink-toggle');
+            const satlinkStatus = document.getElementById('satlink-status');
+            const mapContainer = document.getElementById('map');
+            const noiseOverlay = document.getElementById('noise-overlay');
+            const networkIdEl = document.getElementById('network-id');
+            const pingRateEl = document.getElementById('ping-rate');
+            let isSatlinkOnline = !config.startOffline;
+            const originalNetworkId = networkIdEl.textContent;
+            let pingInterval;
+
+            // Map Layer elements
+            const configureBtn = document.getElementById('configure-btn');
+            const configureMenu = document.getElementById('configure-menu');
+            const btnSat = document.getElementById('btn-sat');
+            const btnTopo = document.getElementById('btn-topo');
+            const btnNv = document.getElementById('btn-nv');
+            const nightVisionOverlay = document.getElementById('night-vision-overlay');
+            let tileLayers = {};
+            let currentLayer;
+            
+            // Fullscreen
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+
+            // UI elements to hide on lockdown
+            const uiElementsToHide = [
+                document.getElementById('top-bar'),
+                mapContainer,
+                document.getElementById('visual-overlay'),
+                missionBriefing,
+                targetInfo,
+                configureMenu,
+                document.getElementById('line-canvas'),
+                nightVisionOverlay
+            ];
+
+
+            function drawLines() {
+                if (!reticle) return;
+                const reticleRect = reticle.getBoundingClientRect();
+                const reticleCenter = {
+                    x: reticleRect.left + reticleRect.width / 2,
+                    y: reticleRect.top + reticleRect.height / 2
+                };
+
+                if (missionBriefing.classList.contains('visible')) {
+                    const missionRect = missionBriefing.getBoundingClientRect();
+                    lineMission.setAttribute('x1', missionRect.right);
+                    lineMission.setAttribute('y1', missionRect.top + missionRect.height / 2);
+                    lineMission.setAttribute('x2', reticleCenter.x);
+                    lineMission.setAttribute('y2', reticleCenter.y);
+                    lineMission.style.opacity = 1;
+                } else {
+                    lineMission.style.opacity = 0;
+                }
+
+                if (targetInfo.classList.contains('visible')) {
+                    const targetRect = targetInfo.getBoundingClientRect();
+                    lineTarget.setAttribute('x1', targetRect.left);
+                    lineTarget.setAttribute('y1', targetRect.top + targetRect.height / 2);
+                    lineTarget.setAttribute('x2', reticleCenter.x);
+                    lineTarget.setAttribute('y2', reticleCenter.y);
+                    lineTarget.style.opacity = 1;
+                } else {
+                    lineTarget.style.opacity = 0;
+                }
+            }
+            
+            function makeDraggable(panel) {
+                let isDragging = false;
+                let offsetX, offsetY;
+
+                panel.addEventListener('mousedown', (e) => {
+                    if (e.target.tagName === 'BUTTON') return;
+                    isDragging = true;
+                    
+                    const rect = panel.getBoundingClientRect();
+                    panel.style.right = 'auto';
+                    panel.style.bottom = 'auto';
+                    panel.style.left = `${rect.left}px`;
+                    panel.style.top = `${rect.top}px`;
+                    panel.style.transform = 'none';
+
+                    offsetX = e.clientX - panel.offsetLeft;
+                    offsetY = e.clientY - panel.offsetTop;
+                    panel.style.cursor = 'grabbing';
+
+                    document.addEventListener('mousemove', onMouseMove);
+                    document.addEventListener('mouseup', onMouseUp);
+                });
+
+                function onMouseMove(e) {
+                    if (!isDragging) return;
+                    panel.style.left = `${e.clientX - offsetX}px`;
+                    panel.style.top = `${e.clientY - offsetY}px`;
+                    drawLines();
+                }
+
+                function onMouseUp() {
+                    isDragging = false;
+                    panel.style.cursor = 'grab';
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                }
+            }
+
+
+            function populateInfoPanels() {
+                // Mission Briefing Panel
+                const objectivesHTML = config.missionData.objectives.map(obj => `<li>${obj}</li>`).join('');
+                missionBriefing.innerHTML = `
+                    <button class="close-panel-btn">&times;</button>
+                    <h3>MISSION STATEMENT</h3>
+                    <p class="text-sm">${config.missionData.statement}</p>
+                    <h3 class="mt-4">OBJECTIVES</h3>
+                    <ul>${objectivesHTML}</ul>
+                `;
+
+                // Target Info Panel
+                targetInfo.innerHTML = `
+                    <button class="close-panel-btn">&times;</button>
+                    <h3>TARGET ANALYSIS</h3>
+                    <ul>
+                        <li>OPERATORS: <span class="status-online">${config.targetData.operators}</span></li>
+                        <li>HOSTILES: <span class="status-caution">${config.targetData.hostiles}</span></li>
+                        <li>CIVILIANS: <span class="status-caution">${config.targetData.civilians}</span></li>
+                        <li>PRIMARY TARGET: ${config.targetData.primaryTarget}</li>
+                        <li>SECONDARY: ${config.targetData.secondaryTarget}</li>
+                    </ul>
+                `;
+
+                // Re-add event listeners for the new close buttons
+                missionBriefing.querySelector('.close-panel-btn').addEventListener('click', () => {
+                    missionBriefing.classList.remove('visible');
+                    drawLines();
+                });
+                targetInfo.querySelector('.close-panel-btn').addEventListener('click', () => {
+                    targetInfo.classList.remove('visible');
+                    drawLines();
+                });
+            }
+
+            function initMap() {
+                map = L.map('map', {
+                    zoomControl: false,
+                    attributionControl: false,
+                }).setView(config.mapCoordinates.initialView, config.mapCoordinates.initialZoom);
+
+                // Define Tile Layers
+                tileLayers.sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 });
+                tileLayers.topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { maxZoom: 17 });
+                
+                // Add initial layer
+                currentLayer = tileLayers.sat;
+                currentLayer.addTo(map);
+
+                map.on('move', () => {
+                    const center = map.getCenter();
+                    latDisplay.textContent = center.lat.toFixed(4);
+                    lonDisplay.textContent = center.lng.toFixed(4);
+                });
+                
+                map.fire('move');
+
+                if (!config.startOffline) {
+                    setTimeout(() => {
+                        map.flyTo(config.mapCoordinates.targetView, config.mapCoordinates.targetZoom);
+                    }, 2500);
+
+                    map.once('moveend', () => {
+                        missionBriefing.classList.add('visible');
+                        targetInfo.classList.add('visible');
+                        drawLines();
+                        startDecryptAnimation(missionBriefing);
+                        startDecryptAnimation(targetInfo);
+                    });
+                }
+            }
+
+            function updateTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-GB', { hour12: false });
+                const dateString = now.toLocaleDateString('en-GB', { 
+                    weekday: 'long', 
+                    day: '2-digit', 
+                    month: 'long', 
+                    year: 'numeric' 
+                }).toUpperCase() + `, GMT ${-now.getTimezoneOffset()/60}.00`;
+
+                timeEl.textContent = timeString;
+                dateEl.textContent = dateString;
+            }
+
+            // --- Modal and Alert Logic ---
+            function showModal(modal) {
+                modal.classList.add('visible');
+            }
+
+            function hideModal(modal) {
+                modal.classList.remove('visible');
+            }
+
+            function showAlert(message) {
+                alertMessage.textContent = message;
+                showModal(alertModal);
+            }
+
+            terminalAccessBtn.addEventListener('click', () => {
+                if (!terminalAccessBtn.classList.contains('disabled')) {
+                    showModal(searchModal);
+                }
+            });
+            closeModalBtn.addEventListener('click', () => hideModal(searchModal));
+            closeAlertBtn.addEventListener('click', () => hideModal(alertModal));
+            
+            searchModal.addEventListener('click', (e) => {
+                if (e.target === searchModal) {
+                    hideModal(searchModal);
+                }
+            });
+            alertModal.addEventListener('click', (e) => {
+                if (e.target === alertModal) {
+                    hideModal(alertModal);
+                }
+            });
+
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const query = coordInput.value.trim();
+                const parts = query.split(',').map(part => parseFloat(part.trim()));
+
+                if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+                    const lat = parts[0];
+                    const lon = parts[1];
+                    map.flyTo([lat, lon], 18);
+                    hideModal(searchModal);
+                    coordInput.value = '';
+                } else {
+                    coordInput.style.borderColor = 'red';
+                    setTimeout(() => {
+                        coordInput.style.borderColor = 'var(--ui-color-border)';
+                    }, 1000);
+                }
+            });
+
+            myLocationBtn.addEventListener('click', () => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        map.flyTo([lat, lon], 18);
+                        hideModal(searchModal);
+                    }, () => {
+                        showAlert("Unable to retrieve your location. Please ensure location services are enabled.");
+                    });
+                } else {
+                    showAlert("Geolocation is not supported by this browser.");
+                }
+            });
+            
+            // --- System Reboot & Terminate Logic ---
+            systemRebootBtn.addEventListener('click', () => {
+                location.reload();
+            });
+            lockdownRebootBtn.addEventListener('click', () => {
+                location.reload();
+            });
+
+            terminateLoginBtn.addEventListener('click', () => {
+                lockdownScreen.classList.add('visible');
+                uiElementsToHide.forEach(el => el.style.opacity = 0);
+            });
+
+
+            // --- SAT.LINK Toggle Logic ---
+            function updatePingRate() {
+                if (isSatlinkOnline) {
+                    const randomPing = (Math.random() * (120 - 30) + 30).toFixed(2);
+                    pingRateEl.textContent = `CONNECTION PING-RATE: ${randomPing}MS`;
+                }
+            }
+            
+            function setSatlinkOffline() {
+                isSatlinkOnline = false;
+                satlinkStatus.textContent = 'OFFLINE';
+                satlinkStatus.classList.remove('text-green-500');
+                satlinkStatus.classList.add('text-red-500');
+                mapContainer.classList.add('offline');
+                noiseOverlay.classList.add('offline');
+                networkIdEl.textContent = 'NTWRK-ID: //:NULL';
+                pingRateEl.textContent = 'CONNECTION PING-RATE: //:---';
+                clearInterval(pingInterval);
+                terminalAccessBtn.classList.add('disabled');
+            }
+
+            function setSatlinkOnline() {
+                isSatlinkOnline = true;
+                satlinkStatus.textContent = 'ONLINE';
+                satlinkStatus.classList.remove('text-red-500');
+                satlinkStatus.classList.add('text-green-500');
+                mapContainer.classList.remove('offline');
+                noiseOverlay.classList.remove('offline');
+                networkIdEl.textContent = originalNetworkId;
+                pingInterval = setInterval(updatePingRate, 2500);
+                updatePingRate();
+                terminalAccessBtn.classList.remove('disabled');
+            }
+
+            satlinkToggle.addEventListener('click', () => {
+                if (isSatlinkOnline) {
+                    setSatlinkOffline();
+                } else {
+                    setSatlinkOnline();
+                }
+            });
+
+            // --- Map Layer Logic ---
+            configureBtn.addEventListener('click', () => {
+                configureMenu.classList.toggle('visible');
+            });
+
+            function switchLayer(newLayerKey) {
+                if (newLayerKey !== 'nv' && currentLayer !== tileLayers[newLayerKey]) {
+                    map.removeLayer(currentLayer);
+                    currentLayer = tileLayers[newLayerKey];
+                    map.addLayer(currentLayer);
+                }
+
+                document.querySelectorAll('#configure-menu button').forEach(btn => btn.classList.remove('active'));
+                document.getElementById(`btn-${newLayerKey}`).classList.add('active');
+                
+                if (newLayerKey === 'nv') {
+                    if (currentLayer !== tileLayers.sat) {
+                        map.removeLayer(currentLayer);
+                        currentLayer = tileLayers.sat;
+                        map.addLayer(currentLayer);
+                    }
+                    nightVisionOverlay.classList.add('visible');
+                } else {
+                    nightVisionOverlay.classList.remove('visible');
+                }
+            }
+            btnSat.addEventListener('click', () => switchLayer('sat'));
+            btnTopo.addEventListener('click', () => switchLayer('topo'));
+            btnNv.addEventListener('click', () => switchLayer('nv'));
+
+            // --- Decrypt Animation Logic ---
+            function startDecryptAnimation(panel) {
+                const elements = panel.querySelectorAll('p, li, h3');
+                const chars = "!<>-_\\/[]{}—=+*^?#________";
+
+                elements.forEach(el => {
+                    const originalText = el.textContent;
+                    el.textContent = ''; // Clear the element
+                    let i = 0;
+                    const interval = setInterval(() => {
+                        if (i < originalText.length) {
+                            let newText = '';
+                            for (let j = 0; j < originalText.length; j++) {
+                                if (j <= i) {
+                                    newText += originalText[j];
+                                } else {
+                                    newText += chars[Math.floor(Math.random() * chars.length)];
+                                }
+                            }
+                            el.textContent = newText;
+                            i++;
+                        } else {
+                            el.textContent = originalText;
+                            clearInterval(interval);
+                        }
+                    }, 50); // Speed of decryption
+                });
+            }
+
+            // --- Fullscreen Logic ---
+            fullscreenBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            });
+
+
+            // Redraw lines on window resize
+            window.addEventListener('resize', drawLines);
+
+            // Initial Setup
+            opconCallsignEl.textContent = config.operatorCallsign;
+            populateInfoPanels();
+            makeDraggable(missionBriefing);
+            makeDraggable(targetInfo);
+            setInterval(updateTime, 1000);
+            updateTime();
+            
+            if (config.startOffline) {
+                setSatlinkOffline();
+            } else {
+                pingInterval = setInterval(updatePingRate, 2500);
+            }
+
+            initMap();
+        };
+    </script>
+</body>
+</html>
