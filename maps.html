@@ -522,8 +522,8 @@
             </div>
             <div class="bar-section hidden md:flex">
                 <p id="network-id">NTWRK-ID: 150.248.142.178</p>
-                <div class="bar-divider"></div>
-                <p id="mission-briefing-btn" class="clickable">MISSION BRIEF</p>
+                <div style="display:none;" class="bar-divider"></div>
+                <p style="display:none;" id="mission-briefing-btn" class="clickable">MISSION BRIEF</p>
             </div>
             <div class="bar-section">
                 <div class="hidden lg:flex items-center gap-4">
@@ -683,6 +683,7 @@
                     callsign: 'KERBEROS',
                     nationality: '████████',
                     specialty: 'Drone Operator / Tech Specialist',
+                    operation: "Locust Slayer",
                     photoUrl: 'https://suzakuchris.github.io/assets/dossier.png',
                     profile: 'A former military engineer whose service records are suspiciously sparse. It seems she has been scrubbing information regarding ██████████████ from all but the most secure choosen networks, almost like a ghost who only exists where she chooses to. This erasure is rumored to be tied to █████████████ ████████████ ████████████████████. She exhibits talent in electronic warfare, even shows promising capability in drone maintenance and piloting, making her an invaluable asset for an intelligence-gathering operation.',
                     stats: {
@@ -984,6 +985,7 @@
                             <p><strong>CALLSIGN:</strong> ${config.dossierData.callsign}</p>
                             <p><strong>NATIONALITY:</strong> ${config.dossierData.nationality}</p>
                             <p><strong>SPECIALTY:</strong> ${config.dossierData.specialty}</p>
+                            <p><strong>ASSIGNED OPS:</strong> ${config.dossierData.operation}</p>
                         </div>
                     </div>
                     <h3 class="mt-4">COMBAT & DEFENSE</h3>
