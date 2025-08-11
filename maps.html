@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <!-- Leaflet.js CSS for map rendering -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
@@ -181,7 +181,9 @@
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
             pointer-events: none;
-            cursor: grab;
+        }
+        .info-panel.draggable {
+             cursor: grab;
         }
         .info-panel.visible {
             opacity: 1;
@@ -197,6 +199,21 @@
             right: 2rem;
             bottom: 6rem; /* Position above the main bottom bar */
             width: 300px;
+        }
+        #dossier-panel {
+            position: fixed;
+            top: 4rem; /* Height of top bar */
+            left: -100%;
+            width: 450px;
+            height: calc(100% - 8rem); /* Full height minus top and bottom bars */
+            transition: left 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+            z-index: 1001;
+            cursor: default;
+            display: flex;
+            flex-direction: column;
+        }
+        #dossier-panel.visible {
+            left: 0;
         }
         .info-panel h3 {
             font-family: 'Orbitron', sans-serif;
@@ -225,6 +242,56 @@
             cursor: pointer;
             padding: 0.25rem;
         }
+        #dossier-photo {
+            filter: sepia(1) hue-rotate(90deg) saturate(2) contrast(0.8) brightness(0.9);
+        }
+        .dossier-tabs button {
+            background: transparent;
+            border: 1px solid var(--ui-color-border);
+            padding: 0.25rem 0.5rem;
+        }
+        .dossier-tabs button.active {
+            background: var(--ui-color);
+            color: #000;
+        }
+        .dossier-tab-content-wrapper {
+            flex-grow: 1;
+            overflow-y: auto;
+            position: relative;
+        }
+        .dossier-tab-content {
+            display: none;
+        }
+        .dossier-tab-content.active {
+            display: block;
+        }
+        .dossier-section-bg {
+            background: rgba(0,0,0,0.3);
+            padding: 0.5rem;
+        }
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .stats-table td {
+            padding: 0.25rem;
+        }
+
+        /* --- Custom Scrollbar --- */
+        .dossier-tab-content-wrapper::-webkit-scrollbar {
+            width: 8px;
+        }
+        .dossier-tab-content-wrapper::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.3);
+        }
+        .dossier-tab-content-wrapper::-webkit-scrollbar-thumb {
+            background-color: var(--ui-color-border);
+            border-radius: 4px;
+        }
+        .dossier-tab-content-wrapper::-webkit-scrollbar-thumb:hover {
+            background-color: var(--ui-color);
+        }
+
 
         /* --- SVG Lines --- */
         #line-canvas {
@@ -399,6 +466,12 @@
                 display: flex;
             }
         }
+        
+        @media (max-width: 640px) {
+            #dossier-panel {
+                width: 100%;
+            }
+        }
 
     </style>
 </head>
@@ -426,19 +499,23 @@
         <div class="top-bar" id="top-bar">
             <div class="bar-section">
                 <p class="font-display text-lg" id="time-display">14:06:47</p>
-                <div class="hidden sm:block">
-                    <p id="date-display">FRIDAY, 02 AUGUST, 2002, GMT +2.00</p>
-                    <p id="configure-btn" class="clickable">CONFIGURE</p>
+                <div class="hidden sm:flex items-center gap-4">
+                    <div>
+                        <p id="date-display">FRIDAY, 02 AUGUST, 2002, GMT +2.00</p>
+                        <p id="configure-btn" class="clickable">CONFIGURE</p>
+                    </div>
                 </div>
             </div>
             <div class="bar-section hidden md:flex">
                 <p id="network-id">NTWRK-ID: 150.248.142.178</p>
                 <div class="bar-divider"></div>
-                <p>MISSION BRIEF</p>
+                <p id="mission-briefing-btn" class="clickable">MISSION BRIEF</p>
             </div>
             <div class="bar-section">
-                <p class="hidden lg:block">UNENCRYPTED SIGNAL</p>
-                <div class="bar-divider hidden lg:block"></div>
+                <div class="hidden lg:flex items-center gap-4">
+                    <p>UNENCRYPTED SIGNAL</p>
+                    <div class="bar-divider"></div>
+                </div>
                 <div class="flex items-center gap-4">
                     <div class="hidden sm:block">
                         <p>TOSHKA SATELLITE LOGS-07</p>
@@ -464,13 +541,15 @@
         <!-- Bottom Bar -->
         <div class="bottom-bar" id="bottom-bar">
             <div class="bar-section">
-                <p class="font-display">SYSTEM</p>
-                <div class="bar-divider"></div>
-                <div>
-                    <p>OP.CON: <span id="opcon-callsign" class="text-white"></span></p>
-                    <p id="terminate-login" class="clickable">TERMINATE LOGIN</p>
-                    <p id="system-reboot" class="clickable">SYSTEM REBOOT</p>
-                    <p id="terminal-access" class="clickable">TERMINAL ACCESS</p>
+                <p class="hidden sm:flex font-display">SYSTEM</p>
+                <div style="display:flex;" class="items-center gap-4">
+                    <div class="bar-divider"></div>
+                    <div>
+                        <p>OP.CON: <span id="opcon-callsign" class="text-white clickable"></span></p>
+                        <p id="terminate-login" class="clickable">TERMINATE LOGIN</p>
+                        <p id="system-reboot" class="clickable">SYSTEM REBOOT</p>
+                        <p id="terminal-access" class="clickable">TERMINAL ACCESS</p>
+                    </div>
                 </div>
             </div>
             <div class="bar-section hidden sm:flex">
@@ -480,19 +559,23 @@
                 <svg width="80" height="40" viewBox="0 0 100 50" class="fill-current text-cyan-400 opacity-50 hidden md:block">
                     <path d="M 50,0 L 60,10 L 55,15 L 65,25 L 50,50 L 35,25 L 45,15 L 40,10 Z M 0,25 L 100,25 M 20,15 A 30,15 0 0 1 80,15 M 10,25 A 40,20 0 0 1 90,25 M 0,35 A 50,25 0 0 1 100,35" fill="none" stroke="currentColor" stroke-width="2"/>
                 </svg>
-                    <div id="satlink-toggle" class="clickable">
-                        <p class="font-display">SAT.LINK</p>
-                        <p id="satlink-status" class="text-green-500">ONLINE</p>
-                    </div>
+                <div id="satlink-toggle" class="clickable">
+                    <p class="font-display">SAT.LINK</p>
+                    <p id="satlink-status" class="text-green-500">ONLINE</p>
+                </div>
             </div>
         </div>
 
         <!-- New Info Panels -->
-        <div id="mission-briefing" class="info-panel">
+        <div id="mission-briefing" class="info-panel draggable">
             <!-- Content generated by JavaScript -->
         </div>
 
-        <div id="target-info" class="info-panel">
+        <div id="target-info" class="info-panel draggable">
+            <!-- Content generated by JavaScript -->
+        </div>
+
+        <div id="dossier-panel" class="info-panel">
             <!-- Content generated by JavaScript -->
         </div>
 
@@ -500,6 +583,7 @@
         <svg id="line-canvas">
             <line id="line-mission" x1="0" y1="0" x2="0" y2="0" style="opacity: 0;"/>
             <line id="line-target" x1="0" y1="0" x2="0" y2="0" style="opacity: 0;"/>
+            <line id="line-dossier" x1="0" y1="0" x2="0" y2="0" style="opacity: 0;"/>
         </svg>
 
 
@@ -538,7 +622,8 @@
     <!-- Rotate Device Overlay -->
     <div id="rotate-overlay">
         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="mb-4" viewBox="0 0 16 16">
-            <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm.5 11.5a.5.5 0 0 1-1 0V5.707L4.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V12.5z"/>
+            <path d="M8 3a.5.5 0 0 0-.5.5v1.28L6.28 3.53a.5.5 0 0 0-.708.707l2.5 2.5a.5.5 0 0 0 .708 0l2.5-2.5a.5.5 0 0 0-.708-.708L8.5 4.783V3.5A.5.5 0 0 0 8 3zM12.5 8.5a.5.5 0 0 0-.5.5v1.28l-1.22-1.22a.5.5 0 0 0-.707.708l2.5 2.5a.5.5 0 0 0 .708 0l2.5-2.5a.5.5 0 0 0-.708-.708L12.5 10.783V9a.5.5 0 0 0-.5-.5zM3.5 8.5a.5.5 0 0 0-.5.5v1.28l-1.22-1.22a.5.5 0 0 0-.707.708l2.5 2.5a.5.5 0 0 0 .708 0l2.5-2.5a.5.5 0 0 0-.708-.708L3.5 10.783V9a.5.5 0 0 0-.5-.5z"/>
+            <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
         </svg>
         <p class="font-display text-2xl">PLEASE ROTATE YOUR DEVICE</p>
     </div>
@@ -578,6 +663,33 @@
                     civilians: 'UNKNOWN',
                     primaryTarget: 'HVT "VIPER"',
                     secondaryTarget: 'COMMS TOWER'
+                },
+                dossierData: {
+                    name: 'Alina Petrova',
+                    callsign: 'KERBEROS',
+                    nationality: 'Ukrainian',
+                    specialty: 'Drone Operator / Tech Specialist',
+                    photoUrl: 'https://placehold.co/150x200/000000/68d8d6?text=OPERATOR',
+                    profile: 'A former military engineer whose service records are suspiciously sparse. Petrova is a digital phantom, her past scrubbed from all but the most secure networks—a ghost who only exists where she chooses to. This erasure is rumored to be the result of a past operation taking its toll, leaving her physically frail but with an unparalleled mastery over technology. She exhibits an almost preternatural bond with her drone companions, making her an invaluable asset for any intelligence-gathering operation.',
+                    stats: {
+                        wounds: 2,
+                        stamina: 3,
+                        luck: 0,
+                        move: 6,
+                        evade: 8,
+                        armor: '*',
+                        strength: '-1',
+                        agility: 1,
+                        knowledge: 2,
+                        empathy: 0
+                    },
+                    feats: [
+                        '<strong>Uncanny Connection:</strong> KERBEROS exhibits an almost preternatural bond with her drone companions, allowing her to push them to perform complex actions in perfect sync with her own. (Animal Lover/Trainer)',
+                        '<strong>Electronic Warfare Specialist:</strong> Her deep-seated expertise in electronic warfare provides a decisive edge in navigating and manipulating hostile digital landscapes. (Knowhow)',
+                        '<strong>Digital Phantom:</strong> Official records of Petrova\'s existence are virtually non-existent. She is a ghost, her data scrubbed from all but the most secure, isolated networks. (Ghost)',
+                        '<strong>Physical Frailty:</strong> Past operations have taken their toll, leaving her physically weaker than her peers. (Faded Glory - Max Strength reduced)',
+                        '<strong>Jinxed:</strong> At critical moments, fortune seems to abandon her, turning sure successes into unpredictable gambles. (Unlucky - Luck rolls may fail)'
+                    ]
                 }
             };
             // =================================================================
@@ -594,9 +706,11 @@
             // Info panels and lines
             const missionBriefing = document.getElementById('mission-briefing');
             const targetInfo = document.getElementById('target-info');
+            const dossierPanel = document.getElementById('dossier-panel');
             const reticle = document.getElementById('reticle-element');
             const lineMission = document.getElementById('line-mission');
             const lineTarget = document.getElementById('line-target');
+            const lineDossier = document.getElementById('line-dossier');
             
             // Modal elements
             const terminalAccessBtn = document.getElementById('terminal-access');
@@ -615,6 +729,8 @@
             const lockdownScreen = document.getElementById('lockdown-screen');
             const lockdownRebootBtn = document.getElementById('lockdown-reboot-btn');
             const opconCallsignEl = document.getElementById('opcon-callsign');
+            const missionBriefingBtn = document.getElementById('mission-briefing-btn');
+
 
             // SAT.LINK Toggle elements
             const satlinkToggle = document.getElementById('satlink-toggle');
@@ -647,6 +763,7 @@
                 document.getElementById('visual-overlay'),
                 missionBriefing,
                 targetInfo,
+                dossierPanel,
                 configureMenu,
                 document.getElementById('line-canvas'),
                 nightVisionOverlay
@@ -682,6 +799,27 @@
                 } else {
                     lineTarget.style.opacity = 0;
                 }
+                
+                if (dossierPanel.classList.contains('visible')) {
+                    const dossierRect = dossierPanel.getBoundingClientRect();
+                    lineDossier.setAttribute('x1', dossierRect.right);
+                    lineDossier.setAttribute('y1', dossierRect.top + dossierRect.height / 2);
+                    lineDossier.setAttribute('x2', reticleCenter.x);
+                    lineDossier.setAttribute('y2', reticleCenter.y);
+                    lineDossier.style.opacity = 1;
+                } else {
+                    lineDossier.style.opacity = 0;
+                }
+
+                adjustDossierPane();
+            }
+
+            function adjustDossierPane(){
+                var tbheight = $("#top-bar")[0].clientHeight;
+                var bbheight = $("#bottom-bar")[0].clientHeight;
+                var clientheight = window.innerHeight;
+                var totalheight = clientheight - tbheight - bbheight;
+                $("#dossier-panel").css({'height':totalheight+"px",'top':tbheight+"px"});
             }
             
             function makeDraggable(panel) {
@@ -746,6 +884,51 @@
                         <li>SECONDARY: ${config.targetData.secondaryTarget}</li>
                     </ul>
                 `;
+                
+                // Dossier Panel
+                const featsHTML = config.dossierData.feats.map(feat => `<li>${feat}</li>`).join('');
+                dossierPanel.innerHTML = `
+                    <button class="close-panel-btn">&times;</button>
+                    <div class="flex gap-4">
+                        <img id="dossier-photo" src="${config.dossierData.photoUrl}" alt="Operator Photo" class="w-1/3 h-auto border border-gray-700">
+                        <div class="text-sm w-2/3">
+                            <p><strong>NAME:</strong> ${config.dossierData.name}</p>
+                            <p><strong>CALLSIGN:</strong> ${config.dossierData.callsign}</p>
+                            <p><strong>NATIONALITY:</strong> ${config.dossierData.nationality}</p>
+                            <p><strong>SPECIALTY:</strong> ${config.dossierData.specialty}</p>
+                        </div>
+                    </div>
+                    <h3 class="mt-4">COMBAT & DEFENSE</h3>
+                    <div class="grid grid-cols-3 gap-x-2 text-sm dossier-section-bg">
+                        <p>STR: ${config.dossierData.stats.strength}</p>
+                        <p>AGI: ${config.dossierData.stats.agility}</p>
+                        <p>MOVE: ${config.dossierData.stats.move}</p>
+                        <p>EVADE: ${config.dossierData.stats.evade}</p>
+                        <p>ARMOR: ${config.dossierData.stats.armor}</p>
+                    </div>
+                    <div class="dossier-tabs mt-4 flex gap-2">
+                        <button class="tab-btn active" data-tab="profile">Profile</button>
+                        <button class="tab-btn" data-tab="aptitude">Aptitude</button>
+                        <button class="tab-btn" data-tab="characteristics">Characteristics</button>
+                    </div>
+                    <div class="mt-2 border-t border-gray-700 pt-2 text-sm dossier-tab-content-wrapper">
+                        <div id="tab-profile" class="dossier-tab-content active dossier-section-bg">
+                            <p>${config.dossierData.profile}</p>
+                        </div>
+                        <div id="tab-aptitude" class="dossier-tab-content">
+                            <table class="stats-table">
+                                <tr><td>Health (Wounds):</td><td>${config.dossierData.stats.wounds}</td></tr>
+                                <tr><td>Stamina:</td><td>${config.dossierData.stats.stamina}</td></tr>
+                                <tr><td>Luck:</td><td>${config.dossierData.stats.luck}</td></tr>
+                                <tr><td>Intellect (Knowledge):</td><td>${config.dossierData.stats.knowledge}</td></tr>
+                                <tr><td>Charisma (Empathy):</td><td>${config.dossierData.stats.empathy}</td></tr>
+                            </table>
+                        </div>
+                        <div id="tab-characteristics" class="dossier-tab-content dossier-section-bg">
+                            <ul>${featsHTML}</ul>
+                        </div>
+                    </div>
+                `;
 
                 // Re-add event listeners for the new close buttons
                 missionBriefing.querySelector('.close-panel-btn').addEventListener('click', () => {
@@ -755,6 +938,26 @@
                 targetInfo.querySelector('.close-panel-btn').addEventListener('click', () => {
                     targetInfo.classList.remove('visible');
                     drawLines();
+                });
+                dossierPanel.querySelector('.close-panel-btn').addEventListener('click', () => {
+                    dossierPanel.classList.remove('visible');
+                    drawLines();
+                });
+
+                // Add tab functionality
+                const tabButtons = dossierPanel.querySelectorAll('.tab-btn');
+                const tabContents = dossierPanel.querySelectorAll('.dossier-tab-content');
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        tabButtons.forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+                        tabContents.forEach(content => {
+                            content.classList.remove('active');
+                            if (content.id === `tab-${button.dataset.tab}`) {
+                                content.classList.add('active');
+                            }
+                        });
+                    });
                 });
             }
 
@@ -786,11 +989,9 @@
                     }, 2500);
 
                     map.once('moveend', () => {
-                        missionBriefing.classList.add('visible');
-                        targetInfo.classList.add('visible');
+                        dossierPanel.classList.add('visible');
                         drawLines();
-                        startDecryptAnimation(missionBriefing);
-                        startDecryptAnimation(targetInfo);
+                        startDecryptAnimation(dossierPanel);
                     });
                 }
             }
@@ -964,10 +1165,11 @@
 
             // --- Decrypt Animation Logic ---
             function startDecryptAnimation(panel) {
-                const elements = panel.querySelectorAll('p, li, h3');
+                const elements = panel.querySelectorAll('p, li, h3, strong');
                 const chars = "!<>-_\\/[]{}—=+*^?#________";
 
                 elements.forEach(el => {
+                    const originalHTML = el.innerHTML;
                     const originalText = el.textContent;
                     el.textContent = ''; // Clear the element
                     let i = 0;
@@ -984,10 +1186,10 @@
                             el.textContent = newText;
                             i++;
                         } else {
-                            el.textContent = originalText;
+                            el.innerHTML = originalHTML; // Restore original HTML to keep tags
                             clearInterval(interval);
                         }
-                    }, 50); // Speed of decryption
+                    }, 30); // Speed of decryption
                 });
             }
 
@@ -1000,6 +1202,17 @@
                         document.exitFullscreen();
                     }
                 }
+            });
+            
+            // --- Dossier & Mission Briefing Logic ---
+            opconCallsignEl.addEventListener('click', () => {
+                dossierPanel.classList.toggle('visible');
+                drawLines();
+            });
+            missionBriefingBtn.addEventListener('click', () => {
+                missionBriefing.classList.toggle('visible');
+                targetInfo.classList.toggle('visible');
+                drawLines();
             });
 
 
