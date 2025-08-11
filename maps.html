@@ -269,12 +269,26 @@
             background: rgba(0,0,0,0.3);
             padding: 0.5rem;
         }
-        .stats-table {
+        .equipment-table, .stats-table {
             width: 100%;
             border-collapse: collapse;
         }
         .stats-table td {
             padding: 0.25rem;
+        }
+
+        .equipment-table td, .equipment-table th{
+            padding: 0.25rem;
+            border:1px solid;
+        }
+
+        .subscript{
+            font-size: small;
+            color: #8cc7d9;
+        }
+
+        .text-center{
+            text-align:center;
         }
 
         /* --- Custom Scrollbar --- */
@@ -667,19 +681,19 @@
                 dossierData: {
                     name: 'Eris Planika',
                     callsign: 'KERBEROS',
-                    nationality: 'Viridian',
+                    nationality: '████████',
                     specialty: 'Drone Operator / Tech Specialist',
                     photoUrl: 'https://suzakuchris.github.io/assets/dossier.png',
-                    profile: 'A former military engineer whose service records are suspiciously sparse. It seems she has been scrubbing information regarding her past from all but the most secure choosen networks, almost like a ghost who only exists where she chooses to. This erasure is rumored to be tied of her past as an operator implicated in an incident. She exhibits talent in electronic warfare, even shows promising capability in drone maintenance and piloting, making her an invaluable asset for an intelligence-gathering operation.',
+                    profile: 'A former military engineer whose service records are suspiciously sparse. It seems she has been scrubbing information regarding ██████████████ from all but the most secure choosen networks, almost like a ghost who only exists where she chooses to. This erasure is rumored to be tied to █████████████ ████████████ ████████████████████. She exhibits talent in electronic warfare, even shows promising capability in drone maintenance and piloting, making her an invaluable asset for an intelligence-gathering operation.',
                     stats: {
                         wounds: 2,
                         stamina: 3,
                         luck: 0,
                         move: 6,
                         evade: 8,
-                        armor: '0*',
+                        armor: '4*',
                         strength: '-1',
-                        agility: 1,
+                        agility: 0,
                         knowledge: 2,
                         empathy: 0
                     },
@@ -699,6 +713,58 @@
                             damage: '2d6'
                         }
                     },
+                    equipment:[
+                        {
+                            name:"Pistol",
+                            desc:"Sidearm, Range 8 | Damage 1d6+1 | Ammo7 | Semi<br/>2 Mag, AP Rounds",
+                            price:(300+250)
+                        },
+                        {
+                            name:"Light Armor",
+                            desc:"Concealed. +4 armor",
+                            price:500
+                        },
+                        {
+                            name:"Binocular",
+                            desc:"Standard issue, 10x magnification",
+                            price:70
+                        },
+                        {
+                            name:"Tactical Vest",
+                            desc:"3 Slots for Binocular, EDTA, Flashlight, 1 for Pistol, 3 for Mags<br/><br/>A Tactical Vest may hold any mix of 8 Magazines, grenades, Sidearms.",
+                            price:300
+                        },
+                        {
+                            name:"Bag (Large)",
+                            desc:"2 Slots for Drone, 1 for GPS<br/><br/>Can carry 3 items. Takes 1 hand to carry. Any equipment in the Bag doesn't count towards the total bulk a character is carrying. It takes 1 Stamina to take or put anything in the Bag.",
+                            price:30
+                        },
+                        {
+                            name:"Ecotech Digital Tactical Assistant (EDTA)",
+                            desc:"communication device to transmit signals over long distances, including digital weapon sights, magnification, constant digital mapping, personally nicknamed 'Bluewolf'",
+                            price:800
+                        },
+                        {
+                            name:"Animal Companion (Med)",
+                            desc:"Ghost Robotics' Seventh Generation Q-UGV. Eris' personal preference. Supports wire-guide.",
+                            price:700
+                        },
+                        {
+                            name:"GPS",
+                            desc:"a satellite-based hyperbolic navigation system",
+                            price:0
+                        },
+                        {
+                            name:"Flashlight",
+                            desc:"a standard issue torch",
+                            price:0
+                        },
+                        {
+                            name:"Common Clothes",
+                            desc:"",
+                            price:0
+                        },
+                    ],
                     feats: [
                         '<strong>Uncanny Connection:</strong> KERBEROS seems to favor piloting a drone than being assigned an assault weapon. She is able to push her drones to perform complex actions in perfect sync with her own. (Animal Lover/Trainer)',
                         '<strong>Electronic Warfare Specialist:</strong> Her deep-seated expertise in electronic warfare provides a decisive edge in navigating and manipulating hostile digital landscapes. (Knowhow)',
@@ -903,6 +969,12 @@
                 
                 // Dossier Panel
                 const featsHTML = config.dossierData.feats.map(feat => `<li>${feat}</li>`).join('');
+                var totalMoney = 0;
+                let equipmentHTML = config.dossierData.equipment.map((item, idx) => {
+                    totalMoney += item.price;
+                    return `<tr><td><div>- ${item.name}</div><div class="subscript">${item.desc}</div></td><td class="text-center">$${item.price}</td></tr>`;
+                }).join('');
+
                 dossierPanel.innerHTML = `
                     <button class="close-panel-btn">&times;</button>
                     <div class="flex gap-4">
@@ -926,7 +998,7 @@
                         <button class="tab-btn active" data-tab="profile">//:Prfl.</button>
                         <button class="tab-btn" data-tab="aptitude">//:Apt.</button>
                         <button class="tab-btn" data-tab="characteristics">//:Cha.</button>
-                        <button class="tab-btn" data-tab="drones">//:Drone.</button>
+                        <button class="tab-btn" data-tab="drones">//:Drn.</button>
                     </div>
                     <div class="mt-2 border-t border-gray-700 pt-2 text-sm dossier-tab-content-wrapper">
                         <div id="tab-profile" class="dossier-tab-content active dossier-section-bg">
@@ -939,6 +1011,17 @@
                                 <tr><td>Luck:</td><td>${config.dossierData.stats.luck}</td></tr>
                                 <tr><td>Intellect (Knowledge):</td><td>${config.dossierData.stats.knowledge}</td></tr>
                                 <tr><td>Charisma (Empathy):</td><td>${config.dossierData.stats.empathy}</td></tr>
+                            </table>
+                            <table class="equipment-table" style="margin-top:15px;">
+                                <thead>
+                                    <tr>
+                                        <th>Items</th>
+                                        <th>Price ($${totalMoney})</th>
+                                    </tr>    
+                                </thead>
+                                <tbody>
+                                ${equipmentHTML}
+                                </tbody>
                             </table>
                         </div>
                         <div id="tab-characteristics" class="dossier-tab-content dossier-section-bg">
