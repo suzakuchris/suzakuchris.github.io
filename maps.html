@@ -665,29 +665,45 @@
                     secondaryTarget: 'COMMS TOWER'
                 },
                 dossierData: {
-                    name: 'Alina Petrova',
+                    name: 'Eris Planika',
                     callsign: 'KERBEROS',
-                    nationality: 'Ukrainian',
+                    nationality: 'Viridian',
                     specialty: 'Drone Operator / Tech Specialist',
-                    photoUrl: 'https://placehold.co/150x200/000000/68d8d6?text=OPERATOR',
-                    profile: 'A former military engineer whose service records are suspiciously sparse. Petrova is a digital phantom, her past scrubbed from all but the most secure networks—a ghost who only exists where she chooses to. This erasure is rumored to be the result of a past operation taking its toll, leaving her physically frail but with an unparalleled mastery over technology. She exhibits an almost preternatural bond with her drone companions, making her an invaluable asset for any intelligence-gathering operation.',
+                    photoUrl: 'https://suzakuchris.github.io/assets/dossier.png',
+                    profile: 'A former military engineer whose service records are suspiciously sparse. It seems she has been scrubbing information regarding her past from all but the most secure choosen networks, almost like a ghost who only exists where she chooses to. This erasure is rumored to be tied of her past as an operator implicated in an incident. She exhibits talent in electronic warfare, even shows promising capability in drone maintenance and piloting, making her an invaluable asset for an intelligence-gathering operation.',
                     stats: {
                         wounds: 2,
                         stamina: 3,
                         luck: 0,
                         move: 6,
                         evade: 8,
-                        armor: '*',
+                        armor: '0*',
                         strength: '-1',
                         agility: 1,
                         knowledge: 2,
                         empathy: 0
                     },
+                    drone:{
+                        stats:{
+                            wounds: 3,
+                            stamina: 0,
+                            luck: 0,
+                            move: 10,
+                            evade: 12,
+                            armor: '0*',
+                            strength: '+2',
+                            agility: 0,
+                            knowledge: '-3',
+                            empathy: '+2',
+                            range: 1,
+                            damage: '2d6'
+                        }
+                    },
                     feats: [
-                        '<strong>Uncanny Connection:</strong> KERBEROS exhibits an almost preternatural bond with her drone companions, allowing her to push them to perform complex actions in perfect sync with her own. (Animal Lover/Trainer)',
+                        '<strong>Uncanny Connection:</strong> KERBEROS seems to favor piloting a drone than being assigned an assault weapon. She is able to push her drones to perform complex actions in perfect sync with her own. (Animal Lover/Trainer)',
                         '<strong>Electronic Warfare Specialist:</strong> Her deep-seated expertise in electronic warfare provides a decisive edge in navigating and manipulating hostile digital landscapes. (Knowhow)',
-                        '<strong>Digital Phantom:</strong> Official records of Petrova\'s existence are virtually non-existent. She is a ghost, her data scrubbed from all but the most secure, isolated networks. (Ghost)',
-                        '<strong>Physical Frailty:</strong> Past operations have taken their toll, leaving her physically weaker than her peers. (Faded Glory - Max Strength reduced)',
+                        '<strong>Digital Phantom:</strong> Official records of her existence are virtually non-existent. She is a ghost, her data scrubbed from all but the most secure, isolated networks. (Ghost)',
+                        '<strong>Physical Frailty:</strong> Past operations have taken their toll, leaving her physically weaker than her peers. (Faded Glory)',
                         '<strong>Jinxed:</strong> At critical moments, fortune seems to abandon her, turning sure successes into unpredictable gambles. (Unlucky - Luck rolls may fail)'
                     ]
                 }
@@ -907,9 +923,10 @@
                         <p>ARMOR: ${config.dossierData.stats.armor}</p>
                     </div>
                     <div class="dossier-tabs mt-4 flex gap-2">
-                        <button class="tab-btn active" data-tab="profile">Profile</button>
-                        <button class="tab-btn" data-tab="aptitude">Aptitude</button>
-                        <button class="tab-btn" data-tab="characteristics">Characteristics</button>
+                        <button class="tab-btn active" data-tab="profile">//:Prfl.</button>
+                        <button class="tab-btn" data-tab="aptitude">//:Apt.</button>
+                        <button class="tab-btn" data-tab="characteristics">//:Cha.</button>
+                        <button class="tab-btn" data-tab="drones">//:Drone.</button>
                     </div>
                     <div class="mt-2 border-t border-gray-700 pt-2 text-sm dossier-tab-content-wrapper">
                         <div id="tab-profile" class="dossier-tab-content active dossier-section-bg">
@@ -926,6 +943,24 @@
                         </div>
                         <div id="tab-characteristics" class="dossier-tab-content dossier-section-bg">
                             <ul>${featsHTML}</ul>
+                        </div>
+                        <div id="tab-drones" class="dossier-tab-content">
+                            <table class="stats-table">
+                                 <div class="grid grid-cols-3 gap-x-2 text-sm dossier-section-bg">
+                                    <p>STR: ${config.dossierData.drone.stats.strength}</p>
+                                    <p>AGI: ${config.dossierData.drone.stats.agility}</p>
+                                    <p>MOVE: ${config.dossierData.drone.stats.move}</p>
+                                    <p>EVADE: ${config.dossierData.drone.stats.evade}</p>
+                                    <p>ARMOR: ${config.dossierData.drone.stats.armor}</p>
+                                    <p>RANGE: ${config.dossierData.drone.stats.range}</p>
+                                    <p>DAMAGE: ${config.dossierData.drone.stats.damage}</p>
+                                </div>
+                                <tr><td>Health (Wounds):</td><td>${config.dossierData.drone.stats.wounds}</td></tr>
+                                <tr><td>Stamina:</td><td>${config.dossierData.drone.stats.stamina}</td></tr>
+                                <tr><td>Luck:</td><td>${config.dossierData.drone.stats.luck}</td></tr>
+                                <tr><td>Intellect (Knowledge):</td><td>${config.dossierData.drone.stats.knowledge}</td></tr>
+                                <tr><td>Charisma (Empathy):</td><td>${config.dossierData.drone.stats.empathy}</td></tr>
+                            </table>
                         </div>
                     </div>
                 `;
