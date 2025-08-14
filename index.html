@@ -621,7 +621,7 @@
             const levelBonus = Math.floor(level/2);
             const ACBonus = 3;
             const REFBonus = 2;
-            const FORTBonus = 0;
+            const FORTBonus = 2;
             const WILLBonus = 0;
 
             const attributes = {
@@ -695,6 +695,12 @@
                 { name: 'Windlord', content: `
                     Your origin becomes elemental. For the purpose of effects that relate to creature origin, you are considered to be an elemental. Add Primordial to the languages you can read, write, and speak. You gain a +2 power bonus to Athletics checks and Perception checks.
                 ` },
+                { name: 'Versatile Aptitude (Background)', content: `
+                    Choose one feat with “Expertise” in its name or
+                    the Master at Arms feat in which you can meet
+                    the requirements. You gain that feat.
+                    (Two-Handed Weapon Expertise)
+                ` },
             ];
 
             // =========================================================================
@@ -711,9 +717,9 @@
 
             const baseDefense = 10;
             const ACDefense = baseDefense+ACBonus+Math.floor((attributes['DEX']-10)/2)+Math.floor((attributes['INT']-10)/2);
-            const REFDefense = baseDefense+REFBonus+Math.floor((attributes['DEX']-10)/2)+Math.floor((attributes['INT']-10)/2);
-            const FORTDefense = baseDefense+FORTBonus+Math.floor((attributes['CON']-10)/2)+Math.floor((attributes['STR']-10)/2);
-            const WILLDefense = baseDefense+WILLBonus+Math.floor((attributes['WIS']-10)/2)+Math.floor((attributes['CHA']-10)/2);
+            const REFDefense = baseDefense+REFBonus+Math.floor((attributes['DEX']-10)/2);
+            const FORTDefense = baseDefense+FORTBonus+Math.floor((attributes['STR']-10)/2);
+            const WILLDefense = baseDefense+WILLBonus+Math.floor((attributes['WIS']-10)/2);
 
             const attributesList = document.getElementById('attributes-list');
             const skillsList = document.getElementById('skills-list');
