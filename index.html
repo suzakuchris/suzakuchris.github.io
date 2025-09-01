@@ -626,6 +626,7 @@
             const REFBonus = 2;
             const FORTBonus = 2;
             const WILLBonus = 0;
+            const HSUsed = 2;
 
             const attributes = {
                 "STR": 20, "CON": 11, "DEX": 16, "INT": 10, "WIS": 10, "CHA": 8
@@ -998,9 +999,10 @@
             $("#max-hp").val(totalHP);
             $("#initiative-value").html("+"+initiative);
 
-            $("#surge-value-display").html(HSPerDay+" / "+HSPerDay);
+            var currentHS = HSPerDay-HSUsed;
+            $("#surge-value-display").html(currentHS+" / "+HSPerDay);
             $("#surge-slider").attr("max", HSPerDay);
-            $("#surge-slider").attr("value", HSPerDay);
+            $("#surge-slider").attr("value", currentHS);
             $("#attack-roll").html("+"+attackValue);
             $("#defenses").html("AC"+ACDefense+" R"+REFDefense+" F"+FORTDefense+" W"+WILLDefense);
         });
