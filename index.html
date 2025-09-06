@@ -361,7 +361,7 @@
                                     <span class="text-lg tome-font text-white-50">Attack Roll</span>
                                     <div>
                                         <span class="fs-4 text-white fw-bold mt-2" id="attack-roll">--</span>
-                                        <span class="fs-4 text-white fw-bold mt-2">(2d4+5)</span>
+                                        <span class="fs-4 text-white fw-bold mt-2">(2d4+5+1)</span>
                                     </div>
                                 </div>
                             </div>
@@ -422,6 +422,10 @@
                             <button id="clear-daily-powers" class="btn btn-sm btn-clear-all ms-auto">Clear</button>
                         </div>
                         <div id="daily-powers-list" class="power-grid"></div>
+
+                        <hr class="mt-4"/>
+                        <h4 class="tome-font h5 mb-2 mt-2">Magic Items</span></h4>
+                        <div id="magic-items-list" class="power-grid"></div>
 
                         <div id="power-details-container" class="d-none">
                             <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
@@ -618,15 +622,15 @@
             // =========================================================================
             //  EDITABLE DATA: Modify these objects to update your character sheet
             // =========================================================================
-            const level = 1;
+            const level = 2;
             const weaponProf = 2;
-            const otherBonus = 1;
+            const otherBonus = 1+1;
             const levelBonus = Math.floor(level/2);
             const ACBonus = 3;
             const REFBonus = 2;
             const FORTBonus = 2;
             const WILLBonus = 0;
-            const HSUsed = 2;
+            const HSUsed = 0;
 
             const attributes = {
                 "STR": 20, "CON": 11, "DEX": 16, "INT": 10, "WIS": 10, "CHA": 8
@@ -664,13 +668,20 @@
                 { id: 'power4821', name: 'Avalanche Strike', type: 'Encounter' },
                 { id: 'power16113', name: 'Wind Fury Assault', type: 'Encounter' },
                 { id: 'power11739', name: 'Thri-kreen Claws', type: 'Encounter' },
+                { id: 'power16547', name: 'Mantis Jump', type: 'Encounter' },
 
                 { id: 'power4936', name: 'Rage Drake\'s Frenzy', type: 'Daily' }
             ];
 
             const featsToDisplay = [
                 { id: 'feat3672', name: 'Two-Handed Weapon Expertise' },
-                { id: 'feat3247', name: 'Wild Talent Master' }
+                { id: 'feat3247', name: 'Wild Talent Master' },
+                { id: 'feat1261', name: 'Slow Fall' }
+            ];
+
+            const magicItems = [
+                { id: 'weapon2965', name: 'Vanguard Weapon (+1)' },
+                { id: 'item842', name: 'Catstep Boots' },
             ];
 
             const miscFeaturesToDisplay = [
@@ -720,10 +731,10 @@
             const attackValue = ((attributes['STR']-10)/2) + weaponProf + otherBonus + levelBonus;
 
             const baseDefense = 10;
-            const ACDefense = baseDefense+ACBonus+Math.floor((attributes['DEX']-10)/2)+Math.floor((attributes['INT']-10)/2);
-            const REFDefense = baseDefense+REFBonus+Math.floor((attributes['DEX']-10)/2);
-            const FORTDefense = baseDefense+FORTBonus+Math.floor((attributes['STR']-10)/2);
-            const WILLDefense = baseDefense+WILLBonus+Math.floor((attributes['WIS']-10)/2);
+            const ACDefense = levelBonus+baseDefense+ACBonus+Math.floor((attributes['DEX']-10)/2)+Math.floor((attributes['INT']-10)/2);
+            const REFDefense = levelBonus+baseDefense+REFBonus+Math.floor((attributes['DEX']-10)/2);
+            const FORTDefense = levelBonus+baseDefense+FORTBonus+Math.floor((attributes['STR']-10)/2);
+            const WILLDefense = levelBonus+baseDefense+WILLBonus+Math.floor((attributes['WIS']-10)/2);
 
             const attributesList = document.getElementById('attributes-list');
             const skillsList = document.getElementById('skills-list');
@@ -731,6 +742,7 @@
             const encounterPowersList = document.getElementById('encounter-powers-list');
             const dailyPowersList = document.getElementById('daily-powers-list');
             const featsList = document.getElementById('feats-list');
+            const magicItemsList = document.getElementById('magic-items-list');
             const miscFeaturesList = document.getElementById('misc-features-list');
             const clearEncounterButton = document.getElementById('clear-encounter-powers');
             const clearDailyButton = document.getElementById('clear-daily-powers');
@@ -875,7 +887,7 @@
                     const row = document.createElement('div');
                     row.className = 'row g-2 mb-2';
 
-                    for (let j = 0; j < 3 && i + j < entries.length; j++) {
+                    for (let j = 0; j < 2 && i + j < entries.length; j++) {
                         const feat = entries[i + j];
                         const col = document.createElement('div');
                         col.className = 'col';
@@ -899,6 +911,29 @@
                     }
                     featsList.appendChild(row);
                 }
+            }
+
+            function generateMagicItemList(){
+                magicItems.sort((a, b) => a.name.localeCompare(b.name));
+                magicItemsList.innerHTML = '';
+                magicItems.forEach((feature, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'tome-item p-2 shadow-sm rounded-lg mb-2 feat-item-container';
+                    const isOdd = index % 2 !== 0;
+                    item.classList.add(isOdd ? 'bg-dark-deep' : 'bg-dark-subtle');
+
+                    const magicItemName = document.createElement('span');
+                    magicItemName.className = 'misc-feature-link';
+                    magicItemName.textContent = feature.name;
+
+                    magicItemName.onclick = () => {
+                        powerDetailsContainer.classList.remove('d-none');
+                        powerIframe.src = `https://iws.mx/dnd/?view=${feature.id}`;
+                    };
+                    
+                    item.appendChild(magicItemName);
+                    magicItemsList.appendChild(item);
+                });
             }
 
             // Function to generate and render the list of miscellaneous features
@@ -970,7 +1005,7 @@
             // Calculate Passive Perception
             const perceptionSkill = skills.Perception;
             const perceptionAttribute = attributes[perceptionSkill.baseAttribute];
-            const perceptionModifier = getModifier(perceptionAttribute) + (perceptionSkill.trained ? 5 : 0) + perceptionSkill.otherBonus;
+            const perceptionModifier = levelBonus+getModifier(perceptionAttribute) + (perceptionSkill.trained ? 5 : 0) + perceptionSkill.otherBonus;
             passivePerceptionElement.textContent = perceptionModifier + 10;
 
 
@@ -993,6 +1028,7 @@
             generatePowersList(dailyPowersList, dailyPowers, true);
             generateFeatsList();
             generateMiscFeaturesList();
+            generateMagicItemList();
 
             $("#level").html(level);
             $("#current-hp").val(totalHP);
