@@ -94,7 +94,7 @@
         }
 
         /* Iframe for displaying power details */
-        .power-iframe {
+        .power-iframe, .mitem-iframe {
             border: 1px solid rgba(255, 255, 255, 0.1);
             background-color: #101010;
             width: 100%;
@@ -310,12 +310,12 @@
 
         <div class="bg-dark p-3 pb-1 shadow-sm rounded-lg mb-3" style="background:#626694 !important;">
             <div class="d-flex flex-column flex-md-row justify-content-between text-white gap-2 gap-md-0">
-                <p><strong>Race:</strong> Thri-Kreen</p>
-                <p><strong>Class:</strong> Barbarian (Berserker)</p>
+                <p><strong>Race:</strong> Dragonborn (Bozak Draconian)</p>
+                <p><strong>Class:</strong> Sorcerer (Dragon Soul)</p>
                 <p><strong>Theme:</strong> Windlord</p>
                 <p><strong>Faculty:</strong> Anathema</p>
                 <p><strong>Level:</strong> <span id="level"></span></p>
-                <p><strong>Speed:</strong> 7</p>
+                <p><strong>Speed:</strong> 6 (Fly)</p>
             </div>
         </div>
 
@@ -361,15 +361,30 @@
                                     <span class="text-lg tome-font text-white-50">Attack Roll</span>
                                     <div>
                                         <span class="fs-4 text-white fw-bold mt-2" id="attack-roll">--</span>
-                                        <span class="fs-4 text-white fw-bold mt-2">(2d4+5+1)</span>
+                                        <span class="text-white small mt-2">(MBA, Ensorc)</span>
+                                    </div>
+                                    <div>
+                                        <span class="fs-4 text-white fw-bold mt-2" id="attack-implement-roll">--</span>
+                                        <span class="text-white small mt-2">(+1 if vs ref)</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="tome-item bg-dark-deep p-2 shadow-sm rounded-lg d-flex flex-column justify-content-center align-items-center h-100">
                                     <span class="text-lg tome-font text-white-50">Defenses</span>
-                                    <span class="fs-5 text-white mt-2" id="defenses">--</span>
+                                    <span class="fs-5 text-white mt-2 text-center" id="defenses">--</span>
                                 </div>
+                            </div>
+                            <div class="col-12">
+                                <table id="bonus-dmg-table" class="table-dark table-striped table table-bordered text-center">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">Bonus Damage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bonus-dmg-table-body">
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
@@ -383,28 +398,10 @@
                             </div>
                             <iframe id="feat-details-iframe" class="power-iframe" src="" frameborder="0"></iframe>
                         </div>
-
-                        <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
-                            <h3 id="skills-section" class="tome-font h4 mb-0 text-white skill-collapsible-link" data-bs-toggle="collapse" data-bs-target="#skills-list-container" aria-expanded="false" aria-controls="skills-list-container">Skills</h3>
-                        </div>
-                        
-                        <div id="top-skills-preview"></div>
-                        <div id="skills-list-container" class="collapse">
-                            <div id="skills-list" class="row g-2"></div>
-                        </div>
                         
                         <h3 id="attributes-section" class="tome-font h4 mb-2 text-white mt-3">Attributes</h3>
                         
                         <div id="attributes-list" class="row g-2"></div>
-
-                        
-                        <div id="skill-details-container" class="d-none">
-                            <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
-                                <h3 class="tome-font h4 mb-0 text-white">Skill Details</h3>
-                                <button class="btn-close btn-close-white" onclick="document.getElementById('skill-details-container').classList.add('d-none');"></button>
-                            </div>
-                            <iframe id="skill-details-iframe" class="power-iframe" src="" frameborder="0"></iframe>
-                        </div>
                     </div>
                     
                     <div class="col-12 col-lg-6">
@@ -423,16 +420,42 @@
                         </div>
                         <div id="daily-powers-list" class="power-grid"></div>
 
-                        <hr class="mt-4"/>
-                        <h4 class="tome-font h5 mb-2 mt-2">Magic Items</span></h4>
-                        <div id="magic-items-list" class="power-grid"></div>
-
                         <div id="power-details-container" class="d-none">
                             <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
                                 <h3 class="tome-font h4 mb-0 text-white">Power Details</h3>
                                 <button class="btn-close btn-close-white" onclick="document.getElementById('power-details-container').classList.add('d-none');"></button>
                             </div>
                             <iframe id="power-details-iframe" class="power-iframe" src="" frameborder="0"></iframe>
+                        </div>
+
+                        <hr class="mt-4"/>
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                            <h3 id="skills-section" class="tome-font h4 mb-0 text-white skill-collapsible-link" data-bs-toggle="collapse" data-bs-target="#skills-list-container" aria-expanded="false" aria-controls="skills-list-container">Skills</h3>
+                        </div>
+                        <div id="top-skills-preview"></div>
+                        <div id="skills-list-container" class="collapse">
+                            <div id="skills-list" class="row g-2"></div>
+                        </div>
+
+                        <div id="skill-details-container" class="d-none">
+                            <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                                <h3 class="tome-font h4 mb-0 text-white">Skill Details</h3>
+                                <button class="btn-close btn-close-white" onclick="document.getElementById('skill-details-container').classList.add('d-none');"></button>
+                            </div>
+                            <iframe id="skill-details-iframe" class="power-iframe" src="" frameborder="0"></iframe>
+                        </div>
+
+                        <hr class="mt-4"/>
+                        <h4 class="tome-font h5 mb-2 mt-2">Magic Items</span></h4>
+                        <div id="magic-items-list" class="power-grid"></div>
+
+                        <div id="mitem-details-container" class="d-none">
+                            <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                                <h3 class="tome-font h4 mb-0 text-white">Magic Items Details</h3>
+                                <button class="btn-close btn-close-white" onclick="document.getElementById('mitem-details-container').classList.add('d-none');"></button>
+                            </div>
+                            <iframe id="mitem-details-iframe" class="mitem-iframe" src="" frameborder="0"></iframe>
                         </div>
                     </div>
                 </div>
@@ -441,7 +464,8 @@
             <div class="col-12 col-lg-4">
                 <h3 class="tome-font h4 mb-2 text-white">Character Portrait</h3>
                 <div class="tome-item bg-dark-subtle p-3 shadow-sm rounded-lg mb-3 d-flex justify-content-center portrait-container" style="height:auto;">
-                    <img src="https://suzakuchris.github.io/assets/pluma2.jpg" alt="Character Portrait" class="w-100 rounded-lg">
+                    <img src="https://suzakuchris.github.io/assets/abfd.png" alt="Character Portrait" class="w-100 rounded-lg">
+                    <!-- <img src="file:///D:/suzakuchris.github.io/assets/abfd.png" alt="Character Portrait" class="w-100 rounded-lg"> -->
                 </div>
                 
                 <h3 class="tome-font h4 mt-3 mb-2 text-white">Miscellaneous Features</h3>
@@ -622,33 +646,33 @@
             // =========================================================================
             //  EDITABLE DATA: Modify these objects to update your character sheet
             // =========================================================================
-            const level = 3;
-            const weaponProf = 2;
-            const otherBonus = 1+1;
+            const level = 4;
+            const weaponProf = 3;
+            const otherBonus = 1+1; //expertise and magic weapon
             const levelBonus = Math.floor(level/2);
-            const ACBonus = 3;
-            const REFBonus = 2;
-            const FORTBonus = 2;
-            const WILLBonus = 0;
-            const HSUsed = 2;
+            const ACBonus = 2+1+1;//veterans armor (cloth) and unarmored agility and rhythm dagger
+            const REFBonus = 1+1; //safewing amulet
+            const FORTBonus = 0+1; //safewing amulet
+            const WILLBonus = 2+1; //safewing amulet
+            const HSUsed = 0;
 
             const attributes = {
-                "STR": 20, "CON": 11, "DEX": 16, "INT": 10, "WIS": 10, "CHA": 8
+                "STR": 18, "CON": 11, "DEX": 12, "INT": 10, "WIS": 8, "CHA": 20
             };
 
             const skills = {
-                "Acrobatics": { id: 'skill1', baseAttribute: "DEX", trained: true, otherBonus: 0 },
-                "Arcana": { id: 'skill2', baseAttribute: "INT", trained: false, otherBonus: 0 },
-                "Athletics": { id: 'skill27', baseAttribute: "STR", trained: true, otherBonus: 4 },
-                "Bluff": { id: 'skill3', baseAttribute: "CHA", trained: false, otherBonus: 0 },
+                "Acrobatics": { id: 'skill1', baseAttribute: "DEX", trained: false, otherBonus: 0 },
+                "Arcana": { id: 'skill2', baseAttribute: "INT", trained: true, otherBonus: 0 },
+                "Athletics": { id: 'skill27', baseAttribute: "STR", trained: true, otherBonus: 3 },
+                "Bluff": { id: 'skill3', baseAttribute: "CHA", trained: true, otherBonus: 0 },
                 "Diplomacy": { id: 'skill6', baseAttribute: "CHA", trained: false, otherBonus: 0 },
                 "Dungeoneering": { id: 'skill7', baseAttribute: "WIS", trained: false, otherBonus: 0 },
-                "Endurance": { id: 'skill8', baseAttribute: "CON", trained: false, otherBonus: 0 },
-                "Heal": { id: 'skill9', baseAttribute: "WIS", trained: true, otherBonus: 0 },
-                "History": { id: 'skill11', baseAttribute: "INT", trained: false, otherBonus: 0 },
+                "Endurance": { id: 'skill8', baseAttribute: "CON", trained: false, otherBonus: 2 },
+                "Heal": { id: 'skill9', baseAttribute: "WIS", trained: false, otherBonus: 0 },
+                "History": { id: 'skill11', baseAttribute: "INT", trained: false, otherBonus: 2 },
                 "Insight": { id: 'skill13', baseAttribute: "WIS", trained: false, otherBonus: 0 },
-                "Intimidate": { id: 'skill14', baseAttribute: "CHA", trained: false, otherBonus: 0 },
-                "Nature": { id: 'skill16', baseAttribute: "WIS", trained: false, otherBonus: 2 },
+                "Intimidate": { id: 'skill14', baseAttribute: "CHA", trained: true, otherBonus: 2 },
+                "Nature": { id: 'skill16', baseAttribute: "WIS", trained: false, otherBonus: 0 },
                 "Perception": { id: 'skill17', baseAttribute: "WIS", trained: false, otherBonus: 2 },
                 "Religion": { id: 'skill18', baseAttribute: "INT", trained: false, otherBonus: 0 },
                 "Stealth": { id: 'skill20', baseAttribute: "DEX", trained: false, otherBonus: 0 },
@@ -657,56 +681,68 @@
             };
 
             const powersToDisplay = [
-                { id: 'power4818', name: 'Howling Strike', type: 'At-Will' },
-                { id: 'power14411', name: 'Stalk and Strike', type: 'At-Will' },
-                { id: 'power12406', name: 'Psionic Spark', type: 'At-Will' },
-                { id: 'power12408', name: 'Telekinetic Grasp', type: 'At-Will' },
-                { id: 'power12400', name: 'Body Equilibrium', type: 'At-Will' },
-                { id: 'power12660', name: 'Defender Aura', type: 'At-Will' },
-                { id: 'power15848', name: 'Vengeful Guardian', type: 'At-Will' },
+                { id: 'power13425', name: 'Ensorcelled Blade', type: 'At-Will' },
+                { id: 'power3701', name: 'Burning Spray', type: 'At-Will' },
 
-                { id: 'power4821', name: 'Avalanche Strike', type: 'Encounter' },
+                { id: 'power12577', name: 'Dragonfear', type: 'Encounter' },
+                { id: 'power3171', name: 'Tearing Claws', type: 'Encounter' },
                 { id: 'power16113', name: 'Wind Fury Assault', type: 'Encounter' },
-                { id: 'power11739', name: 'Thri-kreen Claws', type: 'Encounter' },
-                { id: 'power16547', name: 'Mantis Jump', type: 'Encounter' },
-                { id: 'power4810', name: 'Brutal Slam', type: 'Encounter' },
+                { id: 'power3718', name: 'Explosive Pyre', type: 'Encounter' },
+                { id: 'power3053', name: 'Sorcerous Sirocco', type: 'Encounter' },
 
-                { id: 'power4936', name: 'Rage Drake\'s Frenzy', type: 'Daily' }
+                { id: 'power5264', name: 'Dazzling Ray', type: 'Daily' }
             ];
 
             const featsToDisplay = [
-                { id: 'feat3672', name: 'Two-Handed Weapon Expertise' },
-                { id: 'feat3247', name: 'Wild Talent Master' },
-                { id: 'feat1261', name: 'Slow Fall' }
+                { id: 'feat2785', name: 'Versatile Expertise' },
+                { id: 'feat2626', name: 'Unarmored Agility' },
+                { id: 'implement3707', name: 'Superior Implement Training (Inc. Dagger)' },
+                { id: 'feat27', name: 'Long Jumper' }
             ];
 
             const magicItems = [
-                { id: 'weapon2965', name: 'Vanguard Weapon (+1)' },
+                { id: 'armor2986', name: 'Veterans Armor (+1)' },
                 { id: 'item842', name: 'Catstep Boots' },
+                { id: 'weapon2188', name: 'Rhythm Dagger (+1)' },
+                { id: 'weapon1306', name: 'Flaming Dagger (+1)' },
+                { id: 'weapon1689', name: 'Khyber Shard of the Fiery Depth' },
+                { id: 'item2378', name: 'Safewing Amulet (+1)' },
+                { id: 'item639', name: 'Belt of Endurance' },
+            ];
+
+            const bonusDamageReminder = [
+                { plus: 4, notes: 'Strength (Dragon Soul, Arcane only)' },
+                { plus: 2, notes: 'Incendiary Dagger (Fire only)' },
+                { plus: 1, notes: 'Kyberis Fire Shard (Fire only)' },
+                { plus: 1, notes: 'Bozak Arcane Might (Arcane only)' },
             ];
 
             const miscFeaturesToDisplay = [
-                { name: 'Thri-Kreen Traits', content: `
-                    Speed: 7 squares.
-                    Vision: Low-light
-                    Languages: Common, Thri-kreen
-                    Skill Bonuses: +2 Athletics, +2 Nature.
-                    Multiple Arms: Once per turn, you can draw or sheathe a weapon (or retrieve or stow an item stored on your person) as a free action instead of a minor action.
-                    Natural Jumper: A thri-kreen is always considered to have a running start when jumping.
-                    Thri-kreen Claws: You have the thri-kreen claws power.
-                    Torpor: Rather than sleep, thri-kreen enter a torpid state. In this state, you remain aware of your surroundings, and you require only 4 hours of torpor (rather than 6 hours of sleep) to gain the benefit of an extended rest.
+                { name: 'Dragonborn (Bozak) Traits', content: `
+                    Speed: 6 squares.
+                    Vision: Normal
+
+                    Languages: Common, Draconic
+                    Skill Bonuses: +2 History, +2 Intimidate.
+
+                    Instinctive Flight:Although your wings are neither large enough nor strong enough to sustain flight for long, your battleground mobility is still quite extraordinary.
+                    Benefits: You gain a flight speed of 6 squares (altitude limit 1). You cannot use this fly speed if you are carrying more than a normal load. You must land at the end of your turn. This benefit replaces Draconic Heritage.
+
+                    Arcane Blood:The essence of your draconic forebears surges through your veins. Born to a legacy of arcane might, you have learned to augment your spells with this gift.
+                    Benefits: You gain a +1 racial bonus to the damage rolls of your arcane attack powers. This bonus increases to +2 at 11th level and +3 at 21st level. This benefit replaces Dragonborn Fury.
                 ` },
-                { name: 'Berserker Fury', content: `
-                    When you use a barbarian primal attack power, you enter your Berserker Fury until the end of the encounter. Alternatively, you can use a minor action while you are bloodied to enter the fury. The fury has the following effects.
-                    ✦      Your defender aura ends, if it was active, and you cannot use defender aura or vengeful guardian until the fury ends.
-                    ✦      Some of your powers, such as your barbarian martial at-will attack powers, gain additional benefits, as noted in those powers.
-                    ✦      Your melee basic attacks deal 1d8 extra damage. This extra damage increases to 2d8 at 11th level and 3d8 at 21st level.
+                { name: 'Dragon Magic', content: `
+                    Draconic Power: You gain a bonus to the damage rolls of arcane powers equal to your Strength modifier (+4). The bonus increases to your Strength modifier +2 at 11th level and your Strength modifier +4 at 21st level.
+
+                    Draconic Resilience: While you are not wearing heavy armor, you can use your Strength modifier in place of your Dexterity or Intelligence modifier to determine your AC.
+
+                    Dragon Soul: Choose a damage type: (Fire). You gain resist 5 to that damage type. The resistance increases to 10 at 11th level and 15 at 21st level. Your arcane powers ignore any target's resistance to that damage type up to the value of your resistance.
                 ` },
-                { name: 'Heartland - Arid Desert', content: `
-                    While you are wearing cloth armor or no armor and not using a shield, you gain a +3 bonus to AC and a +2 bonus to Reflex.
+                { name: 'Scales of the Dragon', content: `
+                    The first time you become bloodied during an encounter, you gain a +2 bonus to AC until the end of the encounter.
                 ` },
-                { name: 'Poised Defender', content: `
-                    While your defender aura is active and you're not wearing heavy armor, you gain a +2 bonus to AC.
+                { name: 'Dragonborn Racial Power', content: `
+                    Dragonfear: You are naturally intimidating at the best of times, and when passions strike, you are positively terrifying. You gain the dragonfear racial power.
                 ` },
                 { name: 'Windlord', content: `
                     Your origin becomes elemental. For the purpose of effects that relate to creature origin, you are considered to be an elemental. Add Primordial to the languages you can read, write, and speak. You gain a +2 power bonus to Athletics checks and Perception checks.
@@ -715,7 +751,7 @@
                     Choose one feat with “Expertise” in its name or
                     the Master at Arms feat in which you can meet
                     the requirements. You gain that feat.
-                    (Two-Handed Weapon Expertise)
+                    (Versatile Expertise)
                 ` },
             ];
 
@@ -723,19 +759,20 @@
             //  END OF EDITABLE DATA
             // =========================================================================
 
-            const baseHP = 15;
-            const hitPointsPerLevel = 6;
+            const baseHP = 12;
+            const hitPointsPerLevel = 5;
             const totalHP = baseHP + ((level-1)*hitPointsPerLevel) + attributes['CON'];
-            const HSPerDay = 8 + Math.floor((attributes['CON']-10)/2);
+            const HSPerDay = 6 + Math.floor((attributes['CON']-10)/2);
             const initiative = Math.floor((attributes['DEX']-10)/2);
 
-            const attackValue = ((attributes['STR']-10)/2) + weaponProf + otherBonus + levelBonus;
+            const attackValue = ((attributes['CHA']-10)/2) + weaponProf + otherBonus + levelBonus;
+            const attackValueImplement = ((attributes['CHA']-10)/2) + otherBonus + levelBonus;
 
             const baseDefense = 10;
-            const ACDefense = levelBonus+baseDefense+ACBonus+Math.floor((attributes['DEX']-10)/2)+Math.floor((attributes['INT']-10)/2);
+            const ACDefense = levelBonus+baseDefense+ACBonus+Math.floor((attributes['STR']-10)/2)+Math.floor((attributes['DEX']-10)/2);
             const REFDefense = levelBonus+baseDefense+REFBonus+Math.floor((attributes['DEX']-10)/2);
             const FORTDefense = levelBonus+baseDefense+FORTBonus+Math.floor((attributes['STR']-10)/2);
-            const WILLDefense = levelBonus+baseDefense+WILLBonus+Math.floor((attributes['WIS']-10)/2);
+            const WILLDefense = levelBonus+baseDefense+WILLBonus+Math.floor((attributes['CHA']-10)/2);
 
             const attributesList = document.getElementById('attributes-list');
             const skillsList = document.getElementById('skills-list');
@@ -748,6 +785,7 @@
             const clearEncounterButton = document.getElementById('clear-encounter-powers');
             const clearDailyButton = document.getElementById('clear-daily-powers');
             const powerIframe = document.getElementById('power-details-iframe');
+            const mitemIframe = document.getElementById('mitem-details-iframe');
             const skillIframe = document.getElementById('skill-details-iframe');
             const featIframe = document.getElementById('feat-details-iframe');
             const passivePerceptionElement = document.getElementById('passive-perception');
@@ -758,6 +796,7 @@
             const surgeDisplay = document.getElementById('surge-value-display');
             const skillDetailsContainer = document.getElementById('skill-details-container');
             const powerDetailsContainer = document.getElementById('power-details-container');
+            const mitemDetailsContainer = document.getElementById('mitem-details-container');
             const featDetailsContainer = document.getElementById('feat-details-container');
             const miscFeatureDetailsContainer = document.getElementById('misc-feature-details-container');
             const miscFeatureContent = document.getElementById('misc-feature-content');
@@ -928,8 +967,8 @@
                     magicItemName.textContent = feature.name;
 
                     magicItemName.onclick = () => {
-                        powerDetailsContainer.classList.remove('d-none');
-                        powerIframe.src = `https://iws.mx/dnd/?view=${feature.id}`;
+                        mitemDetailsContainer.classList.remove('d-none');
+                        mitemIframe.src = `https://iws.mx/dnd/?view=${feature.id}`;
                     };
                     
                     item.appendChild(magicItemName);
@@ -959,6 +998,22 @@
                     item.appendChild(featureName);
                     miscFeaturesList.appendChild(item);
                 });
+            }
+
+            function generateBonusReminderList(){
+                var table = document.getElementById("bonus-dmg-table-body")
+
+                var row = '';
+                bonusDamageReminder.forEach((a, b) => {
+                    row += `
+                        <tr>
+                            <td>${a.plus}</td>
+                            <td>${a.notes}</td>    
+                        </tr>
+                    `;
+                });
+
+                table.setHTMLUnsafe(row);
             }
 
             // Clear powers functionality for Encounter and Daily
@@ -1030,6 +1085,7 @@
             generateFeatsList();
             generateMiscFeaturesList();
             generateMagicItemList();
+            generateBonusReminderList();
 
             $("#level").html(level);
             $("#current-hp").val(totalHP);
@@ -1041,6 +1097,7 @@
             $("#surge-slider").attr("max", HSPerDay);
             $("#surge-slider").attr("value", currentHS);
             $("#attack-roll").html("+"+attackValue);
+            $("#attack-implement-roll").html("+"+attackValueImplement);
             $("#defenses").html("AC"+ACDefense+" R"+REFDefense+" F"+FORTDefense+" W"+WILLDefense);
         });
     </script>
