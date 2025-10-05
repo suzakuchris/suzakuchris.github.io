@@ -646,34 +646,34 @@
             // =========================================================================
             //  EDITABLE DATA: Modify these objects to update your character sheet
             // =========================================================================
-            const level = 5;
+            const level = 6;
             const weaponProf = 3;
             const otherBonus = 1+1; //expertise and magic weapon
             const levelBonus = Math.floor(level/2);
-            const ACBonus = 2+1+1;//veterans armor (cloth) and unarmored agility and rhythm dagger
-            const REFBonus = 1+1; //safewing amulet
-            const FORTBonus = 0+1; //safewing amulet
-            const WILLBonus = 2+1; //safewing amulet
+            const ACBonus = 2+2+1;//veterans armor (cloth) and unarmored agility and rhythm dagger
+            const REFBonus = 1+2; //safewing amulet
+            const FORTBonus = 0+2; //safewing amulet
+            const WILLBonus = 2+2; //safewing amulet
             const HSUsed = 0;
 
             const attributes = {
-                "STR": 18, "CON": 11, "DEX": 12, "INT": 10, "WIS": 8, "CHA": 20
+                "STR": 18, "CON": 10, "DEX": 13, "INT": 10, "WIS": 8, "CHA": 20
             };
 
             const skills = {
-                "Acrobatics": { id: 'skill1', baseAttribute: "DEX", trained: false, otherBonus: 0 },
+                "Acrobatics": { id: 'skill1', baseAttribute: "DEX", trained: false, otherBonus: 5 },
                 "Arcana": { id: 'skill2', baseAttribute: "INT", trained: true, otherBonus: 0 },
-                "Athletics": { id: 'skill27', baseAttribute: "STR", trained: true, otherBonus: 1 },
-                "Bluff": { id: 'skill3', baseAttribute: "CHA", trained: true, otherBonus: 2 },
-                "Diplomacy": { id: 'skill6', baseAttribute: "CHA", trained: false, otherBonus: 4 },
+                "Athletics": { id: 'skill27', baseAttribute: "STR", trained: true, otherBonus: 1 },//Long jumper
+                "Bluff": { id: 'skill3', baseAttribute: "CHA", trained: true, otherBonus: 2 }, //regalia
+                "Diplomacy": { id: 'skill6', baseAttribute: "CHA", trained: false, otherBonus: 4 }, //regalia, circlet of authority
                 "Dungeoneering": { id: 'skill7', baseAttribute: "WIS", trained: false, otherBonus: 0 },
-                "Endurance": { id: 'skill8', baseAttribute: "CON", trained: false, otherBonus: 2 },
+                "Endurance": { id: 'skill8', baseAttribute: "CON", trained: false, otherBonus: 2 },//belt of endurance
                 "Heal": { id: 'skill9', baseAttribute: "WIS", trained: false, otherBonus: 0 },
-                "History": { id: 'skill11', baseAttribute: "INT", trained: false, otherBonus: 2 },
+                "History": { id: 'skill11', baseAttribute: "INT", trained: false, otherBonus: 2 },//dragonborn
                 "Insight": { id: 'skill13', baseAttribute: "WIS", trained: false, otherBonus: 0 },
-                "Intimidate": { id: 'skill14', baseAttribute: "CHA", trained: true, otherBonus: 6 },
+                "Intimidate": { id: 'skill14', baseAttribute: "CHA", trained: true, otherBonus: 6 },//dragonborn, regalia, circlet of authority
                 "Nature": { id: 'skill16', baseAttribute: "WIS", trained: false, otherBonus: 0 },
-                "Perception": { id: 'skill17', baseAttribute: "WIS", trained: false, otherBonus: 2 },
+                "Perception": { id: 'skill17', baseAttribute: "WIS", trained: false, otherBonus: 2 }, //investigation gear
                 "Religion": { id: 'skill18', baseAttribute: "INT", trained: false, otherBonus: 0 },
                 "Stealth": { id: 'skill20', baseAttribute: "DEX", trained: false, otherBonus: 0 },
                 "Streetwise": { id: 'skill21', baseAttribute: "CHA", trained: false, otherBonus: 0 },
@@ -686,35 +686,38 @@
 
                 { id: 'power12577', name: 'Dragonfear', type: 'Encounter' },
                 { id: 'power3171', name: 'Tearing Claws', type: 'Encounter' },
-                // { id: 'power16113', name: 'Wind Fury Assault', type: 'Encounter' },
                 { id: 'power3718', name: 'Explosive Pyre', type: 'Encounter' },
                 { id: 'power3053', name: 'Sorcerous Sirocco', type: 'Encounter' },
+                { id: 'power16131', name: 'Desert Wind Flurry of Blows', type: 'Encounter' },
 
                 { id: 'custom_power/grimoire', name: 'Grimoire\'s Shield', type: 'Daily' },
                 { id: 'power5264', name: 'Dazzling Ray', type: 'Daily' },
-                { id: 'power5849', name: 'Slaad\'s Gambit', type: 'Daily' }
+                { id: 'power5849', name: 'Slaad\'s Gambit', type: 'Daily' },
+                { id: 'power5276', name: 'Energetic Flight', type: 'Daily' }
             ];
 
             const featsToDisplay = [
                 { id: 'feat3738', name: 'White Lotus Dueling Expertise' },
                 { id: 'feat2626', name: 'Unarmored Agility' },
                 { id: 'implement3707', name: 'Superior Implement Training (Inc. Dagger)' },
-                { id: 'feat27', name: 'Long Jumper' }
+                { id: 'feat27', name: 'Long Jumper' },
+                { id: 'feat2694', name: 'Monastic Disciple [Multiclass Monk]' },
             ];
 
             const magicItems = [
-                { id: 'armor2986', name: 'Veterans Armor (+1)' },
+                { id: 'armor2986', name: 'Veterans Armor (+2)' },
                 { id: 'item842', name: 'Catstep Boots' },
                 { id: 'weapon2188', name: 'Rhythm Dagger (+1)' },
                 { id: 'weapon1306', name: 'Flaming Dagger (+1)' },
                 { id: 'weapon1689', name: 'Khyber Shard of the Fiery Depth' },
-                { id: 'item2378', name: 'Safewing Amulet (+1)' },
+                { id: 'item2378', name: 'Safewing Amulet (+2)' },
                 { id: 'item639', name: 'Belt of Endurance' },
                 { id: 'item3476', name: 'Avandra\'s Boon of Storms' },
                 { id: 'item325', name: 'Investigation gear (Camera)' },
                 { id: 'item1436', name: 'Gloves of Piercing' },
                 { id: 'item319', name: 'Regalia' },
                 { id: 'item880', name: 'Circlet of Authority' },
+                { id: 'implement2133', name: 'Rain of Hammers Ki Focus (+1)' },
             ];
 
             const bonusDamageReminder = [
@@ -751,9 +754,6 @@
                 { name: 'Dragonborn Racial Power', content: `
                     Dragonfear: You are naturally intimidating at the best of times, and when passions strike, you are positively terrifying. You gain the dragonfear racial power.
                 ` },
-                // { name: 'Windlord', content: `
-                //     Your origin becomes elemental. For the purpose of effects that relate to creature origin, you are considered to be an elemental. Add Primordial to the languages you can read, write, and speak. You gain a +2 power bonus to Athletics checks and Perception checks.
-                // ` },
                 { name: 'Anathema', content: `
                     Level 1 Anathema's Rituals Starting Feature
                     You gain Grimoire's Shield power and +2 to Perception.
