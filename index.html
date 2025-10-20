@@ -784,8 +784,8 @@
             const HSPerDay = 6 + Math.floor((attributes['CON']-10)/2);
             const initiative = Math.floor((attributes['DEX']-10)/2);
 
-            const attackValue = ((attributes['CHA']-10)/2) + weaponProf + otherBonus + levelBonus;
-            const attackValueImplement = ((attributes['CHA']-10)/2) + otherBonus + levelBonus;
+            const attackValue = Math.floor((attributes['CHA']-10)/2) + weaponProf + otherBonus + levelBonus;
+            const attackValueImplement = Math.floor((attributes['CHA']-10)/2) + otherBonus + levelBonus;
 
             const baseDefense = 10;
             const ACDefense = levelBonus+baseDefense+ACBonus+Math.floor((attributes['STR']-10)/2)+Math.floor((attributes['DEX']-10)/2);
