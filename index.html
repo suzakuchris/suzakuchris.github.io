@@ -312,7 +312,7 @@
             <div class="d-flex flex-column flex-md-row justify-content-between text-white gap-2 gap-md-0">
                 <p><strong>Race:</strong> Dragonborn (Bozak Draconian)</p>
                 <p><strong>Class:</strong> Sorcerer (Dragon Soul)</p>
-                <p><strong>Theme:</strong> Anathema's</p>
+                <p><strong>Theme:</strong> Templar</p>
                 <p><strong>Faculty:</strong> Anathema</p>
                 <p><strong>Level:</strong> <span id="level"></span></p>
                 <p><strong>Speed:</strong> 6 (Fly)</p>
@@ -365,7 +365,7 @@
                                     </div>
                                     <div>
                                         <span class="fs-4 text-white fw-bold mt-2" id="attack-implement-roll">--</span>
-                                        <span class="text-white small mt-2">(+1 if vs ref)</span>
+                                        <span class="text-white small mt-2">(+1 accurate dagger)</span>
                                     </div>
                                 </div>
                             </div>
@@ -648,30 +648,30 @@
             // =========================================================================
             const level = 8;
             const weaponProf = 3;
-            const otherBonus = 1+1; //expertise and magic weapon
+            const otherBonus = 1+2; //expertise and magic weapon
             const levelBonus = Math.floor(level/2);
             const ACBonus = 2+2+1;//veterans armor (cloth) and unarmored agility and rhythm dagger
-            const REFBonus = 1+2; //safewing amulet
+            const REFBonus = 1+2; //rhythm dagger and safewing amulet
             const FORTBonus = 0+2; //safewing amulet
             const WILLBonus = 2+2; //safewing amulet
             const HSUsed = 0;
 
             const attributes = {
-                "STR": 19, "CON": 10, "DEX": 13, "INT": 10, "WIS": 8, "CHA": 21
+                "STR": 20, "CON": 10, "DEX": 10, "INT": 12, "WIS": 10, "CHA": 20
             };
 
             const skills = {
-                "Acrobatics": { id: 'skill1', baseAttribute: "DEX", trained: false, otherBonus: 5 },
+                "Acrobatics": { id: 'skill1', baseAttribute: "DEX", trained: false, otherBonus: 0 },
                 "Arcana": { id: 'skill2', baseAttribute: "INT", trained: true, otherBonus: 0 },
-                "Athletics": { id: 'skill27', baseAttribute: "STR", trained: true, otherBonus: 1 },//Long jumper
+                "Athletics": { id: 'skill27', baseAttribute: "STR", trained: true, otherBonus: 0 },
                 "Bluff": { id: 'skill3', baseAttribute: "CHA", trained: true, otherBonus: 2 }, //regalia
-                "Diplomacy": { id: 'skill6', baseAttribute: "CHA", trained: false, otherBonus: 4 }, //regalia, circlet of authority
+                "Diplomacy": { id: 'skill6', baseAttribute: "CHA", trained: false, otherBonus: 4 }, //regalia, andropinis authority
                 "Dungeoneering": { id: 'skill7', baseAttribute: "WIS", trained: false, otherBonus: 0 },
                 "Endurance": { id: 'skill8', baseAttribute: "CON", trained: false, otherBonus: 2 },//belt of endurance
                 "Heal": { id: 'skill9', baseAttribute: "WIS", trained: false, otherBonus: 0 },
                 "History": { id: 'skill11', baseAttribute: "INT", trained: false, otherBonus: 2 },//dragonborn
-                "Insight": { id: 'skill13', baseAttribute: "WIS", trained: false, otherBonus: 0 },
-                "Intimidate": { id: 'skill14', baseAttribute: "CHA", trained: true, otherBonus: 6 },//dragonborn, regalia, circlet of authority
+                "Insight": { id: 'skill13', baseAttribute: "WIS", trained: false, otherBonus: 2 }, //crown of whispers
+                "Intimidate": { id: 'skill14', baseAttribute: "CHA", trained: true, otherBonus: 6 },//dragonborn, regalia, andropinis authority
                 "Nature": { id: 'skill16', baseAttribute: "WIS", trained: false, otherBonus: 0 },
                 "Perception": { id: 'skill17', baseAttribute: "WIS", trained: false, otherBonus: 2 }, //investigation gear
                 "Religion": { id: 'skill18', baseAttribute: "INT", trained: false, otherBonus: 0 },
@@ -682,53 +682,61 @@
 
             const powersToDisplay = [
                 { id: 'power13425', name: 'Ensorcelled Blade', type: 'At-Will' },
-                { id: 'power3701', name: 'Burning Spray', type: 'At-Will' },
+                { id: 'power3705', name: 'Dragonfrost', type: 'At-Will' },
 
                 { id: 'power12577', name: 'Dragonfear', type: 'Encounter' },
-                { id: 'power3171', name: 'Tearing Claws', type: 'Encounter' },
-                { id: 'power3718', name: 'Explosive Pyre', type: 'Encounter' },
-                { id: 'power3053', name: 'Sorcerous Sirocco', type: 'Encounter' },
-                { id: 'power3016', name: 'Spark Form', type: 'Encounter' },
-                { id: 'power16131', name: 'Desert Wind Flurry of Blows', type: 'Encounter' },
+                { id: 'power5841', name: 'Pinning Bolt', type: 'Encounter' },
+                { id: 'power12315', name: 'Templar\'s Fist', type: 'Encounter' },
+                { id: 'power16380', name: 'Baleful Glance', type: 'Encounter' },
+                { id: 'power12318', name: 'Fearsome Command', type: 'Encounter' },
+                { id: 'power12321', name: 'Fettering Glare', type: 'Encounter' },
+                { id: 'power5277', name: 'Sudden Scales', type: 'Encounter' },
 
-                { id: 'custom_power/grimoire', name: 'Grimoire\'s Shield', type: 'Daily' },
-                { id: 'power5264', name: 'Dazzling Ray', type: 'Daily' },
+                // { id: 'custom_power/grimoire', name: 'Grimoire\'s Shield', type: 'Daily' },
+                { id: 'power7426', name: 'Grounding Rebuke', type: 'Daily' },
+                { id: 'power12319', name: 'Glare of Oppression', type: 'Daily' },
                 { id: 'power5849', name: 'Slaad\'s Gambit', type: 'Daily' },
-                { id: 'power5276', name: 'Energetic Flight', type: 'Daily' }
             ];
 
             const featsToDisplay = [
                 { id: 'feat3738', name: 'White Lotus Dueling Expertise' },
                 { id: 'feat2626', name: 'Unarmored Agility' },
-                { id: 'implement3707', name: 'Superior Implement Training (Inc. Dagger)' },
-                { id: 'feat27', name: 'Long Jumper' },
-                { id: 'feat2694', name: 'Monastic Disciple [Multiclass Monk]' },
+                { id: 'implement3706', name: 'Superior Implement Training (Accurate Dagger)' },
+                { id: 'feat1398', name: 'Mark of Warding [Dragonmark]' },
+                { id: 'feat3102', name: 'Draconic Guardian' },
                 { id: 'feat3119', name: 'Aggressive Advantage' },
             ];
 
             const magicItems = [
                 { id: 'armor2986', name: 'Veterans Armor (+2)' },
                 { id: 'item842', name: 'Catstep Boots' },
-                { id: 'weapon2188', name: 'Rhythm Dagger (+1)' },
-                { id: 'weapon1306', name: 'Flaming Dagger (+1)' },
-                { id: 'weapon1689', name: 'Khyber Shard of the Fiery Depth' },
-                { id: 'item2378', name: 'Safewing Amulet (+2)' },
+                { id: 'weapon2188', name: 'Rhythm Dagger (+2)' },
+                // { id: 'weapon1306', name: 'Flaming Dagger (+1)' },
+                // { id: 'weapon1689', name: 'Khyber Shard of the Fiery Depth' },
+                { id: 'weapon2505', name: 'Siberys Shard of the Mage' },
+                // { id: 'item2378', name: 'Safewing Amulet (+2)' },
                 { id: 'item639', name: 'Belt of Endurance' },
                 { id: 'item3476', name: 'Avandra\'s Boon of Storms' },
                 { id: 'item325', name: 'Investigation gear (Camera)' },
-                { id: 'item1436', name: 'Gloves of Piercing' },
+                // { id: 'item1436', name: 'Gloves of Piercing' },
                 { id: 'item319', name: 'Regalia' },
-                { id: 'item880', name: 'Circlet of Authority' },
-                { id: 'implement2133', name: 'Rain of Hammers Ki Focus (+1)' },
+                // { id: 'item880', name: 'Circlet of Authority' },
+                // { id: 'implement2133', name: 'Rain of Hammers Ki Focus (+1)' },
                 { id: 'item2117', name: 'Quick Step Tattoo (Anathema)' },
                 { id: 'item1109', name: 'Dragon Sorcery Tattoo (Others)' },
                 { id: 'item2843', name: 'Tempest Fan' },
+                { id: 'implement2411', name: 'Scepter of Winter (+2)' },
+                { id: 'item512', name: 'Andropinis\'s Authority' },
+                { id: 'item1759', name: 'Lucky Charm (+2)' },
+                { id: 'item985', name: 'Crown of Whispers' },
+                { id: 'item2381', name: 'Salve of Power' },
             ];
 
             const bonusDamageReminder = [
-                { plus: 4, notes: 'Strength (Dragon Soul, Arcane only)' },
-                { plus: 2, notes: 'Incendiary Dagger (Fire only)' },
-                { plus: 1, notes: 'Kyberis Fire Shard (Fire only)' },
+                { plus: 5, notes: 'Strength (Dragon Soul, Arcane only)' },
+                // { plus: 2, notes: 'Incendiary Dagger (Fire only)' },
+                // { plus: 1, notes: 'Kyberis Fire Shard (Fire only)' },
+                { plus: 1, notes: 'Siberys Shard of the Mage (Implement)' },
                 { plus: 1, notes: 'Bozak Arcane Might (Arcane only)' },
             ];
 
@@ -747,7 +755,7 @@
                     Benefits: You gain a +1 racial bonus to the damage rolls of your arcane attack powers. This bonus increases to +2 at 11th level and +3 at 21st level. This benefit replaces Dragonborn Fury.
                 ` },
                 { name: 'Dragon Magic', content: `
-                    Draconic Power: You gain a bonus to the damage rolls of arcane powers equal to your Strength modifier (+4). The bonus increases to your Strength modifier +2 at 11th level and your Strength modifier +4 at 21st level.
+                    Draconic Power: You gain a bonus to the damage rolls of arcane powers equal to your Strength modifier (+5). The bonus increases to your Strength modifier +2 at 11th level and your Strength modifier +4 at 21st level.
 
                     Draconic Resilience: While you are not wearing heavy armor, you can use your Strength modifier in place of your Dexterity or Intelligence modifier to determine your AC.
 
@@ -759,12 +767,8 @@
                 { name: 'Dragonborn Racial Power', content: `
                     Dragonfear: You are naturally intimidating at the best of times, and when passions strike, you are positively terrifying. You gain the dragonfear racial power.
                 ` },
-                { name: 'Anathema', content: `
-                    Level 1 Anathema's Rituals Starting Feature
-                    You gain Grimoire's Shield power and +2 to Perception.
-
-                    Level 5 Anathema's Rituals Level 5 Feature
-                    You gain 2[W] bonus or 2d8 bonus for non-weapons to damage rolls against an enemy that triggers your Grimoire's Shield until the end of the encounter.
+                { name: 'Templar', content: `
+                    "I have been entrusted with the full power and authority of our king. Where I am, he is too. What I deem right and just, he approves. What I condemn as seditious or criminal, he also condemns. I am the law."
                 ` },
                 { name: 'Versatile Aptitude (Background)', content: `
                     Choose one feat with “Expertise” in its name or
@@ -782,7 +786,7 @@
             const hitPointsPerLevel = 5;
             const totalHP = baseHP + ((level-1)*hitPointsPerLevel) + attributes['CON'];
             const HSPerDay = 6 + Math.floor((attributes['CON']-10)/2);
-            const initiative = Math.floor((attributes['DEX']-10)/2);
+            const initiative = Math.floor((attributes['DEX']-10)/2) + levelBonus;
 
             const attackValue = Math.floor((attributes['CHA']-10)/2) + weaponProf + otherBonus + levelBonus;
             const attackValueImplement = Math.floor((attributes['CHA']-10)/2) + otherBonus + levelBonus;
