@@ -296,11 +296,11 @@
     </style>
     <style>
         .power-iframe, .mitem-iframe {
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background-color: #101010;
+            border: 4px double #4a3b32; /* Double border for old style */
+            background-color: #fdfbf7; /* Paper color instead of black screen */
             width: 100%;
             height: 300px;
-            border-radius: 0.25rem;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
         }
 
         /* Iframe Container & Close Button Styles */
@@ -308,29 +308,44 @@
             display: none; /* Hidden by default */
             margin-top: 2rem;
             position: relative;
+            background: #ffffff;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border: 1px solid #cbd5e0;
+            transform: rotate(-0.5deg);
         }
         
+        /* "Paper Tag" Close Button */
         .iframe-close-btn {
             position: absolute;
-            top: -24px;
-            right: 0;
-            background: #2d3748;
-            color: #fc8181;
-            font-family: 'Special Elite', monospace;
-            font-size: 10px;
-            padding: 2px 8px;
-            border: 1px solid #1a202c;
-            border-bottom: none;
+            top: -15px;
+            right: 10px;
+            background: #ffffff; /* Wax Seal Red */
+            color: #f7fafc;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: bold;
+            font-style: italic;
+            font-size: 14px;
+            padding: 4px 12px;
             cursor: pointer;
             z-index: 10;
             transition: all 0.2s;
-            box-shadow: 0 -2px 4px rgba(0,0,0,0.2);
-            border-radius: 4px 4px 0 0;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            transform: rotate(2deg);
         }
 
         .iframe-close-btn:hover {
-            background: #e53e3e;
-            color: white;
+            background: #f7fafc;
+            transform: rotate(0deg) scale(1.05);
+        }
+
+        .loading-text {
+            color: #4a5568;
+            font-family: 'Special Elite', monospace;
+            font-size: 10px;
+            margin-bottom: 5px;
+            border-bottom: 1px dotted #a0aec0;
+            display: inline-block;
         }
     </style>
 </head>
@@ -348,8 +363,8 @@
     <div class="mess-item paper-under">
         <div class="w-full border-b border-gray-400 mb-4 opacity-50"></div>
         <p class="font-typewriter text-[10px] text-gray-600 opacity-60">
-            [INTERCEPTED TRANSMISSION]<br>
-            Source: Unidentified<br>
+            [INTERCEPTED NOTE]<br>
+            Source: Unknown<br>
             "The magic flows differently here. It burns hotter than before."
         </p>
     </div>
@@ -364,11 +379,11 @@
 
         <!-- TABS -->
         <div style="top: 130px;" onclick="switchTab('profile')" id="tab-profile" class="side-tab active">BIO</div>
-        <div style="top: 220px;" onclick="switchTab('vitals')" id="tab-vitals" class="side-tab">STAT</div>
+        <div style="top: 220px;" onclick="switchTab('vitals')" id="tab-vitals" class="side-tab">COND</div>
         <div style="top: 310px;" onclick="switchTab('feats')" id="tab-feats" class="side-tab">FEAT</div>
-        <div style="top: 400px;" onclick="switchTab('features')" id="tab-features" class="side-tab">POW</div>
+        <div style="top: 400px;" onclick="switchTab('features')" id="tab-features" class="side-tab">TRAIT</div>
         <div style="top: 490px;" onclick="switchTab('skills')" id="tab-skills" class="side-tab">SKIL</div>
-        <div style="top: 580px;" onclick="switchTab('evidence')" id="tab-evidence" class="side-tab">ITEMS</div>
+        <div style="top: 580px;" onclick="switchTab('evidence')" id="tab-evidence" class="side-tab">ITEM</div>
 
         <!-- MAIN PAPER -->
         <div class="parchment w-full h-full px-8 pb-12">
@@ -382,8 +397,8 @@
                         <div class="w-2 h-2 bg-gray-600 rounded-full"></div>
                     </div>
                     <div>
-                        <h1 class="font-serif text-2xl font-bold text-gray-800 tracking-wide uppercase">File of Personnel</h1>
-                        <p class="text-[8px] font-typewriter tracking-widest uppercase">Scientific Computing Center</p>
+                        <h1 class="font-serif text-2xl font-bold text-gray-800 tracking-wide uppercase">Subject Dossier</h1>
+                        <p class="text-[8px] font-typewriter tracking-widest uppercase">Royal Investigation Bureau</p>
                     </div>
                 </div>
                 <div class="text-right whitespace-nowrap">
@@ -474,15 +489,15 @@
                                         Paladin/Bard
                                     </div>
                                     <div>
-                                        <span class="font-bold text-[10px] uppercase text-gray-500 block">Apparition</span>
+                                        <span class="font-bold text-[10px] uppercase text-gray-500 block">Nature</span>
                                         Horror
                                     </div>
                                     <div>
-                                        <span class="font-bold text-[10px] uppercase text-gray-500 block">Level</span>
+                                        <span class="font-bold text-[10px] uppercase text-gray-500 block">Rank</span>
                                         <span id="profile-level"></span>
                                     </div>
                                     <div>
-                                        <span class="font-bold text-[10px] uppercase text-gray-500 block">Speed</span>
+                                        <span class="font-bold text-[10px] uppercase text-gray-500 block">Pace</span>
                                         5
                                     </div>
                                 </div>
@@ -513,11 +528,12 @@
                         <!-- Card Header -->
                         <div class="flex justify-between items-end border-b border-gray-600 pb-2 mb-4">
                             <div>
-                                <h3 class="font-cinzel text-xl">Vital Statistics</h3>
-                                <p class="text-[9px] font-typewriter text-gray-500 uppercase">Field Assessment Unit 4</p>
+                                <h3 class="font-cinzel text-xl">Physician's Report</h3>
+                                <p class="text-[9px] font-typewriter text-gray-500 uppercase">Department of Biology</p>
                             </div>
                             <div class="text-right">
-                                <span class="text-green-500 text-xs font-mono animate-pulse">● STABLE</span>
+                                <!-- Replaced digital green text with stamp -->
+                                <span class="text-red-900 border border-red-900 px-1 text-xs font-typewriter opacity-80 rotate-[-5deg] block mt-1">STATUS: STABLE</span>
                             </div>
                         </div>
 
@@ -526,20 +542,20 @@
                             
                             <!-- HP Box -->
                             <div class=" p-3 border border-gray-600 relative overflow-hidden group">
-                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Health Points</span>
+                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Vitality</span>
                                 <div class="flex items-baseline gap-2">
                                     <span id="stat-hp-curr" class="font-cinzel text-3xl">38</span>
                                     <span id="stat-hp-max" class="text-gray-500 text-sm">/ 38</span>
                                 </div>
                                 <!-- HP Bar Aesthetic -->
                                 <div class="w-full h-1 bg-gray-700 mt-2">
-                                    <div class="w-full h-full bg-red-800/80"></div>
+                                    <div class="w-full h-full bg-red-900 opacity-80"></div>
                                 </div>
                             </div>
 
                             <!-- Surges Box -->
                             <div class=" p-3 border border-gray-600">
-                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Healing Surges</span>
+                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Recuperative Cap.</span>
                                 <div class="flex justify-between items-center h-full pb-2">
                                     <span class="font-cinzel text-3xl ">8/8</span>
                                     <!-- Decorative notches -->
@@ -558,19 +574,19 @@
 
                             <!-- Initiative -->
                             <div class=" p-3 border border-gray-600">
-                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Initiative</span>
+                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Reaction Speed</span>
                                 <span id="stat-init" class="font-cinzel text-2xl"></span>
                             </div>
 
                             <!-- Passive Perception -->
                             <div class=" p-3 border border-gray-600">
-                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">P. Perception</span>
+                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Observation</span>
                                 <span id="stat-pperception" class="font-cinzel text-2xl"></span>
                             </div>
 
                             <!-- Attack Roll (Full Width) -->
                             <div class="col-span-2  p-3 border border-gray-600">
-                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-2">Offensive Capabilities</span>
+                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-2">Combat Proficiency</span>
                                 <div id="dmg-bonuses-list" class="flex flex-col gap-1 text-xs font-typewriter text-gray-800">
                                     <!-- Populated by JS -->
                                 </div>
@@ -578,10 +594,10 @@
 
                             <!-- Defenses (Full Width) -->
                             <div class="col-span-2  p-3 border border-gray-600">
-                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-2">Defensive Metrics</span>
+                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-2">Resilience Factors</span>
                                 <div class="grid grid-cols-4 gap-2 text-center">
                                     <div>
-                                        <span class="text-gray-500 block">AC</span>
+                                        <span class="text-gray-500 block">ARM</span>
                                         <span id="stat-ac" class="font-cinzel text-xl"></span>
                                     </div>
                                     <div>
@@ -615,8 +631,8 @@
                         <div class="tape w-28 h-8 -top-4 left-1/2 -translate-x-1/2 rotate-[-1deg]"></div>
                         
                         <div class="text-center mb-6">
-                            <h3 class="font-typewriter text-2xl font-bold text-gray-800 border-b-2 border-gray-800 inline-block pb-1">COMPETENCY EVALUATION</h3>
-                            <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-widest">Field Agent Proficiency Assessment Form 104-B</p>
+                            <h3 class="font-typewriter text-2xl font-bold text-gray-800 border-b-2 border-gray-800 inline-block pb-1">PROFICIENCY LEDGER</h3>
+                            <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-widest">Operative Assessment Form 104-B</p>
                         </div>
 
                         <!-- Dynamic Skills Grid -->
@@ -626,7 +642,7 @@
 
                         <div class="mt-8 flex justify-between items-end">
                             <div class="text-[10px] font-typewriter text-gray-400">
-                                EVALUATOR: <span class="font-handwriting text-lg text-blue-900">Dr. Arkwright</span>
+                                EXAMINER: <span class="font-handwriting text-lg text-blue-900">Dr. Arkwright</span>
                             </div>
                             <div class="w-16 h-16 rounded-full border-4 border-blue-900 flex items-center justify-center opacity-40 transform rotate-[-12deg]">
                                 <span class="text-blue-900 font-bold text-xs text-center leading-none">CLEARED<br>FOR<br>DUTY</span>
@@ -636,8 +652,8 @@
                     
                     <!-- Shared Iframe for Skills -->
                     <div class="iframe-container" id="wrap-skills">
-                        <button class="iframe-close-btn" onclick="closeAllIframes()">[X] CLOSE TRANSMISSION</button>
-                        <p class="text-[10px] text-gray-500 font-typewriter mb-1">> ACCESSING DATABASE...</p>
+                        <button class="iframe-close-btn" onclick="closeAllIframes()"><img src="assets/lys.webp" style="max-width:30px;"></button>
+                        <p class="loading-text">> Retrieving Record...</p>
                         <iframe id="iframe-skills" class="power-iframe" src="about:blank" frameborder="0"></iframe>
                     </div>
                 </div>
@@ -651,11 +667,11 @@
                             
                             <div class="flex justify-between items-start border-b-2 border-gray-800 pb-2 mb-6">
                                 <div>
-                                    <h3 class="font-typewriter font-bold text-2xl text-gray-900">GENERAL TACTICS</h3>
-                                    <p class="text-[9px] font-sans text-gray-500 uppercase">Authorization Code: OMEGA-7</p>
+                                    <h3 class="font-typewriter font-bold text-2xl text-gray-900">COMBAT MANEUVERS</h3>
+                                    <p class="text-[9px] font-sans text-gray-500 uppercase">File Reference: OMEGA-7</p>
                                 </div>
                                 <div class="border-2 border-red-800 px-2 py-1 transform rotate-[-5deg]">
-                                    <span class="font-typewriter text-red-800 font-bold text-xs">LETHAL FORCE<br>AUTHORIZED</span>
+                                    <span class="font-typewriter text-red-800 font-bold text-xs">CLASSIFIED<br>INFORMATION</span>
                                 </div>
                             </div>
 
@@ -663,7 +679,7 @@
                                 
                                 <!-- AT-WILL -->
                                 <div class="col-span-1 md:col-span-2">
-                                    <h4 class="font-cinzel text-lg text-gray-800 border-b border-gray-400 mb-2">Standard Engagement (At-Will)</h4>
+                                    <h4 class="font-cinzel text-lg text-gray-800 border-b border-gray-400 mb-2">Standard Engagement</h4>
                                     <div id="powers-atwill" class="grid grid-cols-2 gap-4">
                                         <!-- Populated by JS -->
                                     </div>
@@ -671,7 +687,7 @@
 
                                 <!-- ENCOUNTER -->
                                 <div>
-                                    <h4 class="font-cinzel text-lg text-gray-800 border-b border-gray-400 mb-2">Tactical Options (Encounter)</h4>
+                                    <h4 class="font-cinzel text-lg text-gray-800 border-b border-gray-400 mb-2">Tactical Options</h4>
                                     <ul id="powers-encounter" class="space-y-2 font-typewriter text-sm text-gray-700">
                                         <!-- Populated by JS -->
                                     </ul>
@@ -679,7 +695,7 @@
 
                                 <!-- DAILY -->
                                 <div>
-                                    <h4 class="font-cinzel text-lg text-gray-800 border-b border-gray-400 mb-2">Restricted (Daily)</h4>
+                                    <h4 class="font-cinzel text-lg text-gray-800 border-b border-gray-400 mb-2">Restricted</h4>
                                     <ul id="powers-daily" class="space-y-2 font-typewriter text-sm text-gray-700">
                                         <!-- Populated by JS -->
                                     </ul>
@@ -692,7 +708,7 @@
                             <div class="border border-[#5d4037] p-4">
                                 <div class="tape w-20 h-6 -top-5 left-10 rotate-[-2deg]"></div>
                                 <div class="border-b border-[#5d4037] mb-3 pb-1 flex justify-between items-end">
-                                    <h3 class="font-typewriter font-bold text-lg text-[#3e2723] tracking-widest">EXHIBITED TRAITS (FEATS)</h3>
+                                    <h3 class="font-typewriter font-bold text-lg text-[#3e2723] tracking-widest">OBSERVED TRAITS</h3>
                                     <span class="text-[9px] font-serif italic text-[#5d4037]">Section 3-A</span>
                                 </div>
                                 <div id="feats-list" class="space-y-1">
@@ -703,8 +719,8 @@
 
                         <!-- Shared Iframe for Feats -->
                         <div class="iframe-container" id="wrap-feats">
-                             <button class="iframe-close-btn" onclick="closeAllIframes()">[X] CLOSE TRANSMISSION</button>
-                             <p class="text-[10px] text-gray-500 font-typewriter mb-1">> ACCESSING DATABASE...</p>
+                             <button class="iframe-close-btn" onclick="closeAllIframes()"><img src="assets/lys.webp" style="max-width:30px;"></button>
+                             <p class="loading-text">> Retrieving Record...</p>
                             <iframe id="iframe-feats" class="power-iframe" src="about:blank" frameborder="0"></iframe>
                         </div>
                     </div>
@@ -730,7 +746,7 @@
                     <div class="grid grid-cols-1 gap-6">
                         <!-- Header -->
                         <div class="bg-gray-800 text-gray-200 p-2 font-typewriter text-center border border-gray-600">
-                            INVENTORY MANIFEST
+                            CONFISCATED EFFECTS / GEAR
                         </div>
 
                         <div id="items-list" class="space-y-4">
@@ -739,8 +755,8 @@
 
                         <!-- Shared Iframe for Items -->
                         <div class="iframe-container" id="wrap-evidence">
-                             <button class="iframe-close-btn" onclick="closeAllIframes()">[X] CLOSE TRANSMISSION</button>
-                             <p class="text-[10px] text-gray-500 font-typewriter mb-1">> ACCESSING DATABASE...</p>
+                             <button class="iframe-close-btn" onclick="closeAllIframes()"><img src="assets/lys.webp" style="max-width:30px;"></button>
+                             <p class="loading-text">> Retrieving Record...</p>
                             <iframe id="iframe-evidence" class="power-iframe" src="about:blank" frameborder="0"></iframe>
                         </div>
                     </div>
