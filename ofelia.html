@@ -366,8 +366,8 @@
                     <div class="block md:flex md:flex-col md:flex-row gap-6 mb-8 relative">
                         <!-- Photo (Clipped & Taped) -->
                         <div class="block md:flex w-full shrink-0 transform -rotate-2">
-                            <div>
-                                <div class="bg-white p-2 m-2 shadow-md border border-gray-300">
+                            <div class="flex justify-center">
+                                <div style="max-width:50vw;" class="bg-white p-2 m-2 shadow-md border border-gray-300">
                                     <img src="assets/Ofelia-old.png" alt="Suspect" class="w-full grayscale contrast-125 brightness-90">
                                 </div>
                                 <div class="tape w-20 h-8 -top-3 left-12"></div>
@@ -387,23 +387,23 @@
                                         <!-- Stat Item -->
                                         <div class="flex flex-col items-center">
                                             <span class="font-serif italic font-bold text-[#6d4c41] text-[10px]">Str</span>
-                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">20</span>
+                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">10</span>
                                         </div>
                                         <div class="flex flex-col items-center">
                                             <span class="font-serif italic font-bold text-[#6d4c41] text-[10px]">Dex</span>
-                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">20</span>
+                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">8</span>
                                         </div>
                                         <div class="flex flex-col items-center">
                                             <span class="font-serif italic font-bold text-[#6d4c41] text-[10px]">Con</span>
-                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">20</span>
+                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">10</span>
                                         </div>
                                         <div class="flex flex-col items-center">
                                             <span class="font-serif italic font-bold text-[#6d4c41] text-[10px]">Int</span>
-                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">20</span>
+                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">18</span>
                                         </div>
                                         <div class="flex flex-col items-center">
                                             <span class="font-serif italic font-bold text-[#6d4c41] text-[10px]">Wis</span>
-                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">20</span>
+                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">10</span>
                                         </div>
                                         <div class="flex flex-col items-center">
                                             <span class="font-serif italic font-bold text-[#6d4c41] text-[10px]">Cha</span>
@@ -493,8 +493,8 @@
                             <div class=" p-3 border border-gray-600 relative overflow-hidden group">
                                 <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Health Points</span>
                                 <div class="flex items-baseline gap-2">
-                                    <span class="font-cinzel text-3xl ">62</span>
-                                    <span class="text-gray-500 text-sm">/ 62</span>
+                                    <span class="font-cinzel text-3xl ">38</span>
+                                    <span class="text-gray-500 text-sm">/ 38</span>
                                 </div>
                                 <!-- HP Bar Aesthetic -->
                                 <div class="w-full h-1 bg-gray-700 mt-2">
@@ -506,9 +506,11 @@
                             <div class=" p-3 border border-gray-600">
                                 <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Healing Surges</span>
                                 <div class="flex justify-between items-center h-full pb-2">
-                                    <span class="font-cinzel text-3xl ">6/6</span>
+                                    <span class="font-cinzel text-3xl ">8/8</span>
                                     <!-- Decorative notches -->
                                     <div class="flex gap-1">
+                                        <div class="w-2 h-4 bg-gray-400"></div>
+                                        <div class="w-2 h-4 bg-gray-400"></div>
                                         <div class="w-2 h-4 bg-gray-400"></div>
                                         <div class="w-2 h-4 bg-gray-400"></div>
                                         <div class="w-2 h-4 bg-gray-400"></div>
@@ -522,25 +524,21 @@
                             <!-- Initiative -->
                             <div class=" p-3 border border-gray-600">
                                 <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Initiative</span>
-                                <span class="font-cinzel text-2xl ">+4</span>
+                                <span class="font-cinzel text-2xl ">+5</span>
                             </div>
 
                             <!-- Passive Perception -->
                             <div class=" p-3 border border-gray-600">
                                 <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">P. Perception</span>
-                                <span class="font-cinzel text-2xl ">16</span>
+                                <span class="font-cinzel text-2xl ">12</span>
                             </div>
 
                             <!-- Attack Roll (Full Width) -->
                             <div class="col-span-2  p-3 border border-gray-600">
                                 <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-2">Offensive Capabilities</span>
                                 <div class="flex justify-between items-center border-b border-gray-700 pb-1 mb-1">
-                                    <span class="text-sm font-serif ">Melee Basic (Ensorc)</span>
-                                    <span class="font-cinzel text-xl">+15</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm font-serif ">Accurate Dagger (+1)</span>
-                                    <span class="font-cinzel text-xl ">+12</span>
+                                    <span class="text-sm font-serif ">Melee Basic (Ardent Strike)</span>
+                                    <span class="font-cinzel text-xl">+11</span>
                                 </div>
                             </div>
 
@@ -550,19 +548,19 @@
                                 <div class="grid grid-cols-4 gap-2 text-center">
                                     <div>
                                         <span class="text-gray-500 block">AC</span>
-                                        <span class="font-cinzel text-xl ">24</span>
+                                        <span class="font-cinzel text-xl ">22</span>
                                     </div>
                                     <div>
                                         <span class="text-gray-500 block">FORT</span>
-                                        <span class="font-cinzel text-xl ">21</span>
+                                        <span class="font-cinzel text-xl ">13</span>
                                     </div>
                                     <div>
                                         <span class="text-gray-500 block">REF</span>
-                                        <span class="font-cinzel text-xl ">17</span>
+                                        <span class="font-cinzel text-xl ">19</span>
                                     </div>
                                     <div>
                                         <span class="text-gray-500 block">WILL</span>
-                                        <span class="font-cinzel text-xl ">23</span>
+                                        <span class="font-cinzel text-xl ">17</span>
                                     </div>
                                 </div>
                             </div>
@@ -589,25 +587,25 @@
 
                         <div class="grid grid-cols-2 gap-x-8 gap-y-1">
                             <!-- Left Column -->
-                            <div class="skill-row skill-highlight"><span>Intimidate</span><strong>+20</strong></div>
-                            <div class="skill-row skill-highlight"><span>Bluff</span><strong>+16</strong></div>
-                            <div class="skill-row"><span>Diplomacy</span><strong>+13</strong></div>
-                            <div class="skill-row"><span>History</span><strong>+7</strong></div>
-                            <div class="skill-row"><span>Perception</span><strong>+6</strong></div>
-                            <div class="skill-row"><span>Dungeoneering</span><strong>+4</strong></div>
-                            <div class="skill-row"><span>Stealth</span><strong>+4</strong></div>
-                            <div class="skill-row"><span>Religion</span><strong>+5</strong></div>
-                            <div class="skill-row"><span>Nature</span><strong>+4</strong></div>
+                            <div class="skill-row skill-highlight"><span>Intimidate</span><strong>+11</strong></div>
+                            <div class="skill-row skill-highlight"><span>Bluff</span><strong>+11</strong></div>
+                            <div class="skill-row skill-highlight"><span>Diplomacy</span><strong>+11</strong></div>
+                            <div class="skill-row skill-hightlight"><span>History</span><strong>+10</strong></div>
+                            <div class="skill-row"><span>Perception</span><strong>+2</strong></div>
+                            <div class="skill-row"><span>Dungeoneering</span><strong>+2</strong></div>
+                            <div class="skill-row"><span>Stealth</span><strong>+1</strong></div>
+                            <div class="skill-row"><span>Religion</span><strong>+6</strong></div>
+                            <div class="skill-row"><span>Nature</span><strong>+6</strong></div>
 
                             <!-- Right Column -->
-                            <div class="skill-row skill-highlight"><span>Athletics</span><strong>+14</strong></div>
-                            <div class="skill-row"><span>Arcana</span><strong>+10</strong></div>
-                            <div class="skill-row"><span>Streetwise</span><strong>+9</strong></div>
-                            <div class="skill-row"><span>Endurance</span><strong>+6</strong></div>
-                            <div class="skill-row"><span>Insight</span><strong>+6</strong></div>
-                            <div class="skill-row"><span>Acrobatics</span><strong>+4</strong></div>
-                            <div class="skill-row"><span>Heal</span><strong>+4</strong></div>
-                            <div class="skill-row"><span>Thievery</span><strong>+4</strong></div>
+                            <div class="skill-row"><span>Athletics</span><strong>+2</strong></div>
+                            <div class="skill-row"><span>Arcana</span><strong>+6</strong></div>
+                            <div class="skill-row skill-highlight"><span>Streetwise</span><strong>+11</strong></div>
+                            <div class="skill-row"><span>Endurance</span><strong>+2</strong></div>
+                            <div class="skill-row"><span>Insight</span><strong>+2</strong></div>
+                            <div class="skill-row"><span>Acrobatics</span><strong>+1</strong></div>
+                            <div class="skill-row"><span>Heal</span><strong>+2</strong></div>
+                            <div class="skill-row"><span>Thievery</span><strong>+1</strong></div>
                         </div>
 
                         <div class="space-y-1 mt-3">
@@ -654,15 +652,20 @@
                             <div class="p-3">
                                 <h3 class="font-serif font-bold text-xl text-gray-800 border-b border-gray-400 mb-3">INHERENT TRAITS</h3>
                                 <ul class="list-disc pl-5 font-serif text-sm text-gray-800 space-y-2">
-                                    <li><span class="font-bold">Dragon Magic:</span> Innate sorcerous capability.</li>
-                                    <li><span class="font-bold">Dragonborn (Bozak) Traits:</span> Ancestral lineage verified.</li>
-                                    <li><span class="font-bold">Scales of the Dragon:</span> Natural armor enhancement.</li>
-                                    <li><span class="font-bold">Templar:</span> Organization affiliation confirmed.</li>
-                                    <li><span class="font-bold">Versatile Aptitude:</span> Background anomaly.</li>
+                                    <li><span class="font-bold">Dark Paladin:</span> Knight of The Depth.</li>
+                                    <li><span class="font-bold">Genasi Traits:</span> Affinity of Water.</li>
+                                    <li><span class="font-bold">Skald's Aura:</span> Dirge of The Dead.</li>
+                                    <li><span class="font-bold">Skill Versatility:</span> Waves or Gentle Seas.</li>
+                                    <li><span class="font-bold">Devout Protector:</span> Shield.</li>
                                 </ul>
                                 <div class="mt-4 bg-gray-200 p-2 text-xs font-typewriter text-gray-600 border-l-2 border-gray-500">
-                                    <span class="font-bold block mb-1">NOTE: DRACONIC POWER</span>
-                                    Gain bonus to damage rolls of arcane powers equal to Strength modifier (+5). Resistance to Fire damage (5).
+                                    <span class="font-bold block mb-1">NOTE: DARK PALADIN</span>
+                                    <div>
+                                        - Whenever you make a weapon attack against an enemy granting combat advantage to you using a paladin power or paladin paragon path power, that enemy takes extra damage equal to your Charisma modifier (5).
+                                    </div>
+                                    <div>
+                                        - You can select the dread smite power whenever you have the opportunity to gain or replace a class encounter attack power that has a level. If you already have dread smite, you gain an additional use of the power if you select it again.
+                                    </div>
                                 </div>
                             </div>
                         </div>
