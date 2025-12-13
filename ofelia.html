@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case File #8921-B: The Clockwork Phantom</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Cedarville+Cursive&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Background: Dark Noir Slate (Cool Tone) --- */
+        body {
+            background-color: #0b0c10; /* Deep blue-black */
+            background-image: url("assets/unnamed.jpg");
+            font-family: 'Cormorant Garamond', serif;
+            color: #1a1a1a;
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* --- Layering System --- */
+        .desk-layer {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            justify-content: center;
+            padding: 40px 0; 
+        }
+
+        /* Background Clutter (Cooler Tones) */
+        .mess-item {
+            position: absolute;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .folder-under {
+            background-color: #4a5568; /* Slate Blue Folder */
+            width: 90%;
+            height: 95%;
+            top: 10px;
+            left: 10px;
+            transform: rotate(-3deg);
+            z-index: 1;
+            border-radius: 4px;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+        }
+        
+        .paper-under {
+            background-color: #c5c6c7; /* Cool Grey Paper */
+            background: url("assets/newspaper.jpg");
+            width: 80%;
+            height: 85%;
+            top: 40px;
+            right: -20px;
+            transform: rotate(2deg);
+            z-index: 2;
+            padding: 20px;
+        }
+
+        /* --- Main Clipboard (Rusted Steel Look) --- */
+        .clipboard-board {
+            background-color: #1a1a1a;
+            background-image: linear-gradient(to bottom right, #2d3748, #1a202c);
+            box-shadow: 
+                0 60px 100px -10px rgba(0,0,0,0.95),
+                0 0 0 1px #4a5568;
+            border-radius: 4px;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 800px;
+            transform: rotate(1deg);
+        }
+
+        /* --- Rusted Metal Clip --- */
+        .metal-clip {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 60px;
+            background: linear-gradient(180deg, #583e3e 0%, #3e2723 100%); /* Rusted hue */
+            border-radius: 4px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #3e2723;
+        }
+        .metal-clip::before { /* Rust texture */
+            content: '';
+            position: absolute;
+            top:0; left:0; width:100%; height:100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.3'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
+        }
+
+        /* --- Archival Paper (Cool Grey/Silver) --- */
+        .parchment {
+            background-color: #e2e8f0; /* Cool Grey */
+            background-image: 
+                url("assets/paper.jpg");
+            box-shadow: 
+                inset 0 0 60px rgba(0,0,0,0.2),
+                0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            padding-top: 80px;
+            min-height: 950px;
+            overflow: hidden; 
+        }
+        /* Paper texture overlay */
+        .parchment::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='rough'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.05' numOctaves='2' result='noise'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='noise' scale='10'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23rough)' opacity='0.1'/%3E%3C/svg%3E");
+            opacity: 0.4;
+            pointer-events: none;
+            mix-blend-mode: multiply;
+            z-index: 5;
+        }
+
+        /* --- Clutter Elements --- */
+        
+        /* Scotch Tape (Frosty) */
+        .tape {
+            background-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            backdrop-filter: blur(2px); /* Frosty look */
+            position: absolute;
+            z-index: 20;
+            opacity: 0.8;
+            transform: rotate(-1deg);
+        }
+        .tape::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; top: 0; bottom: 0;
+            background: repeating-linear-gradient(90deg, rgba(255,255,255,0.2) 0, rgba(255,255,255,0.2) 1px, transparent 1px, transparent 4px);
+            opacity: 0.3;
+        }
+
+        /* Scrap Notes */
+        .scrap-note {
+            background-color: #f7fafc; /* Very light cool grey */
+            box-shadow: 1px 3px 6px rgba(0,0,0,0.2);
+            padding: 15px;
+            position: relative;
+            transform: rotate(-1deg);
+            border: 1px solid #cbd5e0;
+            margin-bottom: 20px;
+            z-index: 25;
+        }
+
+        /* Header Bar (Laplace Style) */
+        .header-bar {
+            border-top: 3px solid #2d3748;
+            border-bottom: 1px solid #2d3748;
+            padding: 5px 0;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- Lighting Overlay (Cool Moon/Lab Light) --- */
+        .lighting-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            /* Cool, sharp diagonal light */
+            background: linear-gradient(125deg, 
+                rgba(0,0,0,0.85) 0%, 
+                rgba(0,0,0,0.7) 5%, 
+                rgba(226, 232, 240, 0.15) 30%, /* The Beam */
+                rgba(226, 232, 240, 0.05) 80%, 
+                rgba(0,0,0,0.6) 95%, 
+                rgba(0,0,0,0.9) 100%
+            );
+            pointer-events: none;
+            z-index: 50;
+            mix-blend-mode: hard-light;
+        }
+
+        /* --- Tabs (Tactical) --- */
+        .side-tab {
+            position: absolute;
+            right: -32px;
+            width: 35px;
+            height: 80px;
+            background: #2d3748;
+            border-radius: 0 4px 4px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-family: 'Special Elite', monospace;
+            font-size: 10px;
+            cursor: pointer;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            border: 1px solid #1a202c;
+            z-index: 5;
+            transition: all 0.2s;
+            color: #a0aec0;
+            letter-spacing: 1px;
+        }
+        .side-tab.active {
+            background: #e2e8f0;
+            color: #1a202c;
+            width: 40px;
+            font-weight: bold;
+        }
+
+        /* Typography */
+        .font-code { font-family: 'Libre Barcode 39 Text', cursive; font-size: 24px; }
+        .font-typewriter { font-family: 'Special Elite', monospace; color: #2d3748; }
+        .font-serif { font-family: 'Cormorant Garamond', serif; }
+
+        /* Animations */
+        .file-content { display: none; animation: fadeIn 0.4s ease-out; }
+        .file-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Grunge Stamp Effect */
+        .stamp-text {
+            color: #8b0000;
+            font-family: 'Special Elite', cursive;
+            border: 3px double #8b0000;
+            display: inline-block;
+            padding: 2px 8px;
+            transform: rotate(-5deg);
+            opacity: 0.8;
+            mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E");
+        }
+        
+        /* Typewriter List Items */
+        .typewriter-item {
+            border-bottom: 1px dotted #8d6e63;
+            padding: 4px 0;
+            margin-bottom: 4px;
+            font-family: 'Special Elite', monospace;
+            font-size: 11px;
+            color: #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+        }
+        .typewriter-item:last-child { border-bottom: none; }
+
+        /* Skill Row */
+        .skill-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #cbd5e0;
+            padding: 2px 0;
+            font-family: 'Special Elite', monospace;
+            font-size: 11px;
+            color: #2d3748;
+        }
+        .skill-row strong { color: #1a202c; }
+        .skill-highlight {
+            background-color: rgba(236, 201, 75, 0.15); /* Yellow Tint */
+            border-left: 2px solid #d69e2e;
+            padding-left: 4px;
+        }
+
+        /* Power Checkbox */
+        .power-check {
+            width: 12px;
+            height: 12px;
+            border: 1px solid #5d4037;
+            display: inline-block;
+            margin-right: 8px;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+        }
+        .power-check:hover { background: rgba(0,0,0,0.1); }
+    </style>
+    <style>
+        .power-iframe, .mitem-iframe {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: #101010;
+            width: 100%;
+            height: 300px;
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="desk-layer">
+
+    <!-- CLUTTER LAYER (Behind) -->
+    <!-- 1. Slate Blue Folder -->
+    <div class="mess-item folder-under flex flex-col justify-end p-4">
+        <span class="font-typewriter text-lg text-white opacity-40 rotate-180 mb-4 ml-4">CONFIDENTIAL ARCHIVE</span>
+    </div>
+    
+    <!-- 2. Light Grey Paper -->
+    <div class="mess-item paper-under">
+        <div class="w-full border-b border-gray-400 mb-4 opacity-50"></div>
+        <p class="font-typewriter text-[10px] text-gray-600 opacity-60">
+            [INTERCEPTED TRANSMISSION]<br>
+            Source: Unidentified<br>
+            "The gears are turning backward. The storm is approaching earlier than calculated."
+        </p>
+    </div>
+
+    <!-- MAIN BOARD (The Focus) -->
+    <main class="clipboard-board">
+        
+        <!-- Rusted Metal Clip -->
+        <div class="metal-clip">
+            <div class="w-24 h-px bg-white opacity-20"></div>
+        </div>
+
+        <!-- TABS -->
+        <div style="top: 130px;" onclick="switchTab('profile')" id="tab-profile" class="side-tab active">BIO</div>
+        <div style="top: 220px;" onclick="switchTab('vitals')" id="tab-vitals" class="side-tab">STAT</div>
+        <div style="top: 310px;" onclick="switchTab('feats')" id="tab-feats" class="side-tab">FEAT</div>
+        <div style="top: 400px;" onclick="switchTab('powers')" id="tab-powers" class="side-tab">POW</div>
+        <div style="top: 490px;" onclick="switchTab('skills')" id="tab-skills" class="side-tab">SKIL</div>
+        <div style="top: 580px;" onclick="switchTab('map')" id="tab-map" class="side-tab">LOC</div>
+        <div style="top: 670px;" onclick="switchTab('evidence')" id="tab-evidence" class="side-tab">DAT</div>
+
+        <!-- MAIN PAPER -->
+        <div class="parchment w-full h-full px-8 pb-12">
+            
+            <div class="lighting-overlay"></div>
+
+            <!-- HEADER BAR (Scientific/Laplace Style) -->
+            <div class="header-bar relative z-20">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 border border-gray-600 flex items-center justify-center rounded-full">
+                        <div class="w-2 h-2 bg-gray-600 rounded-full"></div>
+                    </div>
+                    <div>
+                        <h1 class="font-serif text-2xl font-bold text-gray-800 tracking-wide uppercase">File of Personnel</h1>
+                        <p class="text-[8px] font-typewriter tracking-widest uppercase">Scientific Computing Center</p>
+                    </div>
+                </div>
+                <div class="text-right whitespace-nowrap">
+                    <p class="font-code">8921-B</p>
+                    <p class="text-[9px] font-typewriter">CLR. LEVEL 5</p>
+                </div>
+            </div>
+
+            <!-- CONTENT AREA -->
+            <div class="relative z-20">
+
+                <!-- === PROFILE TAB === -->
+                <div id="content-profile" class="file-content active">
+                    
+                    <div class="flex flex-col md:flex-row gap-6 mb-8 relative">
+                        <!-- Photo (Clipped & Taped) -->
+                        <div class="flex w-full shrink-0 transform -rotate-2">
+                            <div>
+                                <div class="bg-white p-2 m-2 shadow-md border border-gray-300">
+                                    <img src="assets/Ofelia-old.png" alt="Suspect" class="w-full grayscale contrast-125 brightness-90">
+                                </div>
+                                <div class="tape w-20 h-8 -top-3 left-12"></div>
+                            </div>
+                            
+                            <!-- Stat Block (Game Style) -->
+                            <div style="background:#4e4a42;" class="w-full ml-4 mt-4 bg-gray-800 text-gray-200 p-2 grid-cols-3 gap-4 text-xs font-typewriter shadow-lg transform rotate-1">
+                                <div class="w-full ml-4 mt-4 bg-[#e8e0c5] shadow-[3px_3px_5px_rgba(0,0,0,0.2)] transform rotate-1 relative p-2">
+                                    <!-- Inner dashed border -->
+                                    <div class="border-2 border-dashed border-[#5d4037] p-2 h-full flex flex-col justify-between">
+                                    <!-- Header -->
+                                    <div class="text-center border-b-2 border-[#5d4037] pb-1 mb-2 relative">
+                                        <span class="font-typewriter font-bold text-[#3e2723] text-xs tracking-[0.2em]">ATTRIBUTES</span>
+                                    </div>
+                                    <!-- Stats Grid -->
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <!-- Stat Item -->
+                                        <div class="flex flex-col items-center">
+                                            <span class="font-serif italic font-bold text-[#6d4c41] text-[10px]">Str</span>
+                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">20</span>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <span class="font-serif italic font-bold text-[#6d4c41] text-[10px]">Dex</span>
+                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">20</span>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <span class="font-serif italic font-bold text-[#6d4c41] text-[10px]">Con</span>
+                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">20</span>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <span class="font-serif italic font-bold text-[#6d4c41] text-[10px]">Int</span>
+                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">20</span>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <span class="font-serif italic font-bold text-[#6d4c41] text-[10px]">Wis</span>
+                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">20</span>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <span class="font-serif italic font-bold text-[#6d4c41] text-[10px]">Cha</span>
+                                            <span class="font-typewriter text-xl font-bold text-[#1a1a1a] border-b border-[#a1887f] w-full text-center leading-none pb-1">20</span>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <!-- Tape -->
+                                    <div class="tape w-12 h-8 -top-4 left-1/2 -translate-x-1/2 rotate-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <!-- Main Info Block -->
+                        <div class="flex-1 space-y-4">
+                            <!-- Info Card -->
+                            <div class="bg-white/60 p-4 border-l-4 border-gray-700 shadow-sm relative">
+                                <h2 class="font-serif text-3xl font-bold text-gray-900 mb-1">Ofelia von Moltke</h2>
+                                <p class="font-typewriter text-xs text-gray-500 uppercase tracking-widest mb-4">Alias: The Drowned Knight</p>
+                                
+                                <div class="grid grid-cols-3 gap-4 text-sm font-serif text-gray-800">
+                                    <div>
+                                        <span class="font-bold text-[10px] uppercase text-gray-500 block">Origin</span>
+                                        Prussia
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-[10px] uppercase text-gray-500 block">Race</span>
+                                        Genasi
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-[10px] uppercase text-gray-500 block">Class</span>
+                                        Paladin/Bard
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-[10px] uppercase text-gray-500 block">Apparition</span>
+                                        Horror
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-[10px] uppercase text-gray-500 block">Level</span>
+                                        2
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-[10px] uppercase text-gray-500 block">Speed</span>
+                                        5
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Note (Scrap) -->
+                            <div class="scrap-note transform rotate-1">
+                                <div class="tape w-8 h-10 -right-2 top-4 rotate-90"></div>
+                                <p class="font-serif italic text-lg leading-relaxed text-gray-800">
+                                    "She is cold to the touch. Her eyes seems dead with her hair as white as a snow. Her skin is pale, much like the winter of prussia."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Stamp -->
+                    <div class="absolute z-100 bottom-0 right-10 transform rotate-[-8deg] opacity-70 border-4 border-red-800 p-2 m-4 text-red-800 font-bold font-typewriter text-xl mask-image-grunge">
+                        DANGEROUS
+                    </div>
+
+                </div>
+
+                <div id="content-vitals" class="file-content">
+                    
+                    <!-- Tactical Assessment Card -->
+                    <div class="tactical-card grid-bg w-full max-w-lg mx-auto mt-4 mb-8">
+                        
+                        <!-- Card Header -->
+                        <div class="flex justify-between items-end border-b border-gray-600 pb-2 mb-4">
+                            <div>
+                                <h3 class="font-cinzel text-xl">Vital Statistics</h3>
+                                <p class="text-[9px] font-typewriter text-gray-500 uppercase">Field Assessment Unit 4</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-green-500 text-xs font-mono animate-pulse">● STABLE</span>
+                            </div>
+                        </div>
+
+                        <!-- Grid Layout -->
+                        <div class="grid grid-cols-2 gap-4">
+                            
+                            <!-- HP Box -->
+                            <div class=" p-3 border border-gray-600 relative overflow-hidden group">
+                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Health Points</span>
+                                <div class="flex items-baseline gap-2">
+                                    <span class="font-cinzel text-3xl ">62</span>
+                                    <span class="text-gray-500 text-sm">/ 62</span>
+                                </div>
+                                <!-- HP Bar Aesthetic -->
+                                <div class="w-full h-1 bg-gray-700 mt-2">
+                                    <div class="w-full h-full bg-red-800/80"></div>
+                                </div>
+                            </div>
+
+                            <!-- Surges Box -->
+                            <div class=" p-3 border border-gray-600">
+                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Healing Surges</span>
+                                <div class="flex justify-between items-center h-full pb-2">
+                                    <span class="font-cinzel text-3xl ">6/6</span>
+                                    <!-- Decorative notches -->
+                                    <div class="flex gap-1">
+                                        <div class="w-2 h-4 bg-gray-400"></div>
+                                        <div class="w-2 h-4 bg-gray-400"></div>
+                                        <div class="w-2 h-4 bg-gray-400"></div>
+                                        <div class="w-2 h-4 bg-gray-400"></div>
+                                        <div class="w-2 h-4 bg-gray-400"></div>
+                                        <div class="w-2 h-4 bg-gray-400"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Initiative -->
+                            <div class=" p-3 border border-gray-600">
+                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Initiative</span>
+                                <span class="font-cinzel text-2xl ">+4</span>
+                            </div>
+
+                            <!-- Passive Perception -->
+                            <div class=" p-3 border border-gray-600">
+                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">P. Perception</span>
+                                <span class="font-cinzel text-2xl ">16</span>
+                            </div>
+
+                            <!-- Attack Roll (Full Width) -->
+                            <div class="col-span-2  p-3 border border-gray-600">
+                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-2">Offensive Capabilities</span>
+                                <div class="flex justify-between items-center border-b border-gray-700 pb-1 mb-1">
+                                    <span class="text-sm font-serif ">Melee Basic (Ensorc)</span>
+                                    <span class="font-cinzel text-xl">+15</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-serif ">Accurate Dagger (+1)</span>
+                                    <span class="font-cinzel text-xl ">+12</span>
+                                </div>
+                            </div>
+
+                            <!-- Defenses (Full Width) -->
+                            <div class="col-span-2  p-3 border border-gray-600">
+                                <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-2">Defensive Metrics</span>
+                                <div class="grid grid-cols-4 gap-2 text-center">
+                                    <div>
+                                        <span class="text-gray-500 block">AC</span>
+                                        <span class="font-cinzel text-xl ">24</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-500 block">FORT</span>
+                                        <span class="font-cinzel text-xl ">21</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-500 block">REF</span>
+                                        <span class="font-cinzel text-xl ">17</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-500 block">WILL</span>
+                                        <span class="font-cinzel text-xl ">23</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        
+                        <!-- Footer code -->
+                        <div class="mt-4 pt-2 border-t border-gray-600 flex justify-between">
+                            <span class="font-barcode text-xl text-gray-500">8921-B</span>
+                            <span class="font-typewriter text-[8px] text-gray-600">CONFIDENTIAL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-skills" class="file-content">
+                    
+                    <div class="bg-white p-6 shadow-md transform rotate-1 border border-gray-300 relative max-w-lg mx-auto mt-4">
+                        <div class="tape w-28 h-8 -top-4 left-1/2 -translate-x-1/2 rotate-[-1deg]"></div>
+                        
+                        <div class="text-center mb-6">
+                            <h3 class="font-typewriter text-2xl font-bold text-gray-800 border-b-2 border-gray-800 inline-block pb-1">COMPETENCY EVALUATION</h3>
+                            <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-widest">Field Agent Proficiency Assessment Form 104-B</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-x-8 gap-y-1">
+                            <!-- Left Column -->
+                            <div class="skill-row skill-highlight"><span>Intimidate</span><strong>+20</strong></div>
+                            <div class="skill-row skill-highlight"><span>Bluff</span><strong>+16</strong></div>
+                            <div class="skill-row"><span>Diplomacy</span><strong>+13</strong></div>
+                            <div class="skill-row"><span>History</span><strong>+7</strong></div>
+                            <div class="skill-row"><span>Perception</span><strong>+6</strong></div>
+                            <div class="skill-row"><span>Dungeoneering</span><strong>+4</strong></div>
+                            <div class="skill-row"><span>Stealth</span><strong>+4</strong></div>
+                            <div class="skill-row"><span>Religion</span><strong>+5</strong></div>
+                            <div class="skill-row"><span>Nature</span><strong>+4</strong></div>
+
+                            <!-- Right Column -->
+                            <div class="skill-row skill-highlight"><span>Athletics</span><strong>+14</strong></div>
+                            <div class="skill-row"><span>Arcana</span><strong>+10</strong></div>
+                            <div class="skill-row"><span>Streetwise</span><strong>+9</strong></div>
+                            <div class="skill-row"><span>Endurance</span><strong>+6</strong></div>
+                            <div class="skill-row"><span>Insight</span><strong>+6</strong></div>
+                            <div class="skill-row"><span>Acrobatics</span><strong>+4</strong></div>
+                            <div class="skill-row"><span>Heal</span><strong>+4</strong></div>
+                            <div class="skill-row"><span>Thievery</span><strong>+4</strong></div>
+                        </div>
+
+                        <div class="space-y-1 mt-3">
+                            <iframe id="feat-details-iframe" class="power-iframe" src="https://iws.mx/dnd/?view=monster3457" frameborder="0"></iframe>
+                        </div>
+
+                        <div class="mt-8 flex justify-between items-end">
+                            <div class="text-[10px] font-typewriter text-gray-400">
+                                EVALUATOR: <span class="font-handwriting text-lg text-blue-900">Dr. Arkwright</span>
+                            </div>
+                            <div class="w-16 h-16 rounded-full border-4 border-blue-900 flex items-center justify-center opacity-40 transform rotate-[-12deg]">
+                                <span class="text-blue-900 font-bold text-xs text-center leading-none">CLEARED<br>FOR<br>DUTY</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- === TAB 4: FEATS === -->
+                <div id="content-feats" class="file-content">
+                    
+                    <div class="flex flex-col gap-8 mt-2">
+                        <!-- FEATS CARD -->
+                        <div class="w-full bg-[#e8e0c5] shadow-[2px_4px_8px_rgba(0,0,0,0.3)] transform -rotate-1 relative p-2">
+                            <div class="border border-[#5d4037] p-4">
+                                <div class="tape w-20 h-6 -top-5 left-10 rotate-[-2deg]"></div>
+                                <div class="border-b border-[#5d4037] mb-3 pb-1 flex justify-between items-end">
+                                    <h3 class="font-typewriter font-bold text-lg text-[#3e2723] tracking-widest">EXHIBITED TRAITS</h3>
+                                    <span class="text-[9px] font-serif italic text-[#5d4037]">Section 3-A</span>
+                                </div>
+                                <div class="space-y-1">
+                                    <div class="typewriter-item"><span>Paladin Armor Proficiency</span><span>[COMBAT]</span></div>
+                                    <div class="typewriter-item"><span>Devout Protector Expertise</span><span>[PASSIVE]</span></div>
+                                    <div class="typewriter-item"><span>Skald's Training</span><span>[TECHNIQUE]</span></div>
+                                </div>
+                                <div class="space-y-1 mt-3">
+                                    <iframe id="feat-details-iframe" class="power-iframe" src="https://iws.mx/dnd/?view=monster3457" frameborder="0"></iframe>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FEATURES CARD -->
+                        <div class="w-full bg-[#f2f2f2] shadow-[2px_4px_8px_rgba(0,0,0,0.2)] transform rotate-1 relative p-2 border border-gray-300">
+                            <div class="tape w-20 h-6 -top-5 right-10 rotate-[3deg]"></div>
+                            <div class="p-3">
+                                <h3 class="font-serif font-bold text-xl text-gray-800 border-b border-gray-400 mb-3">INHERENT TRAITS</h3>
+                                <ul class="list-disc pl-5 font-serif text-sm text-gray-800 space-y-2">
+                                    <li><span class="font-bold">Dragon Magic:</span> Innate sorcerous capability.</li>
+                                    <li><span class="font-bold">Dragonborn (Bozak) Traits:</span> Ancestral lineage verified.</li>
+                                    <li><span class="font-bold">Scales of the Dragon:</span> Natural armor enhancement.</li>
+                                    <li><span class="font-bold">Templar:</span> Organization affiliation confirmed.</li>
+                                    <li><span class="font-bold">Versatile Aptitude:</span> Background anomaly.</li>
+                                </ul>
+                                <div class="mt-4 bg-gray-200 p-2 text-xs font-typewriter text-gray-600 border-l-2 border-gray-500">
+                                    <span class="font-bold block mb-1">NOTE: DRACONIC POWER</span>
+                                    Gain bonus to damage rolls of arcane powers equal to Strength modifier (+5). Resistance to Fire damage (5).
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- === TAB 5: POWERS (NEW!) === -->
+                <div id="content-powers" class="file-content">
+                    
+                    <div class="w-full bg-[#fcfbf9] shadow-[0_4px_6px_rgba(0,0,0,0.1)] p-6 relative mt-4 transform rotate-[0.5deg]">
+                        <div class="tape w-32 h-8 -top-4 left-1/2 -translate-x-1/2 rotate-1"></div>
+                        
+                        <div class="flex justify-between items-start border-b-2 border-gray-800 pb-2 mb-6">
+                            <div>
+                                <h3 class="font-typewriter font-bold text-2xl text-gray-900">GENERAL TACTICS</h3>
+                                <p class="text-[9px] font-sans text-gray-500 uppercase">Authorization Code: OMEGA-7</p>
+                            </div>
+                            <div class="border-2 border-red-800 px-2 py-1 transform rotate-[-5deg]">
+                                <span class="font-typewriter text-red-800 font-bold text-xs">LETHAL FORCE<br>AUTHORIZED</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            
+                            <!-- AT-WILL -->
+                            <div class="col-span-1 md:col-span-2">
+                                <h4 class="font-cinzel text-lg text-gray-800 border-b border-gray-400 mb-2">Standard Engagement (At-Will)</h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-gray-100 p-2 border-l-4 border-green-700">
+                                        <span class="font-serif font-bold text-lg">Ardent Strike (Potency: Melee)</span>
+                                    </div>
+                                    <div class="bg-gray-100 p-2 border-l-4 border-green-700">
+                                        <span class="font-serif font-bold text-lg">Song of Serendipity</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ENCOUNTER -->
+                            <div>
+                                <h4 class="font-cinzel text-lg text-gray-800 border-b border-gray-400 mb-2">Tactical Options (Encounter)</h4>
+                                <ul class="space-y-2 font-typewriter text-sm text-gray-700">
+                                    <li class="flex items-center"><div class="power-check"></div> Dread Smite</li>
+                                    <li class="flex items-center"><div class="power-check"></div> Skald's Aura</li>
+                                    <li class="flex items-center"><div class="power-check"></div> Swiftcurrent</li>
+                                    <li class="flex items-center"><div class="power-check"></div> Inspire Competence</li>
+                                </ul>
+                            </div>
+
+                            <!-- DAILY -->
+                            <div>
+                                <h4 class="font-cinzel text-lg text-gray-800 border-b border-gray-400 mb-2">Restricted (Daily)</h4>
+                                <ul class="space-y-2 font-typewriter text-sm text-gray-700">
+                                    <li class="flex items-center"><div class="power-check"></div> Disruptive Words</li>
+                                </ul>
+                            </div>
+
+                            <div class="space-y-1 mt-3">
+                                <iframe id="feat-details-iframe" class="power-iframe" src="https://iws.mx/dnd/?view=monster3457" frameborder="0"></iframe>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- === MAP TAB === -->
+                <div id="content-map" class="file-content">
+                    
+                    <!-- Voice Log Card -->
+                    <div class="rustic-card w-full max-w-lg mx-auto mt-4 mb-8">
+                        <div class="rustic-border">
+                            <div class="flex justify-between items-end border-b border-[#5d4037] pb-2 mb-4">
+                                <div>
+                                    <h3 class="font-typewriter font-bold text-xl text-[#3e2723]">INTERVIEW DATA</h3>
+                                    <p class="text-[9px] font-serif italic text-[#5d4037]">Reel #402 // Classified</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="font-typewriter text-xs text-[#5d4037] border border-[#5d4037] px-1 py-1">ENCRYPTED</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <!-- Track 1 -->
+                                <div class="bg-[#fafafa] p-3 border border-[#d7ccc8]">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="font-typewriter text-xs text-[#5d4037]">RECORDING_01.WAV</span>
+                                        <span class="font-typewriter text-xs text-red-800">0:14</span>
+                                    </div>
+                                    <audio controls class="w-full h-8 opacity-70">
+                                        <source src="assets/voice/vo3.m4a" type="audio/mp4">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                    <p class="font-serif italic text-sm text-gray-600 mt-2 border-l-2 border-gray-400 pl-2">
+                                        "Transcript: Target was heard humming an unidentified melody before the breach."
+                                    </p>
+                                </div>
+
+                                <!-- Track 2 -->
+                                <div class="bg-[#fafafa] p-3 border border-[#d7ccc8]">
+                                     <div class="flex justify-between items-center mb-1">
+                                        <span class="font-typewriter text-xs text-[#5d4037]">INTERROGATION_LOG.WAV</span>
+                                        <span class="font-typewriter text-xs text-red-800">2:05</span>
+                                    </div>
+                                    <audio controls class="w-full h-8 opacity-70">
+                                        <source src="assets/voice/vo2.m4a" type="audio/mp4">
+                                    </audio>
+                                     <p class="font-serif italic text-sm text-gray-600 mt-2 border-l-2 border-gray-400 pl-2">
+                                        "Transcript: [Static] ...time flows differently here... [Static]"
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 pt-2 border-t border-[#5d4037] flex justify-between items-center">
+                                 <span class="font-code text-xl text-[#3e2723]">8921-B</span>
+                                 <div class="stamp-text text-xs border-double border-blue-900 text-blue-900">ARCHIVED</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="scrap-note w-3/4 ml-auto bg-gray-800 text-gray-300 border-gray-700 transform -rotate-1">
+                        <div class="tape w-10 h-6 -top-3 -left-2 rotate-[-45deg]"></div>
+                        <p class="font-typewriter text-white text-xs">
+                            > Tracing temporal residue...<br>
+                            > Signal lost at Coordinates 51.5, -0.1<br>
+                            > Note: Fog density exceeds normal parameters.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- === EVIDENCE TAB === -->
+                <div id="content-evidence" class="file-content">
+                    
+                    <div class="grid grid-cols-1 gap-6">
+                        <!-- Evidence Bag -->
+                        <div class="relative bg-transparent border-2 border-dashed border-gray-400 p-4 transform -rotate-1">
+                            <span class="absolute -top-3 left-4 bg-[#e2e8f0] px-2 font-typewriter text-xs font-bold">ITEM #001</span>
+                            
+                            <div class="flex gap-4 items-center">
+                                <div class="w-20 h-20 flex items-center justify-center shadow-inner">
+                                    <img src="assets/gram.png">
+                                </div>
+                                <div>
+                                    <h3 class="font-serif font-bold text-lg">Knight's Sword</h3>
+                                    <p class="text-sm font-serif italic text-gray-600">Material: High-carbon steel</p>
+                                    <p class="text-xs font-typewriter mt-2">Analysis: Common knightly sword. Potential for awakening.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative bg-transparent border-2 border-dashed border-gray-400 p-4 transform -rotate-1">
+                            <span class="absolute -top-3 left-4 bg-[#e2e8f0] px-2 font-typewriter text-xs font-bold">ITEM #002</span>
+                            
+                            <div class="flex gap-4 items-center">
+                                <div class="w-20 h-20 flex items-center justify-center shadow-inner">
+                                    <img src="assets/amulet.png">
+                                </div>
+                                <div>
+                                    <h3 class="font-serif font-bold text-lg">Sea Amulet</h3>
+                                    <p class="text-sm font-serif italic text-gray-600">Material: ???</p>
+                                    <p class="text-xs font-typewriter mt-2">Analysis: Warm to the touch, smell like salt.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative bg-transparent border-2 border-dashed border-gray-400 p-4 transform -rotate-1">
+                            <span class="absolute -top-3 left-4 bg-[#e2e8f0] px-2 font-typewriter text-xs font-bold">ITEM #003</span>
+                            
+                            <div class="flex gap-4 items-center">
+                                <div class="w-20 h-20 flex items-center justify-center shadow-inner">
+                                    <img src="assets/veteran.png">
+                                </div>
+                                <div>
+                                    <h3 class="font-serif font-bold text-lg">Suppressing Armor</h3>
+                                    <p class="text-sm font-serif italic text-gray-600">Material: Unknown Alloy</p>
+                                    <p class="text-xs font-typewriter mt-2">Analysis: Suppressing the horror true form into a humanoid shape. Unusual sturdiness.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1 mt-3">
+                            <iframe id="feat-details-iframe" class="power-iframe" src="https://iws.mx/dnd/?view=monster3457" frameborder="0"></iframe>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.side-tab').forEach(tab => {
+            tab.classList.remove('active');
+            tab.style.backgroundColor = '#2d3748';
+            tab.style.color = '#a0aec0';
+        });
+        const activeTab = document.getElementById(`tab-${tabId}`);
+        activeTab.classList.add('active');
+        activeTab.style.backgroundColor = '#e2e8f0';
+        activeTab.style.color = '#1a202c';
+
+        document.querySelectorAll('.file-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(`content-${tabId}`).classList.add('active');
+    }
+</script>
+
+</body>
+</html>
