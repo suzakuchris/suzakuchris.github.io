@@ -13,7 +13,7 @@
         /* --- Background: Dark Noir Slate (Cool Tone) --- */
         body {
             background-color: #0b0c10; /* Deep blue-black */
-            background-image: url("assets/unnamed.jpg");
+            background-image: url("assets/unnamed.jpg"); /* Fallback if missing */
             font-family: 'Cormorant Garamond', serif;
             color: #1a1a1a;
             overflow-x: hidden;
@@ -301,7 +301,36 @@
             width: 100%;
             height: 300px;
             border-radius: 0.25rem;
-            margin-bottom: 0.5rem;
+        }
+
+        /* Iframe Container & Close Button Styles */
+        .iframe-container {
+            display: none; /* Hidden by default */
+            margin-top: 2rem;
+            position: relative;
+        }
+        
+        .iframe-close-btn {
+            position: absolute;
+            top: -24px;
+            right: 0;
+            background: #2d3748;
+            color: #fc8181;
+            font-family: 'Special Elite', monospace;
+            font-size: 10px;
+            padding: 2px 8px;
+            border: 1px solid #1a202c;
+            border-bottom: none;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.2);
+            border-radius: 4px 4px 0 0;
+        }
+
+        .iframe-close-btn:hover {
+            background: #e53e3e;
+            color: white;
         }
     </style>
 </head>
@@ -606,8 +635,9 @@
                     </div>
                     
                     <!-- Shared Iframe for Skills -->
-                    <div class="space-y-1 mt-3">
-                         <p class="text-[10px] text-gray-500 font-typewriter mb-1">> ACCESSING DATABASE...</p>
+                    <div class="iframe-container" id="wrap-skills">
+                        <button class="iframe-close-btn" onclick="closeAllIframes()">[X] CLOSE TRANSMISSION</button>
+                        <p class="text-[10px] text-gray-500 font-typewriter mb-1">> ACCESSING DATABASE...</p>
                         <iframe id="iframe-skills" class="power-iframe" src="about:blank" frameborder="0"></iframe>
                     </div>
                 </div>
@@ -672,7 +702,8 @@
                         </div>
 
                         <!-- Shared Iframe for Feats -->
-                        <div class="space-y-1 mt-3">
+                        <div class="iframe-container" id="wrap-feats">
+                             <button class="iframe-close-btn" onclick="closeAllIframes()">[X] CLOSE TRANSMISSION</button>
                              <p class="text-[10px] text-gray-500 font-typewriter mb-1">> ACCESSING DATABASE...</p>
                             <iframe id="iframe-feats" class="power-iframe" src="about:blank" frameborder="0"></iframe>
                         </div>
@@ -707,7 +738,8 @@
                         </div>
 
                         <!-- Shared Iframe for Items -->
-                        <div class="space-y-1 mt-3">
+                        <div class="iframe-container" id="wrap-evidence">
+                             <button class="iframe-close-btn" onclick="closeAllIframes()">[X] CLOSE TRANSMISSION</button>
                              <p class="text-[10px] text-gray-500 font-typewriter mb-1">> ACCESSING DATABASE...</p>
                             <iframe id="iframe-evidence" class="power-iframe" src="about:blank" frameborder="0"></iframe>
                         </div>
@@ -841,9 +873,30 @@
     function showCompendium(id) {
         if (!id) return;
         const url = `https://iws.mx/dnd/?view=${id}`;
-        // Update all iframes to ensure the active tab shows it
+        
+        // Update iframes
         document.querySelectorAll('.power-iframe').forEach(iframe => {
             iframe.src = url;
+        });
+
+        // Show the containers
+        document.querySelectorAll('.iframe-container').forEach(container => {
+             // Only show the container if it is within the active tab
+             // Find the parent content div
+             const parentContent = container.closest('.file-content');
+             if(parentContent && parentContent.classList.contains('active')){
+                 container.style.display = 'block';
+             }
+        });
+    }
+
+    // Helper: Close all iframes
+    function closeAllIframes() {
+        document.querySelectorAll('.iframe-container').forEach(container => {
+            container.style.display = 'none';
+        });
+        document.querySelectorAll('.power-iframe').forEach(iframe => {
+            iframe.src = 'about:blank';
         });
     }
 
@@ -1004,6 +1057,10 @@
 
     // === TAB LOGIC ===
     function switchTab(tabId) {
+        // 1. Close all open iframes/compendiums to clean the desk
+        closeAllIframes();
+
+        // 2. Switch visual tab styling
         document.querySelectorAll('.side-tab').forEach(tab => {
             tab.classList.remove('active');
             tab.style.backgroundColor = '#2d3748';
@@ -1014,6 +1071,7 @@
         activeTab.style.backgroundColor = '#e2e8f0';
         activeTab.style.color = '#1a202c';
 
+        // 3. Switch Content
         document.querySelectorAll('.file-content').forEach(content => {
             content.classList.remove('active');
         });
