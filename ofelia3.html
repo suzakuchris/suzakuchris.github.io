@@ -1197,97 +1197,76 @@
     }
 </script>
 
-<!-- FIREBASE INTEGRATION SCRIPT -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+<!-- FIREBASE COMPAT SCRIPT (Adapted from Anneliese Code) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-    // 1. Configuration
+<script>
+    // =========================================================================
+    //  FIREBASE CONFIGURATION
+    //  (Paste your keys from the Firebase Console here)
+    // =========================================================================
     const firebaseConfig = {
-        apiKey: "AIzaSyB6biQTgUNBWPhcS_-sr9Xgl-hqYG9eQsA",
-        authDomain: "e-dossier.firebaseapp.com",
-        projectId: "e-dossier",
-        storageBucket: "e-dossier.firebasestorage.app",
-        messagingSenderId: "1046434797184",
-        appId: "1:1046434797184:web:e76bee758001e0a4ac7865",
-        measurementId: "G-CNT5NTEFR7"
+        // Replace with the config from your Firebase project.
+        apiKey: "AIzaSyAZmkytKusbdoDt0g6GOWNYlsXh5TkQI8M",
+        authDomain: "rise-character-sheet.firebaseapp.com",
+        projectId: "rise-character-sheet",
+        storageBucket: "rise-character-sheet.firebasestorage.app",
+        messagingSenderId: "633547066454",
+        appId: "1:633547066454:web:63dfbb6a724308b1fbbff7",
+        measurementId: "G-M80TGFZC8P"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    // Initialize Firebase (Simple, no Auth)
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    // We change this to a static name since we aren't in the Canvas environment anymore
-    const appId = 'ofelia-moltke';
+    // Document Reference: simpler path like your Anneliese code
+    const docRef = db.collection("ofelia_archives").doc("case_file_8921b"); 
 
     const memoInput = document.getElementById('memo-input');
     const statusDiv = document.getElementById('save-status');
-
     let debounceTimer;
 
-    // 2. Authentication Flow
-    async function initAuth() {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-            await signInWithCustomToken(auth, __initial_auth_token);
+    // 1. LOAD DATA (One-time fetch, avoiding 'onSnapshot' issues)
+    docRef.get().then((doc) => {
+        if (doc.exists) {
+            memoInput.value = doc.data().notes || "";
+            statusDiv.innerText = "ARCHIVE RETRIEVED";
+            statusDiv.style.color = "#2f855a"; // Dark Green
         } else {
-            await signInAnonymously(auth);
+            statusDiv.innerText = "NEW FILE STARTED";
         }
-    }
-    
-    initAuth();
-
-    // 3. Data Logic (Runs after Auth)
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            statusDiv.innerText = "LINK ESTABLISHED";
-            
-            // Reference to user's memo doc
-            // PATH: /artifacts/{appId}/users/{userId}/notes/investigation
-            const notesRef = doc(db, 'artifacts', appId, 'users', user.uid, 'notes', 'investigation');
-
-            // Listen for data
-            onSnapshot(notesRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    // Only update if the user isn't currently typing (avoids cursor jumping)
-                    if (document.activeElement !== memoInput) {
-                        memoInput.value = docSnap.data().content || "";
-                    }
-                }
-            }, (error) => {
-                console.error("Error fetching notes:", error);
-                statusDiv.innerText = "CONNECTION ERROR";
-                statusDiv.style.color = "red";
-            });
-
-            // Auto-Save Logic
-            memoInput.addEventListener('input', () => {
-                statusDiv.innerText = "RECORDING EVIDENCE...";
-                statusDiv.style.color = "#718096"; // Gray
-
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => {
-                    saveNotes(user.uid, memoInput.value);
-                }, 1000); // Wait 1 second after typing stops
-            });
-        }
+    }).catch((error) => {
+        console.error("Error loading data:", error);
+        statusDiv.innerText = "CONNECTION FAILED";
+        statusDiv.style.color = "red";
     });
 
-    // 4. Save Function
-    async function saveNotes(userId, content) {
-        try {
-            await setDoc(doc(db, 'artifacts', appId, 'users', userId, 'notes', 'investigation'), {
-                content: content,
-                timestamp: new Date().toISOString()
+    // 2. SAVE DATA (Debounced Input)
+    memoInput.addEventListener('input', () => {
+        statusDiv.innerText = "RECORDING EVIDENCE...";
+        statusDiv.style.color = "#718096"; // Gray
+
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            const dataToSave = {
+                notes: memoInput.value,
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            docRef.set(dataToSave, { merge: true })
+            .then(() => {
+                statusDiv.innerText = "LOG UPDATED";
+                statusDiv.style.color = "#2f855a"; // Dark Green
+            })
+            .catch((error) => {
+                console.error("Error saving data:", error);
+                statusDiv.innerText = "SAVE FAILED";
+                statusDiv.style.color = "red";
             });
-            statusDiv.innerText = "LOG UPDATED";
-            statusDiv.style.color = "green";
-        } catch (e) {
-            console.error("Error saving note: ", e);
-            statusDiv.innerText = "SAVE FAILED";
-            statusDiv.style.color = "red";
-        }
-    }
+        }, 1000); // 1 second delay
+    });
 </script>
 
 </body>
