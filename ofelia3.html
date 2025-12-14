@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Case File #8921-B: The Sorcerer</title>
+    <title>Case File #8921-B: The Drowned Knight</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -580,10 +580,11 @@
                                 
                                 <!-- HP Box -->
                                 <div class=" p-3 border border-gray-600 relative overflow-hidden group">
-                                    <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Vitality</span>
+                                    <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Hitpoints</span>
                                     <div class="flex items-baseline gap-2">
-                                        <span id="stat-hp-curr" class="font-cinzel text-3xl">38</span>
-                                        <span id="stat-hp-max" class="text-gray-500 text-sm">/ 38</span>
+                                        <span id="stat-hp-curr" class="font-cinzel text-3xl"></span>
+                                        /
+                                        <span id="stat-hp-max" class="text-gray-500 text-sm"></span>
                                     </div>
                                     <!-- HP Bar Aesthetic -->
                                     <div class="w-full h-1 bg-gray-700 mt-2">
@@ -593,38 +594,38 @@
 
                                 <!-- Surges Box -->
                                 <div class=" p-3 border border-gray-600">
-                                    <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Recuperative Cap.</span>
+                                    <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Healing Surges (Recover: <b id="stat-hs-recover"></b>)</span>
                                     <div class="flex justify-between items-center h-full pb-2">
-                                        <span class="font-cinzel text-3xl ">8/8</span>
+                                        <span class="font-cinzel text-3xl "><span id="stat-hs-curr"></span>/<span id="stat-hs-max"></span></span>
                                         <!-- Decorative notches -->
                                         <div class="flex gap-1">
-                                            <div class="w-2 h-4 bg-gray-400"></div>
-                                            <div class="w-2 h-4 bg-gray-400"></div>
-                                            <div class="w-2 h-4 bg-gray-400"></div>
-                                            <div class="w-2 h-4 bg-gray-400"></div>
-                                            <div class="w-2 h-4 bg-gray-400"></div>
-                                            <div class="w-2 h-4 bg-gray-400"></div>
-                                            <div class="w-2 h-4 bg-gray-400"></div>
-                                            <div class="w-2 h-4 bg-gray-400"></div>
+                                            <div class="w-1 h-4 bg-gray-400"></div>
+                                            <div class="w-1 h-4 bg-gray-400"></div>
+                                            <div class="w-1 h-4 bg-gray-400"></div>
+                                            <div class="w-1 h-4 bg-gray-400"></div>
+                                            <div class="w-1 h-4 bg-gray-400"></div>
+                                            <div class="w-1 h-4 bg-gray-400"></div>
+                                            <div class="w-1 h-4 bg-gray-400"></div>
+                                            <div class="w-1 h-4 bg-gray-400"></div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Initiative -->
                                 <div class=" p-3 border border-gray-600">
-                                    <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Reaction Speed</span>
+                                    <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Initiative Speed</span>
                                     <span id="stat-init" class="font-cinzel text-2xl"></span>
                                 </div>
 
                                 <!-- Passive Perception -->
                                 <div class=" p-3 border border-gray-600">
-                                    <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Observation</span>
+                                    <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-1">Passive Perception</span>
                                     <span id="stat-pperception" class="font-cinzel text-2xl"></span>
                                 </div>
 
                                 <!-- Attack Roll (Full Width) -->
                                 <div class="col-span-2  p-3 border border-gray-600">
-                                    <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-2">Combat Proficiency</span>
+                                    <span class="block text-[10px] font-typewriter text-gray-500 uppercase mb-2">Combat Reminders</span>
                                     <div id="dmg-bonuses-list" class="flex flex-col gap-1 text-xs font-typewriter text-gray-800">
                                         <!-- Populated by JS -->
                                     </div>
@@ -812,19 +813,22 @@
     // =========================================================================
     //  EDITABLE DATA: Modify these objects to update your character sheet
     // =========================================================================
+    const attributes = {
+        "STR": 10, "CON": 10, "DEX": 8, "INT": 18, "WIS": 10, "CHA": 20
+    };
+
     const level = 2;
     const weaponProf = 3;
     const otherBonus = 2; //expertise and magic weapon
     const levelBonus = Math.floor(level/2);
+    const HPValue = attributes['CHA'] + 13 + ((level-1)*5);
     const ACBonus = 1+2+8;//veterans armor (cloth), shield
     const REFBonus = 1+1+2; //rhythm dagger and safewing amulet
     const FORTBonus = 1+1; //safewing amulet
     const WILLBonus = 1; //safewing amulet
     const HSUsed = 0;
-
-    const attributes = {
-        "STR": 10, "CON": 10, "DEX": 8, "INT": 18, "WIS": 10, "CHA": 20
-    };
+    const HSTotal = 8;
+    const HSValue = Math.floor(HPValue/4);
 
     //skill versatility: untrained = +1bonus
     const skills = {
@@ -872,6 +876,9 @@
     ];
 
     const bonusDamageReminder = [
+        { plus: `${(levelBonus+weaponProf+otherBonus+getMod(attributes["CHA"]))}`, notes: 'Melee Basic Attack (Ardent Strike)' },
+        { plus: `${getMod(attributes["CHA"])+2}`, notes: 'Bonus damage if attacking with CA using paladin powers'},
+        { plus: `${getMod(attributes["CHA"])+2}`, notes: 'Bonus damage through dread smite'},
     ];
 
     const miscFeaturesToDisplay = [
@@ -1002,6 +1009,13 @@
         document.getElementById('stat-fort').innerText = fort;
         document.getElementById('stat-ref').innerText = ref;
         document.getElementById('stat-will').innerText = will;
+
+        document.getElementById('stat-hp-curr').innerText = HPValue;
+        document.getElementById('stat-hp-max').innerText = HPValue;
+
+        document.getElementById('stat-hs-curr').innerText = HSTotal;
+        document.getElementById('stat-hs-max').innerText = HSTotal;
+        document.getElementById('stat-hs-recover').innerText = HSValue;
 
         // Damage Bonus List
         const bonusListEl = document.getElementById('dmg-bonuses-list');
