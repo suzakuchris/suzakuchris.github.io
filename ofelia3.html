@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Case File #8921-B: The Drowned Knight</title>
+    <title>Case File #8921-B: The Drowned Dame</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -422,7 +422,7 @@
             <!-- INFO CARD (Moved from Bio Tab) -->
             <div class="paper-alt bg-[#f7fafc] p-4 border-l-4 border-red-900 shadow-md relative transform rotate-1">
                 <h2 class="font-serif text-3xl font-bold text-gray-900 mb-1">[Countess]<br/> <div class="flex">Ofelia von Moltke <img src="assets/lys.webp" style="height:20px;"/></div></h2>
-                <p class="font-typewriter text-xs text-gray-500 uppercase tracking-widest mb-4">Alias: The Drowned Knight</p>
+                <p class="font-typewriter text-xs text-gray-500 uppercase tracking-widest mb-4">Alias: The Drowned Dame</p>
                 
                 <div class="grid grid-cols-2 gap-4 text-sm font-serif text-gray-800">
                     <div>
@@ -496,9 +496,10 @@
             <div style="top: 220px;" onclick="switchTab('vitals')" id="tab-vitals" class="side-tab">COND</div>
             <div style="top: 310px;" onclick="switchTab('feats')" id="tab-feats" class="side-tab">FEAT</div>
             <div style="top: 400px;" onclick="switchTab('features')" id="tab-features" class="side-tab">TRAIT</div>
-            <div style="top: 490px;" onclick="switchTab('skills')" id="tab-skills" class="side-tab">SKIL</div>
-            <div style="top: 580px;" onclick="switchTab('evidence')" id="tab-evidence" class="side-tab">ITEM</div>
-            <div style="top: 670px;" onclick="switchTab('memo')" id="tab-memo" class="side-tab">MEMO</div>
+            <div style="top: 490px;" onclick="switchTab('features2')" id="tab-features2" class="side-tab">CONT</div>
+            <div style="top: 580px;" onclick="switchTab('skills')" id="tab-skills" class="side-tab">SKIL</div>
+            <div style="top: 670px;" onclick="switchTab('evidence')" id="tab-evidence" class="side-tab">ITEM</div>
+            <div style="top: 760px;" onclick="switchTab('memo')" id="tab-memo" class="side-tab">MEMO</div>
 
 
             <!-- MAIN PAPER -->
@@ -757,7 +758,7 @@
 
                                     <!-- ENCOUNTER -->
                                     <div>
-                                        <h4 class="font-cinzel text-lg text-gray-800 border-b border-gray-400 mb-2">Tactical Options</h4>
+                                        <h4 class="font-cinzel text-lg text-gray-800 border-b border-gray-400 mb-2">Tactical Options (Enc.)</h4>
                                         <ul id="powers-encounter" class="space-y-2 font-typewriter text-sm text-gray-700">
                                             <!-- Populated by JS -->
                                         </ul>
@@ -765,7 +766,7 @@
 
                                     <!-- DAILY -->
                                     <div>
-                                        <h4 class="font-cinzel text-lg text-gray-800 border-b border-gray-400 mb-2">Restricted</h4>
+                                        <h4 class="font-cinzel text-lg text-gray-800 border-b border-gray-400 mb-2">Restricted (Daily)</h4>
                                         <ul id="powers-daily" class="space-y-2 font-typewriter text-sm text-gray-700">
                                             <!-- Populated by JS -->
                                         </ul>
@@ -804,6 +805,19 @@
                             <div class="p-3">
                                 <h3 class="font-serif font-bold text-xl text-gray-800 border-b border-gray-400 mb-3">INHERENT TRAITS</h3>
                                 <div id="features-list" class="font-serif text-sm text-gray-800 space-y-4">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="content-features2" class="file-content">
+                        <!-- FEATURES CARD -->
+                        <div class="paper-alt w-full bg-[#f2f2f2] shadow-[2px_4px_8px_rgba(0,0,0,0.2)] transform rotate-1 relative p-2 border border-gray-300">
+                            <div class="tape w-20 h-6 -top-5 right-10 rotate-[3deg]"></div>
+                            <div class="p-3">
+                                <h3 class="font-serif font-bold text-xl text-gray-800 border-b border-gray-400 mb-3">BACKGROUND RECORDS</h3>
+                                <div id="features-list2" class="font-serif text-sm text-gray-800 space-y-4">
                                     <!-- Populated by JS -->
                                 </div>
                             </div>
@@ -907,6 +921,7 @@
         { id: 'power15849', name: 'Skald\'s Aura', type: 'Encounter' },
         { id: 'power13815', name: 'Dread Smite', type: 'Encounter' },
         { id: 'power1770', name: 'Swiftcurrent', type: 'Encounter' },
+        { id: 'power3286', name: 'Divine Counter', type: 'Encounter' },
 
         // { id: 'custom_power/grimoire', name: 'Grimoire\'s Shield', type: 'Daily' },
         { id: 'power14456', name: 'Disruptive Words', type: 'Daily' },
@@ -970,6 +985,34 @@
             While you have combat advantage against an enemy, you gain a +2 bonus to damage rolls. The bonus increases to +4 while you are bloodied or adjacent to a bloodied creature.
         ` },
     ];
+
+    const miscFeaturesToDisplay2 = [
+        { name: 'Patrician', content: `
+            Patricians: The nobility, wealthy, or influential, who never need to worry about money and some laws. You gain training in Intimidate.
+        ` },
+        { name: 'Horror', content: `
+            Horror: Resist 2 Ranged, Vulnerable 2 Area and Close. You end Dazed and Stunned condition at the end of your turn. You gain Blindsight 5sq.
+        ` },
+        { name: 'Potency', content: `
+            Theme: Potency (Tag)
+            Pick a certain range (Melee, Ranged, or Area/Close) or damage type (Fire, Cold, Psychic, Acid, Radiant, Necrotic, Untyped, etc.) You are more Potent with this Tag, and powers with the tag gains benefits according to your level (starting with +1, and increased to +2 at level 5).
+            Further, one of your 1st level melee or ranged unaugmented At Will Attack power with Potency that rolls damage is considered Basic Attack.
+            You also gain [Inventory] to store your items at a dimensional storage. Drawing items from [Inventory] is part of the action to use them.
+            Choices: Melee, Ardent Strike as MBA.
+
+            Level 1 Benefit
+            You gain a bonus feat. You also gain a +1 bonus to attack rolls, damage, bonuses, and penalties on powers with the Potency. Further, once per encounter, you can reroll failed attack roll using power with the Potency.
+            Choices: Skald Training
+
+            Level 5 Benefit
+            You gain a bonus feat. You also increase the bonus to your Potency by 1. Choose 2 skills, and you gain +2 bonus to their rolls, and once per encounter you can reroll those skill check when you dislike the result.
+            Choices: -
+
+            Level 10 Benefit 
+            You gain a bonus feat. Also, choose a Standard action Daily Power with the Potency. You can use them as a Minor action.
+            Choices: -
+        ` },
+    ]; 
 
     // =========================================================================
     //  LOGIC & RENDERING
@@ -1154,6 +1197,20 @@
                 <p class="text-xs leading-relaxed pl-2 border-l-2 border-gray-300">${contentHtml}</p>
              `;
              featuresContainer.appendChild(el);
+        });
+
+        //6.5 features 2
+        const featuresContainer2 = document.getElementById('features-list2');
+        featuresContainer2.innerHTML = '';
+        miscFeaturesToDisplay2.forEach(f => {
+             const el = document.createElement('div');
+             // Format content with line breaks
+             const contentHtml = f.content.replace(/\n/g, '<br>');
+             el.innerHTML = `
+                <strong class="block text-gray-900 border-b border-gray-400 mb-1">${f.name}</strong>
+                <p class="text-xs leading-relaxed pl-2 border-l-2 border-gray-300">${contentHtml}</p>
+             `;
+             featuresContainer2.appendChild(el);
         });
 
         // --- 7. Items ---
