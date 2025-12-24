@@ -16,7 +16,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Cedarville+Cursive&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
     
     <style>
-        /* --- Background: Dark Noir Slate (Cool Tone) --- */
         body {
             background-color: #0b0c10; /* Deep blue-black */
             background-image: url("assets/unnamed.jpg"); /* Fallback if missing */
@@ -89,11 +88,9 @@
 
         /* --- Right Leaf (Clipboard) --- */
         .right-leaf {
-            /* This replaces the old .clipboard-board positioning context */
             position: relative;
         }
 
-        /* --- Main Clipboard (Rusted Steel Look) --- */
         .clipboard-board {
             background-color: #1a1a1a;
             background-image: linear-gradient(to bottom right, #2d3748, #1a202c);
@@ -132,7 +129,7 @@
             mix-blend-mode: overlay;
         }
 
-        /* --- Archival Paper (Cool Grey/Silver) --- */
+        /* --- Archival Paper --- */
         .parchment {
             background-color: #e2e8f0; /* Cool Grey */
             background-image: url("assets/paper.jpg");
@@ -154,8 +151,6 @@
             z-index: 5;
         }
 
-        /* --- Clutter Elements --- */
-        
         /* Scotch Tape (Frosty) */
         .tape {
             background-color: rgba(255, 255, 255, 0.25);
@@ -186,7 +181,7 @@
             z-index: 25;
         }
 
-        /* Header Bar (Laplace Style) */
+        /* Header Bar */
         .header-bar {
             border-top: 3px solid #2d3748;
             border-bottom: 1px solid #2d3748;
@@ -197,7 +192,7 @@
             align-items: center;
         }
 
-        /* --- Lighting Overlay (Cool Moon/Lab Light) --- */
+        /* --- Lighting Overlay --- */
         .lighting-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -402,10 +397,9 @@
 </head>
 <body onload="renderAllData()">
 
-<!-- NEW LAYOUT STRUCTURE: Spread Container -->
 <div class="spread-container">
 
-    <!-- LEFT LEAF: The "Folder" Cover (Always visible on Desktop, Top on Mobile) -->
+    <!-- LEFT LEAF -->
     <div class="left-leaf relative">
         <div class="flex flex-col gap-6">
             
@@ -425,7 +419,7 @@
                 </div>
             </div>
 
-            <!-- INFO CARD (Moved from Bio Tab) -->
+            <!-- INFO CARD -->
             <div class="paper-alt bg-[#f7fafc] p-4 border-l-4 border-red-900 shadow-md relative transform rotate-1">
                 <h2 class="font-serif text-3xl font-bold text-gray-900 mb-1">[Countess]<br/> <div class="flex">Ofelia von Moltke <img src="assets/lys.webp" style="height:20px;"/></div></h2>
                 <p class="font-typewriter text-xs text-gray-500 uppercase tracking-widest mb-4">Alias: The Drowned Dame</p>
@@ -458,7 +452,7 @@
                 </div>
             </div>
 
-            <!-- STAT BLOCK (Moved from Bio Tab) -->
+            <!-- STAT BLOCK -->
             <div style="background:#4e4a42;" class="w-full flex items-center bg-gray-800 text-gray-200 p-2 text-xs font-typewriter shadow-lg transform -rotate-1">
                 <div class="w-full bg-[#e8e0c5] shadow-[3px_3px_5px_rgba(0,0,0,0.2)] relative p-2">
                     <div class="border-2 border-dashed border-[#5d4037] p-2 h-full">
@@ -488,7 +482,7 @@
     </div>
 
 
-    <!-- RIGHT LEAF: The Clipboard (Tabs & Content) -->
+    <!-- RIGHT LEAF: Clipboard (Tabs & Content) -->
     <div class="right-leaf">
         <main class="clipboard-board">
             
@@ -533,7 +527,7 @@
                 <!-- CONTENT AREA -->
                 <div class="relative z-20">
 
-                    <!-- === TAB 1: NOTES (Renamed from Bio) === -->
+                    <!-- === TAB 1: NOTES === -->
                     <div id="content-profile" class="file-content active">
                          <h3 class="font-typewriter text-xl mb-4 border-b border-gray-400 inline-block">Investigative Notes</h3>
                          
@@ -887,14 +881,14 @@
     };
 
     const level = 2;
-    const weaponProf = 3;
+    const weaponProf = 3; //longsword
     const otherBonus = 2; //expertise and magic weapon
     const levelBonus = Math.floor(level/2);
     const HPValue = attributes['CHA'] + 13 + ((level-1)*5);
-    const ACBonus = 1+2+8;//veterans armor (cloth), shield
-    const REFBonus = 1+1+2; //rhythm dagger and safewing amulet
-    const FORTBonus = 1+1; //safewing amulet
-    const WILLBonus = 1; //safewing amulet
+    const ACBonus = 1+2+8;//level, veterans armor (plate), heavy shield
+    const REFBonus = 1+1+2; //class, amulet, shield
+    const FORTBonus = 1+1; //class, amulet
+    const WILLBonus = 1; //amulet
     const HSUsed = 0;
     const HSTotal = 8;
     const HSValue = Math.floor(HPValue/4);
@@ -1088,9 +1082,6 @@
         document.getElementById('stat-pperception').innerText = pPerception;
 
         // Defenses: 10 + Half Level + Ability Mod + Class/Feat Bonuses
-        // AC: Uses Dex or Int (or Str due to Dragon Sorcerer feat/feature if applicable, but standard is Dex/Int. 
-        // Note: The prompt implies Sorcerer might use Str for AC via Draconic Resilience).
-        // Draconic Resilience: "use Strength modifier in place of Dex/Int".
         const acBaseMod = 0
         const ac = 10 + levelBonus + acBaseMod + ACBonus;
 
@@ -1260,7 +1251,7 @@
     }
 </script>
 
-<!-- FIREBASE COMPAT SCRIPT (Adapted from Anneliese Code) -->
+<!-- FIREBASE COMPAT SCRIPT -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
@@ -1284,7 +1275,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Document Reference: simpler path like your Anneliese code
     const docRef = db.collection("ofelia_archives").doc("case_file_8921b"); 
 
     const memoInput = document.getElementById('memo-input');
