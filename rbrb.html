@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Righteous Blood, Ruthless Blades - Character Sheet</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper-bg: #fdfaf5;
+            --ink-red: #8b0000;
+            --ink-black: #1a1a1a;
+            --border-stone: #d1cfc7;
+        }
+
+        body {
+            background-color: #e8e4d9;
+            font-family: 'Crimson Pro', serif;
+            color: var(--ink-black);
+            padding: 20px 0;
+        }
+
+        .parchment-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: var(--paper-bg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 1px solid var(--border-stone);
+            position: relative;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            border-bottom: 4px solid var(--ink-red);
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--ink-red);
+            border-left: 4px solid var(--ink-red);
+            padding-left: 10px;
+            margin: 20px 0 15px 0;
+            font-size: 1.1rem;
+        }
+
+        .subsection-header {
+            font-style: italic;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--ink-red);
+            border-bottom: 1px solid rgba(139, 0, 0, 0.2);
+            margin-bottom: 10px;
+            padding-bottom: 2px;
+        }
+
+        .form-label-custom {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--ink-red);
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        input[type="text"] {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--border-stone);
+            width: 100%;
+            padding: 2px 0;
+            font-weight: 700;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-bottom-color: var(--ink-red);
+        }
+
+        .box-input {
+            background: rgba(139, 0, 0, 0.05);
+            border: 1px solid rgba(139, 0, 0, 0.15);
+            text-align: center;
+            font-weight: 900;
+            padding: 5px;
+        }
+
+        .bubble-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .bubble-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #555;
+            width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .bubbles {
+            display: flex; gap: 4px;
+        }
+
+        .bubble {
+            width: 15px; height: 15px;
+            border-radius: 50%;
+            border: 1px solid var(--ink-red);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .bubble.active {
+            background-color: var(--ink-red);
+            box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
+        }
+
+        #portrait-container {
+            width: 100%; max-width: 180px; aspect-ratio: 3/4;
+            background: #eee; border: 2px solid var(--border-stone);
+            position: relative; cursor: pointer; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        #portrait-img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        #portrait-placeholder { text-align: center; color: #aaa; font-size: 0.7rem; text-transform: uppercase; font-weight: 700; }
+
+        textarea {
+            width: 100%;
+            background: rgba(139, 0, 0, 0.03);
+            border: 1px solid transparent; border-radius: 4px;
+            padding: 8px; font-size: 0.9rem; resize: none;
+            font-family: 'Noto Serif', serif;
+        }
+
+        textarea:focus { outline: none; border-color: rgba(139, 0, 0, 0.2); background: #fff; }
+
+        .status-bar {
+            background: #f1ede4; padding: 10px 20px;
+            font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+            color: #888; border-top: 1px solid var(--border-stone);
+            display: flex; justify-content: space-between;
+        }
+
+        #save-status.saving { color: var(--ink-red); }
+        #save-status.saved { color: green; }
+        #save-status.error { color: #d32f2f; font-weight: 900; }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .parchment-container { box-shadow: none; border: none; }
+            .status-bar { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="parchment-container">
+    <div class="p-4 p-md-5">
+        <div class="row align-items-start mb-4">
+            <div class="col-md-9">
+                <h1>Character Sheet</h1>
+                <div class="row g-3">
+                    <div class="col-md-7">
+                        <label class="form-label-custom">Character Name</label>
+                        <input type="text" id="name" class="fs-4" placeholder="Wandering Blade">
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label-custom">Level</label>
+                        <input type="text" id="level" class="box-input">
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label-custom">Experience (XP)</label>
+                        <input type="text" id="xp" class="box-input">
+                    </div>
+                </div>
+                <div class="row g-3 mt-1">
+                    <div class="col-4 col-md-2"><label class="form-label-custom">Killing Aura</label><input type="text" id="killingAura" class="box-input py-1"></div>
+                    <div class="col-4 col-md-2"><label class="form-label-custom">Max Wounds</label><input type="text" id="maxWounds" class="box-input py-1"></div>
+                    <div class="col-4 col-md-2"><label class="form-label-custom">Drinking Limit</label><input type="text" id="drinkingLimit" class="box-input py-1"></div>
+                    <div class="col-4 col-md-2"><label class="form-label-custom">Current Wounds</label><input type="text" id="currentWounds" class="box-input py-1"></div>
+                    <div class="col-4 col-md-2"><label class="form-label-custom">K.A. Darkness</label><input type="text" id="killingAuraDarkness" class="box-input py-1"></div>
+                    <div class="col-4 col-md-2"><label class="form-label-custom">Resist</label><input type="text" id="resist" class="box-input py-1"></div>
+                </div>
+            </div>
+            <div class="col-md-3 d-flex justify-content-center justify-content-md-end pt-4 pt-md-0">
+                <label id="portrait-container">
+                    <div id="portrait-placeholder">Click to Upload Portrait</div>
+                    <img id="portrait-img" src="" alt="Character Portrait">
+                    <input type="file" id="portrait-input" class="d-none" accept="image/*">
+                </label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <p>
+                    The Lín family is not known for their exceptional martial arts, nor for their affiliation with any prestigious sects. They were masters of coin, lineage of wealthy merchants who happen to lend and funds many outer-sects in their immediate region. Although, not without any collaterals to back it up. As a result, they have had a lot of enemies. The head of the family has recently been slain in an altercation as the result, following several important figures. Effectively ending the family reputation as a merchant.
+                </p>
+                <p>
+                    Lín Jīnzhū, the surviving daughter of the said Lín family, was left with nothing but the ashes, the remains of her family. Surviving through sheer luck, she had chosen to leave the comfort of living behind to walk on the path of vengeance, seeking the soul of the ones who orchestrated her family's ruin. Ever since the tragedy that robbed the future from her, she has been honing herself with any martial arts manual she can get her hands on, which brings her to the first manual of the Dragon's roar dagger (龙吟短剑 - Lóng yín duǎn jiàn), which belonged to a now dead martial artist who could not pay their debt.
+                </p>
+            </div>
+        </div>
+
+        <div class="row border-top pt-4">
+            <div class="col-lg-6 border-end-lg pe-lg-4">
+                <div class="section-header">Defences</div>
+                <div id="defences-group">
+                    <div class="bubble-container" data-category="defences" data-skill="evade"><span class="bubble-label">Evade</span><div class="bubbles" data-count="10"></div></div>
+                    <div class="bubble-container" data-category="defences" data-skill="hardiness"><span class="bubble-label">Hardiness</span><div class="bubbles" data-count="10"></div></div>
+                    <div class="bubble-container" data-category="defences" data-skill="wits"><span class="bubble-label">Wits</span><div class="bubbles" data-count="10"></div></div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-6 mb-4">
+                        <div class="subsection-header">Martial Arts</div>
+                        <div class="skill-list" data-category="martial">
+                            <div class="bubble-container" data-skill="external"><span class="bubble-label">External</span><div class="bubbles" data-count="3"></div></div>
+                            <div class="bubble-container" data-skill="internal"><span class="bubble-label">Internal</span><div class="bubbles" data-count="3"></div></div>
+                            <div class="bubble-container" data-skill="lightness"><span class="bubble-label">Lightness</span><div class="bubbles" data-count="3"></div></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="subsection-header">Mental Skills</div>
+                        <div class="skill-list" data-category="mental">
+                            <div class="bubble-container" data-skill="command"><span class="bubble-label">Command</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="detect"><span class="bubble-label">Detect</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="empathy"><span class="bubble-label">Empathy</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="persuade"><span class="bubble-label">Persuade</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="reasoning"><span class="bubble-label">Reasoning</span><div class="bubbles" data-count="5"></div></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="subsection-header">Specialist Skills</div>
+                        <div class="skill-list" data-category="specialist">
+                            <div class="bubble-container" data-skill="medicine"><span class="bubble-label">Medicine and Alchemy</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="meditation"><span class="bubble-label">Meditation</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="survival"><span class="bubble-label">Survival</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="talent"><span class="bubble-label">Talent</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="trade"><span class="bubble-label">Trade</span><div class="bubbles" data-count="5"></div></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="subsection-header">Physical Skills</div>
+                        <div class="skill-list" data-category="physical">
+                            <div class="bubble-container" data-skill="athletics"><span class="bubble-label">Athletics</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="endurance"><span class="bubble-label">Endurance</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="muscle"><span class="bubble-label">Muscle</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="ride"><span class="bubble-label">Ride</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="speed"><span class="bubble-label">Speed</span><div class="bubbles" data-count="5"></div></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="subsection-header">Unorthodox Skills</div>
+                        <div class="skill-list" data-category="unorthodox">
+                            <div class="bubble-container" data-skill="disguise"><span class="bubble-label">Disguise</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="drinking"><span class="bubble-label">Drinking</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="gambling"><span class="bubble-label">Gambling</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="magic"><span class="bubble-label">Magical Art</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="theft"><span class="bubble-label">Theft</span><div class="bubbles" data-count="5"></div></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="subsection-header">Knowledge Skills</div>
+                        <div class="skill-list" data-category="knowledge">
+                            <div class="bubble-container" data-skill="institution"><span class="bubble-label">Institution</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="jianghu"><span class="bubble-label">Jianghu</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="people"><span class="bubble-label">People and Places</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="religion"><span class="bubble-label">Religion</span><div class="bubbles" data-count="5"></div></div>
+                            <div class="bubble-container" data-skill="scholarly"><span class="bubble-label">Scholarly Arts</span><div class="bubbles" data-count="5"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 ps-lg-4">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="subsection-header mt-3">Signature Abilities</div>
+                        <textarea id="block-abilities" rows="7"></textarea>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="subsection-header mt-3">Counters</div>
+                        <textarea id="block-counters" rows="7"></textarea>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="subsection-header mt-3">Weapons</div>
+                        <textarea id="block-weapons" rows="7"></textarea>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="subsection-header mt-3">Equipments</div>
+                        <textarea id="block-equipments" rows="7"></textarea>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="subsection-header mt-3">Eccentricities</div>
+                        <textarea id="block-eccentricities" rows="7"></textarea>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="subsection-header mt-3">Injuries</div>
+                        <textarea id="block-injuries" rows="7"></textarea>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="subsection-header mt-3">Blocked Acupoints</div>
+                        <textarea id="block-acupoints" rows="7"></textarea>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="subsection-header mt-3">Grudges</div>
+                        <textarea id="block-grudges" rows="7"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <div class="subsection-header mt-3">Notes</div>
+                        <textarea id="block-notes" rows="7"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div>Status: <span id="save-status">Connecting...</span></div>
+        <div id="error-display" class="text-danger small ms-3"></div>
+        <div>Righteous Blood Ruthless Blades</div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+     const firebaseConfig = {
+        apiKey: "AIzaSyAZmkytKusbdoDt0g6GOWNYlsXh5TkQI8M",
+        authDomain: "rise-character-sheet.firebaseapp.com",
+        projectId: "rise-character-sheet",
+        storageBucket: "rise-character-sheet.firebasestorage.app",
+        messagingSenderId: "633547066454",
+        appId: "1:633547066454:web:63dfbb6a724308b1fbbff7",
+        measurementId: "G-M80TGFZC8P"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const appId = "wuxia_data";
+    const charId = "jinzhu";
+
+    let currentData = {
+        sheet: {
+            name: '', level: '', xp: '',
+            killingAura: '', maxWounds: '', drinkingLimit: '',
+            currentWounds: '', killingAuraDarkness: '', resist: '',
+            defences: { evade: 0, hardiness: 0, wits: 0 },
+            skills: {
+                martial: { external: 0, internal: 0, lightness: 0 },
+                mental: { command: 0, detect: 0, empathy: 0, persuade: 0, reasoning: 0 },
+                specialist: { medicine: 0, meditation: 0, survival: 0, talent: 0, trade: 0 },
+                physical: { athletics: 0, endurance: 0, muscle: 0, ride: 0, speed: 0 },
+                unorthodox: { disguise: 0, drinking: 0, gambling: 0, magic: 0, theft: 0 },
+                knowledge: { institution: 0, jianghu: 0, people: 0, religion: 0, scholarly: 0 },
+            },
+            blocks: { abilities: '', counters: '', weapons: '', equipments: '', notes: '' }
+        },
+        portrait: null
+    };
+
+    function initBubbles() {
+        $('.bubbles').each(function() {
+            const count = parseInt($(this).data('count'));
+            $(this).empty();
+            for(let i = 1; i <= count; i++) {
+                $(this).append(`<div class="bubble" data-val="${i}"></div>`);
+            }
+        });
+    }
+
+    function render() {
+        const s = currentData.sheet;
+        $('#name').val(s.name || '');
+        $('#level').val(s.level || '');
+        $('#xp').val(s.xp || '');
+        $('#killingAura').val(s.killingAura || '');
+        $('#maxWounds').val(s.maxWounds || '');
+        $('#drinkingLimit').val(s.drinkingLimit || '');
+        $('#currentWounds').val(s.currentWounds || '');
+        $('#killingAuraDarkness').val(s.killingAuraDarkness || '');
+        $('#resist').val(s.resist || '');
+
+        Object.keys(s.blocks).forEach(key => { $(`#block-${key}`).val(s.blocks[key] || ''); });
+
+        Object.keys(s.defences).forEach(key => {
+            const val = s.defences[key];
+            const $bubbles = $(`.bubble-container[data-skill="${key}"][data-category="defences"] .bubble`);
+            $bubbles.removeClass('active').each(function() { if ($(this).data('val') <= val) $(this).addClass('active'); });
+        });
+
+        Object.keys(s.skills).forEach(cat => {
+            Object.keys(s.skills[cat]).forEach(skill => {
+                const val = s.skills[cat][skill];
+                const $bubbles = $(`.skill-list[data-category="${cat}"] .bubble-container[data-skill="${skill}"] .bubble`);
+                $bubbles.removeClass('active').each(function() { if ($(this).data('val') <= val) $(this).addClass('active'); });
+            });
+        });
+
+        if (currentData.portrait) {
+            $('#portrait-img').attr('src', currentData.portrait).show();
+            $('#portrait-placeholder').hide();
+        }
+    }
+
+    async function saveToFirestore() {
+        if (!auth.currentUser) return;
+        $('#save-status').text('Saving...').addClass('saving').removeClass('saved').removeClass('error');
+        try {
+            // Path: artifacts/wuxia_data/public/data/characters/jinzhu (6 segments - EVEN)
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'characters', charId);
+            await setDoc(docRef, { 
+                ...currentData, 
+                lastUpdated: new Date().toISOString(), 
+                userId: auth.currentUser.uid 
+            });
+            $('#save-status').text('Saved').addClass('saved').removeClass('saving');
+            $('#error-display').text('');
+        } catch (e) {
+            console.error("Save Error:", e);
+            $('#save-status').text('Save Error').addClass('error').removeClass('saving');
+            $('#error-display').text(e.message);
+        }
+    }
+
+    $(document).on('input', 'input, textarea', function() {
+        const id = $(this).attr('id');
+        if (id.startsWith('block-')) {
+            currentData.sheet.blocks[id.replace('block-', '')] = $(this).val();
+        } else {
+            currentData.sheet[id] = $(this).val();
+        }
+        debouncedSave();
+    });
+    $(document).on('click', '.bubble', function() {
+        const $container = $(this).closest('.bubble-container');
+        const $skillList = $(this).closest('.skill-list');
+        const skill = $container.data('skill');
+        const category = $container.data('category') || $skillList.data('category');
+        const clickedVal = $(this).data('val');
+        let target = (category === 'defences') ? currentData.sheet.defences : currentData.sheet.skills[category];
+        console.log(category, target, skill);
+        console.log(currentData);
+        target[skill] = (target[skill] === clickedVal) ? clickedVal - 1 : clickedVal;
+        render();
+        saveToFirestore();
+    });
+
+    $('#portrait-input').on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                currentData.portrait = event.target.result;
+                render();
+                saveToFirestore();
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    let timeout;
+    function debouncedSave() { clearTimeout(timeout); timeout = setTimeout(saveToFirestore, 1000); }
+
+    $(document).ready(async () => {
+        initBubbles();
+        try {
+            await signInAnonymously(auth);
+            console.log("Auth success: Logged in anonymously.");
+            $('#save-status').text('Authenticated').addClass('saved');
+        } catch (err) {
+            console.error("FULL AUTH ERROR:", err);
+            $('#save-status').text('Auth Error: ' + err.code).addClass('error');
+            $('#error-display').text(err.message);
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'characters', charId);
+                onSnapshot(docRef, (doc) => {
+                    if (doc.exists()) {
+                        currentData = doc.data();
+                        render();
+                        $('#save-status').text('Synced').addClass('saved');
+                    } else {
+                        render();
+                        $('#save-status').text('New Sheet');
+                    }
+                }, (err) => {
+                    console.error("Sync Error:", err);
+                    $('#save-status').text('Sync Error').addClass('error');
+                    $('#error-display').text(err.message);
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>
