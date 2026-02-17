@@ -424,6 +424,8 @@
     }
 
     async function saveToFirestore() {
+        return;
+        //disable saving after we done
         if (!auth.currentUser) return;
         $('#save-status').text('Saving...').addClass('saving').removeClass('saved').removeClass('error');
         try {
