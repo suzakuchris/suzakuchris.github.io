@@ -687,14 +687,14 @@
                     photoUrl: 'https://suzakuchris.github.io/assets/dossier.png',
                     profile: 'A former military engineer whose service records are suspiciously sparse. It seems she has been scrubbing information regarding ██████████████ from all but the most secure choosen networks, almost like a ghost who only exists where she chooses to. This erasure is rumored to be tied to █████████████ ████████████ ████████████████████. She exhibits talent in electronic warfare, even shows promising capability in drone maintenance and piloting, making her an invaluable asset for an intelligence-gathering operation.',
                     stats: {
-                        wounds: 2,
+                        wounds: 3,
                         stamina: 5,
                         luck: 0,
                         move: 5,
                         evade: 8,
                         armor: '4*',
                         strength: '-5',
-                        agility: 0,
+                        agility: 1,
                         knowledge: 5,
                         empathy: 2
                     },
@@ -705,7 +705,7 @@
                             luck: 0,
                             move: 10,
                             evade: 12,
-                            armor: '0*',
+                            armor: '6*',
                             strength: '+2',
                             agility: 0,
                             knowledge: '-3',
@@ -718,12 +718,17 @@
                         {
                             name:"Cash on hand",
                             desc:"Carried, digital wallet",
-                            price:50+200+500+250
+                            price:465
                         },
                         {
                             name:"Pistol",
                             desc:"Sidearm, Range 8 | Damage 1d6+1 | Ammo7 | Semi<br/>2 Mag, AP Rounds",
                             price:(300+250)
+                        },
+                        {
+                            name:"Rifle (+Sling)",
+                            desc:"Main, Range 25 | Damage 1d6+3 | Ammo10 | Semi, Accurate<br/>2 Mag, AP Rounds",
+                            price:(800+200+50)
                         },
                         {
                             name:"Light Armor",
@@ -736,8 +741,13 @@
                             price:70
                         },
                         {
+                            name:"Flashlight",
+                            desc:"Standard issue",
+                            price:35
+                        },
+                        {
                             name:"Tactical Vest",
-                            desc:"3 Slots for Binocular, EDTA, Flashlight, 1 for Pistol, 3 for Mags<br/><br/>A Tactical Vest may hold any mix of 8 Magazines, grenades, Sidearms.",
+                            desc:"3 Slots for Binocular, EDTA, Flashlight, 1 for Pistol, 3 for Mags (Pistol), 1 Mag (Rifle)<br/><br/>A Tactical Vest may hold any mix of 8 Magazines, grenades, Sidearms.",
                             price:300
                         },
                         {
