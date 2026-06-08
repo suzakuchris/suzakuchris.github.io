@@ -877,18 +877,18 @@
     //  EDITABLE DATA: Modify these objects to update your character sheet
     // =========================================================================
     const attributes = {
-        "STR": 10, "CON": 10, "DEX": 8, "INT": 18, "WIS": 10, "CHA": 20
+        "STR": 10, "CON": 10, "DEX": 8, "INT": 20, "WIS": 10, "CHA": 22
     };
 
-    const level = 2;
+    const level = 10;
     const weaponProf = 3; //longsword
-    const otherBonus = 2; //expertise and magic weapon
+    const otherBonus = 2+1; //expertise and magic weapon
     const levelBonus = Math.floor(level/2);
     const HPValue = attributes['CHA'] + 13 + ((level-1)*5);
-    const ACBonus = 1+2+8;//level, veterans armor (plate), heavy shield
-    const REFBonus = 1+1+2; //class, amulet, shield
-    const FORTBonus = 1+1; //class, amulet
-    const WILLBonus = 1; //amulet
+    const ACBonus = 1+2+8+1;//level, veterans armor (plate), heavy shield
+    const REFBonus = 1+1+2+1; //class, amulet, shield
+    const FORTBonus = 1+1+1; //class, amulet
+    const WILLBonus = 1+1; //amulet
     const HSUsed = 0;
     const HSTotal = 8;
     const HSValue = Math.floor(HPValue/4);
@@ -896,7 +896,7 @@
     //skill versatility: untrained = +1bonus
     const skills = {
         "Acrobatics": { id: 'skill1', baseAttribute: "DEX", trained: false, otherBonus: 1-3 },
-        "Arcana": { id: 'skill2', baseAttribute: "INT", trained: false, otherBonus: 1 },
+        "Arcana": { id: 'skill2', baseAttribute: "INT", trained: true, otherBonus: 1 },
         "Athletics": { id: 'skill27', baseAttribute: "STR", trained: false, otherBonus: 1-3 },
         "Bluff": { id: 'skill3', baseAttribute: "CHA", trained: true, otherBonus: 0 },
         "Diplomacy": { id: 'skill6', baseAttribute: "CHA", trained: true, otherBonus: 0 },
@@ -908,7 +908,7 @@
         "Intimidate": { id: 'skill14', baseAttribute: "CHA", trained: true, otherBonus: 0 },
         "Nature": { id: 'skill16', baseAttribute: "WIS", trained: false, otherBonus: 1+2 },
         "Perception": { id: 'skill17', baseAttribute: "WIS", trained: false, otherBonus: 1 },
-        "Religion": { id: 'skill18', baseAttribute: "INT", trained: false, otherBonus: 1 },
+        "Religion": { id: 'skill18', baseAttribute: "INT", trained: true, otherBonus: 1 },
         "Stealth": { id: 'skill20', baseAttribute: "DEX", trained: false, otherBonus: 1-3 },
         "Streetwise": { id: 'skill21', baseAttribute: "CHA", trained: true, otherBonus: 0 },
         "Thievery": { id: 'skill23', baseAttribute: "DEX", trained: false, otherBonus: 1-3 }
@@ -934,9 +934,9 @@
     ];
 
     const magicItems = [
-        { id: 'armor2986', name: 'Veterans Armor (+1)' },
-        { id: 'item498', name: 'Amulet of Protection (+1)' },
-        { id: 'weapon1782', name: 'Magic Weapon (+1)' },
+        { id: 'armor2986', name: 'Veterans Armor (+2)' },
+        { id: 'item498', name: 'Amulet of Protection (+2)' },
+        { id: 'weapon1782', name: 'Magic Weapon (+2)' },
     ];
 
     const bonusDamageReminder = [
