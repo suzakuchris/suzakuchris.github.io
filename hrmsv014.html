@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Passenger / Character Sheet</title>
+        <link rel="icon" type="image/x-icon" href="https://suzakuchris.github.io/assets/sputnik.ico">
+        <meta property="og:title" content="Nataliya Evgenievna Vasilieva">
+        <meta property="og:description" content="Dr. Nataliya Vasilieva is a Russian-born applied mathematician and astrodynamicist based at ETH Zürich, Switzerland. She specializes in deep-space telemetry, signal processing, and automated guidance systems. Her paper, Autonomous Orbital Computation, pioneered low-energy trajectory calculations and orbital transfer dynamics in the wake of the Cold War, laying the mathematical foundation for long-range autonomous spaceflight. (Fanmade website for personal uses)">
+        <meta property="og:image" content="https://suzakuchris.github.io/assets/sputnik_ann.jpg">
+        <meta property="og:type" content="website" />
+        <meta name="theme-color" data-react-helmet="true" content="#FFA500" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@400;600&family=Reenie+Beanie&display=swap" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <style>
+            body {
+                background-color: #111111;
+                display: flex;
+                justify-content: center;
+                padding: 20px;
+                font-family: 'Courier Prime', 'Courier New', monospace;
+                color: #111111;
+                font-weight:bold;
+                height:100vh;
+                background: url("assets/texturefabrik_photocopies_vol-3_00.webp");
+                background-size: cover;
+                background-position-y: center;
+                font-size:0.7rem;
+            }
+
+            .paper {
+                position: relative;
+                background-color: #e3dfd7; 
+                overflow-y: auto; 
+                filter: contrast(280%) brightness(90%) blur(0.2px);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(0, 0, 0, 0.6);
+                padding: 18px 20px 40px 20px;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            @media (min-width: 768px) {
+                .paper {
+                    aspect-ratio: 210 / 297; 
+                    height: 100%;
+                    max-height: 90vh;
+                    width: auto;
+                    padding-bottom: 35px;
+                }
+
+                .page1 {
+                    transform: rotate(-0.8deg);
+                }
+
+                .page2 {
+                    transform: rotate(0.8deg);
+                }
+
+                .doc-footer {
+                    position: absolute;
+                    bottom: 12px;
+                    left: 20px;
+                    right: 20px;
+                }
+            }
+
+            /* --- MOBILE VIEW FIXES --- */
+            @media (max-width: 767.98px) {
+                body {
+                    height: auto;
+                }
+
+                .paper {
+                    height: auto;
+                    min-height: auto;
+                    aspect-ratio: auto; /* Allow height to adjust to text content */
+                    transform: none !important; /* Disable rotation on mobile for cleaner scrolling */
+                    margin-bottom: 20px;
+                }
+
+                .doc-footer {
+                    position: relative;
+                    margin-top: 20px;
+                    left: 0;
+                    right: 0;
+                }
+            }
+
+            .scanned{
+                filter: contrast(280%) brightness(90%) blur(0.2px);
+            }
+
+            .page1{
+                transform: rotate(-0.8deg);
+            }
+
+            .page2{
+                /* transform: rotate(0.8deg); */
+            }
+
+            .redacted {
+                background-color: #000;
+                color: #000;
+                padding: 0 4px;
+                /* user-select: none; */
+            }
+
+            .doc-header {
+                display: flex;
+                justify-content: space-between;
+                border-bottom: 2px solid #000;
+                padding-bottom: 4px;
+                margin-bottom: 10px;
+            }
+
+            .doc-footer {
+                position: absolute;
+                bottom: 12px;
+                left: 22px;
+                right: 22px;
+                display: flex;
+                justify-content: space-between;
+                border-top: 1px solid #000;
+                padding-top: 4px;
+                font-size: 0.7rem;
+            }
+
+            .stamp {
+                border: 2px solid #000;
+                padding: 2px 8px;
+                display: inline-block;
+                text-transform: uppercase;
+                transform: rotate(-3deg);
+                font-weight: bold;
+            }
+
+            .stat-box {
+                border: 1px dashed #000;
+                padding: 4px 8px;
+                margin-bottom: 6px;
+            }
+
+            ul.clean-list {
+                list-style: none;
+                padding-left: 0;
+            }
+
+            ul.clean-list li {
+                margin-bottom: 3px;
+            }
+
+            /* Photo Container & Frame */
+            .photo-frame {
+                position: fixed;
+                width: 120px;
+                height: 150px;
+                background-color: #d1ccc0;
+                border: 1px solid #000;
+                padding: 4px;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+                transform: rotate(-1.5deg);
+                margin: 10px auto;
+                left:0px;
+                top:-10px;
+            }
+
+            .photo-frame2 {
+                position: fixed;
+                width: 120px;
+                height: 150px;
+                padding: 4px;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+                transform: rotate(-1.5deg);
+                margin: 10px auto;
+                bottom:-15px;
+                right:10px;
+            }
+            .photo-frame2 img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                filter: grayscale(100%) contrast(200%);
+                transform: rotate(20deg);
+            }
+
+            .photo-frame img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                filter: grayscale(100%) contrast(120%);
+                border: 1px solid #777;
+            }
+
+            /* Paperclip Visual Graphic */
+            .paperclip {
+                position: absolute;
+                top: -12px;
+                right: 15px;
+                width: 16px;
+                height: 38px;
+                border: 2px solid #555;
+                border-radius: 10px;
+                background: transparent;
+                box-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+                z-index: 10;
+                pointer-events: none;
+            }
+
+            .paperclip::after {
+                content: '';
+                position: absolute;
+                top: 6px;
+                left: 2px;
+                width: 8px;
+                height: 22px;
+                border: 2px solid #555;
+                border-radius: 6px;
+                border-bottom: none;
+            }
+
+            .seamless-textarea {
+                background: transparent;
+                border: none;
+                outline: none;
+                box-shadow: none;
+
+                /* Force font & color to match surrounding text */
+                color: white;
+                font-family: 'Reenie Beanie', cursive;
+                line-height: 1.5;
+                font-size:2rem;
+                font-weight: inherit;
+                line-height: inherit;
+
+                /* Alignment & Text Wrapping */
+                vertical-align: top;       /* Aligns top with adjacent inline elements */
+                resize: none;              /* Hides browser resize handle */
+                overflow: hidden;          /* Hides scrollbars */
+                padding: 0;
+                margin: 0;
+                height:100%;
+                min-height:500px;
+                width:100%;
+                /* border:1px solid white; */
+            }
+
+            /* Optional: Show a subtle bottom border when focused */
+            .seamless-textarea:focus {
+                border-bottom: 1px dashed currentColor;
+            }
+
+            /* Small Firebase sync status indicator */
+            #save-status {
+                color: #888;
+                font-family: 'Courier Prime', monospace;
+                font-size: 0.75rem;
+                margin-top: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="photo-frame2">
+            <img src="assets/cornflower.webp" alt="Agent Photograph">
+        </div>
+        <div class="container">
+            <div class="row d-flex justify-content-center h-100 gy-4">
+                <div class="col-12 col-md-10">
+                    <div class="row gy-4">
+                        <div class="col-12 col-md-6">
+                            <div class="paper page1 border border-dark h-100">
+                                <div class="photo-frame">
+                                    <div class="paperclip"></div>
+                                    <img src="assets/yr.jpg" alt="Agent Photograph">
+                                </div>
+                                <div class="doc-header">
+                                    <span>C00188942</span>
+                                    <span>PAGE: 1 OF 2</span>
+                                </div>
+
+                                <div class="mb-2">
+                                    <div>CLAS UNCLASSIFIED (Skilled Contracted Hire)</div>
+                                    <div>AFSN PY8820194110</div>
+                                    <div>DDAT 911012</div>
+                                    <div>SUBJ FIELD AGENT DOSSIER / CHARACTER SHEET</div>
+                                </div>
+
+                                <hr class="my-2" style="border-color: #000;">
+
+                                <div class="mb-2">
+                                    <div><strong>01 [CODENAME]</strong>  : <span class="redacted">BKORNBLUMME</span></div>
+                                    <div><strong>02 [FULL NAME]</strong> : NATALIYA E. VASILIEVA</div>
+                                    <div><strong>03 [CLEARANCE]</strong> : LEVEL-4 / EYES ONLY</div>
+                                    <div><strong>04 [ORIGIN / DOB]</strong>    : <span class="redacted">LENINGRAD</span> / 19-09-1971</div>
+                                </div>
+
+                                <!-- Core Attributes -->
+                                <div class="stat-box my-2">
+                                    <div class="text-center text-decoration-underline mb-1">OPERATIONAL ATTRIBUTES</div>
+                                    <div class="row">
+                                        <div class="col-6">STR: <span id="stat-str">32</span></div>
+                                        <div class="col-6">SPD: <span id="stat-spd">42</span></div>
+                                        <div class="col-6">INT: <span id="stat-int">43</span></div>
+                                        <div class="col-6">COM: <span id="stat-com">36</span></div>
+                                        <div class="col-12">
+                                            <div style="border-bottom: 2px solid #000;; height: 2px; background-color: #000000;"></div>
+                                        </div>
+                                        <div class="col-6">SANITY: <span id="save-sanity">20</span></div>
+                                        <div class="col-6">FEAR: <span id="save-fear">22</span></div>
+                                        <div class="col-6">BODY: <span id="save-body">19</span></div>
+                                        <div class="col-6">ARMOR: <span id="save-armor">-</span></div>
+                                    </div>
+                                </div>
+
+                                <!-- Vital Metrics & Combat Stats -->
+                                <div class="row mb-2">
+                                    <div class="col-12">
+                                        <div><b>SCIENTIST</b> | <strong>HEALTH</strong>    : <span id="stat-hp">13 / 13</span></div>
+                                        <div style="font-size:10px">WHENEVER YOU FAIL A SANITY SAVE, ALL CLOSE FRIENDLY PLAYERS GAIN 1 STRESS.</div>
+                                    </div>
+                                </div>
+                                
+
+                                <!-- Skills / Proficiencies -->
+                                <div class="mb-2 mt-2">
+                                    <strong>05 [TRAINING PROFICIENCIES]</strong>
+                                    <ul class="clean-list mt-1">
+                                        > MATHEMATICS (+10)
+                                        <br>> PHYSICS (+15)
+                                        <br>> <span class="redacted">HYPERSPACE</span> (+20)
+                                        <br>> COMPUTERS (+10)
+                                    </ul>
+                                </div>
+
+                                <!-- Page Footer -->
+                                <div class="doc-footer">
+                                    <span>DOC 14-B</span>
+                                    <span>TOP SECRET / NOFORN</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="paper page2 border border-dark h-100">
+                                <div class="doc-header">
+                                    <span>C00188942</span>
+                                    <span>PAGE: 2 OF 2</span>
+                                </div>
+
+                                <div class="mb-2">
+                                    <strong>06 [ISSUED GEAR / EQUIPMENT]</strong>
+                                    <ul class="clean-list mt-1">
+                                        - "SPUTNIK" PATCHES
+                                        <br>- STANDARD CREW ATTIRE (AP 1)
+                                        <br>- UTILITY KNIFE
+                                        <br>- CYBERNETIC DIAGNOSTIC SCANNER
+                                        <br>- DUCT TAPE
+                                        <br>- <span class="redacted">DRIED CORNFLOWER ACRYLIC TRINKET</span>
+                                    </ul>
+                                </div>
+
+                                <!-- Field Assessment Paragraphs -->
+                                <div class="mb-2">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <strong>07 [NOTES]</strong>
+                                            <p class="mt-1 mb-1">
+                                                1. 1 Master Skill, and an Expert and Trained Skill prerequisite. Bonus: 1 Trained Skill
+                                            </p>
+                                            <p class="mb-1">
+                                                2. You meet the prerequisite for one Expert Skill immediately (still requires its Training prerequisite)
+                                                (Piloting)
+                                            </p>
+                                        </div>
+                                        <div class="col-4">
+                                            <strong>08 [PHOBIAS]</strong>
+                                            <p class="mt-1 mb-1 redacted">
+                                                Unexplainable Paranoias around people of power
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Classification Stamp -->
+                                <div class="text-center my-3 scanned d-none">
+                                    <span class="stamp">DECLASSIFIED BY DIRECTORATE</span>
+                                </div>
+
+                                <!-- Release Block -->
+                                <div class="border border-dark p-2 mt-2">
+                                    <div>APPROVED FOR RELEASE</div>
+                                    <div>DATE: <span class="text-decoration-underline">10 / 12 / 2001</span></div>
+                                    <div>SIGNATURE: <em><span class="redacted" style="user-select: none;">THE SIXTH MAJOR ARCANA</span></em></div>
+                                </div>
+
+                                <!-- Page Footer -->
+                                <div class="doc-footer">
+                                    <span>DOC 14-B</span>
+                                    <span>UNCLASSIFIED</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-2 px-md-0 mx-md-0">
+                    <textarea 
+                        id="notes-field"
+                        class="seamless-textarea" 
+                        placeholder="Notes..."
+                    ></textarea>
+                    <div id="save-status">Connecting to Uplink...</div>
+                </div>
+            </div>
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+        <!-- Firebase Firestore & Data Population Script -->
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+            import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+            // ----------------------------------------------------
+            // 1. CHARACTER SHEET DATA POPULATION
+            // ----------------------------------------------------
+            const characterData = {
+                "stats": {
+                    "intelligence": 43,
+                    "speed": 42,
+                    "combat": 36,
+                    "strength": 32
+                },
+                "saves": {
+                    "sanity": 20,
+                    "fear": 22,
+                    "body": 19,
+                    "armor": 1,
+                },
+                "hp": 13,
+                "notes": ""
+            };
+
+            function populateStats(data) {
+                document.getElementById('stat-int').textContent = data.stats.intelligence;
+                document.getElementById('stat-spd').textContent = data.stats.speed;
+                document.getElementById('stat-com').textContent = data.stats.combat;
+                document.getElementById('stat-str').textContent = data.stats.strength;
+
+                document.getElementById('save-sanity').textContent = data.saves.sanity;
+                document.getElementById('save-fear').textContent = data.saves.fear;
+                document.getElementById('save-body').textContent = data.saves.body;
+                document.getElementById('save-armor').textContent = data.saves.armor;
+
+                document.getElementById('stat-hp').textContent = `${data.hp} / ${data.hp}`;
+            }
+
+            // Populate document elements on load
+            window.addEventListener('DOMContentLoaded', () => {
+                populateStats(characterData);
+            });
+
+            // ----------------------------------------------------
+            // 2. FIREBASE CONFIGURATION & FIRESTORE SAVE SYSTEM
+            // ----------------------------------------------------
+            const firebaseConfig = {
+                apiKey: "AIzaSyAZmkytKusbdoDt0g6GOWNYlsXh5TkQI8M",
+                authDomain: "rise-character-sheet.firebaseapp.com",
+                projectId: "rise-character-sheet",
+                storageBucket: "rise-character-sheet.firebasestorage.app",
+                messagingSenderId: "633547066454",
+                appId: "1:633547066454:web:63dfbb6a724308b1fbbff7",
+                measurementId: "G-M80TGFZC8P"
+            };
+
+            const notesField = document.getElementById('notes-field');
+            const saveStatus = document.getElementById('save-status');
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+                const docRef = doc(db, "hermes_v014", "vHe8CMR18vX9X4yhiYkm");
+
+                // Load real-time note updates from Firestore
+                onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        if (document.activeElement !== notesField) {
+                            notesField.value = docSnap.data().notes || characterData.notes;
+                        }
+                        saveStatus.textContent = "Synced with Cloud";
+                    } else {
+                        saveStatus.textContent = "Ready";
+                    }
+                }, (error) => {
+                    console.error("Firebase read error:", error);
+                    saveStatus.textContent = "Offline Mode";
+                });
+
+                // Save notes (800ms debounce)
+                let debounceTimer;
+                notesField.addEventListener('input', () => {
+                    saveStatus.textContent = "Saving...";
+                    clearTimeout(debounceTimer);
+
+                    debounceTimer = setTimeout(async () => {
+                        try {
+                            await setDoc(docRef, {
+                                notes: notesField.value,
+                                lastUpdated: new Date()
+                            }, { merge: true });
+                            saveStatus.textContent = "Saved";
+                        } catch (err) {
+                            console.error("Firebase write error:", err);
+                            saveStatus.textContent = "Save Failed";
+                        }
+                    }, 800);
+                });
+            } catch (err) {
+                console.warn("Firebase not configured yet or operating offline:", err);
+                saveStatus.textContent = "Local Mode";
+            }
+        </script>
+    </body>
+</html>
